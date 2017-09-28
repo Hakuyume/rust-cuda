@@ -2,7 +2,7 @@ use std::mem::size_of;
 use std::ptr::null_mut;
 
 use cuda_sys;
-use cuda_sys::{cudaError_t, c_void, size_t};
+use cuda_sys::{cudaError, c_void, size_t};
 
 use Error;
 use Result;
@@ -17,7 +17,7 @@ impl<T> Memory<T> {
         let mut ptr = null_mut::<c_void>();
         let error = unsafe { cuda_sys::cudaMalloc(&mut ptr, (size_of::<T>() * len) as size_t) };
         match error {
-            cudaError_t::cudaSuccess => {
+            cudaError::cudaSuccess => {
                 Ok(Memory {
                        ptr: ptr as *mut T,
                        len,

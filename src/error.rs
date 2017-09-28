@@ -1,5 +1,5 @@
 use std;
-use cuda_sys::cudaError_t;
+use cuda_sys::cudaError;
 
 #[derive(Debug)]
 pub enum Error {
@@ -26,12 +26,12 @@ impl std::fmt::Display for Error {
     }
 }
 
-impl From<cudaError_t> for Error {
-    fn from(error: cudaError_t) -> Self {
+impl From<cudaError> for Error {
+    fn from(error: cudaError) -> Self {
         match error {
-            cudaError_t::cudaErrorMemoryAllocation => Error::MemoryAllocation,
-            cudaError_t::cudaErrorInitializationError => Error::InitializationError,
-            cudaError_t::cudaErrorInvalidDevicePointer => Error::InvalidDevicePointer,
+            cudaError::cudaErrorMemoryAllocation => Error::MemoryAllocation,
+            cudaError::cudaErrorInitializationError => Error::InitializationError,
+            cudaError::cudaErrorInvalidDevicePointer => Error::InvalidDevicePointer,
             _ => Error::Unknown,
         }
     }
