@@ -7,3 +7,12 @@ pub enum cudaError {
     cudaErrorInitializationError = 3,
     cudaErrorInvalidDevicePointer = 17,
 }
+
+#[repr(C)]
+enum cudaMemcpyKind {
+    cudaMemcpyHostToHost = 0,
+    cudaMemcpyHostToDevice = 1,
+    cudaMemcpyDeviceToHost = 2,
+    cudaMemcpyDeviceToDevice = 3,
+    cudaMemcpyDefault = 4,
+}
