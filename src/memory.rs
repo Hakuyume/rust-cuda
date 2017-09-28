@@ -1,4 +1,5 @@
 use std::mem::size_of;
+use std::ops;
 use std::ptr::null_mut;
 
 use cuda_sys;
@@ -6,6 +7,7 @@ use cuda_sys::{cudaError, c_void, size_t};
 
 use Error;
 use Result;
+use slice;
 
 pub struct Memory<T> {
     ptr: *mut T,
@@ -35,5 +37,22 @@ impl<T> Memory<T> {
 impl<T> Drop for Memory<T> {
     fn drop(&mut self) {
         unsafe { cuda_sys::cudaFree(self.ptr as *mut c_void) };
+    }
+}
+
+pub struct Slice<'a, T: 'a> {
+    mem: &'a Memory<T>,
+    offset: usize,
+    len: usize,
+}
+
+impl<'a, T> slice::Slice<ops::RangeFull> for &'a Memory<T> {
+    type Output = Slice<'a, T>;
+    fn slice(self, _: ops::RangeFull) -> Slice<'a, T> {
+        Slice {
+            mem: self,
+            offset: 0,
+            len: self.len(),
+        }
     }
 }
