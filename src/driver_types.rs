@@ -9,7 +9,7 @@ pub enum cudaError {
 }
 
 #[repr(C)]
-enum cudaMemcpyKind {
+pub enum cudaMemcpyKind {
     cudaMemcpyHostToHost = 0,
     cudaMemcpyHostToDevice = 1,
     cudaMemcpyDeviceToHost = 2,
