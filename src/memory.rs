@@ -1,4 +1,6 @@
-use std;
+use std::mem::size_of;
+use std::ptr::null_mut;
+
 use cuda_sys;
 use cuda_sys::{cudaError_t, c_void, size_t};
 
@@ -7,26 +9,26 @@ use Result;
 
 pub struct Memory<T> {
     ptr: *mut T,
-    length: usize,
+    len: usize,
 }
 
 impl<T> Memory<T> {
-    pub fn new(length: usize) -> Result<Memory<T>> {
-        let mut ptr = std::ptr::null_mut::<c_void>();
-        let error = unsafe {
-            cuda_sys::cudaMalloc(&mut ptr, (std::mem::size_of::<T>() * length) as size_t)
-        };
+    pub fn new(len: usize) -> Result<Memory<T>> {
+        let mut ptr = null_mut::<c_void>();
+        let error = unsafe { cuda_sys::cudaMalloc(&mut ptr, (size_of::<T>() * len) as size_t) };
         match error {
             cudaError_t::cudaSuccess => {
-                let ptr = ptr as *mut T;
-                Ok(Memory { ptr, length })
+                Ok(Memory {
+                       ptr: ptr as *mut T,
+                       len,
+                   })
             }
             e => Err(Error::from(e)),
         }
     }
 
     pub fn len(&self) -> usize {
-        self.length
+        self.len
     }
 }
 
