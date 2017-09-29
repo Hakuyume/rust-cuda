@@ -3,7 +3,7 @@ use cudaError;
 use cudaMemcpyKind;
 
 #[link(name = "cudart")]
-extern "C" {
+extern "system" {
     pub fn cudaGetErrorName(error: cudaError) -> *const c_char;
     pub fn cudaGetErrorString(error: cudaError) -> *const c_char;
     pub fn cudaFree(devPtr: *mut c_void) -> cudaError;
