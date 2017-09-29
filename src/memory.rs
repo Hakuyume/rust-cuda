@@ -68,11 +68,11 @@ impl<T> Slice<T> {
         mem::transmute::<Repr<T>, &mut Slice<T>>(Repr { ptr, len })
     }
 
-    pub fn ptr(&self) -> *const T {
+    pub fn as_ptr(&self) -> *const T {
         unsafe { mem::transmute::<&Slice<T>, Repr<T>>(self).ptr as *const T }
     }
 
-    pub fn ptr_mut(&mut self) -> *mut T {
+    pub fn as_mut_ptr(&mut self) -> *mut T {
         unsafe { mem::transmute::<&Slice<T>, Repr<T>>(self).ptr }
     }
 
@@ -91,7 +91,7 @@ impl<T> Slice<T> {
         }
     }
 
-    fn get_slice_mut(&mut self, start: Option<usize>, end: Option<usize>) -> &mut Slice<T> {
+    fn get_mut_slice(&mut self, start: Option<usize>, end: Option<usize>) -> &mut Slice<T> {
         unsafe {
             let repr = mem::transmute::<&Slice<T>, Repr<T>>(self);
             let start = start.unwrap_or(0);
@@ -133,24 +133,24 @@ impl<T> ops::Index<ops::RangeTo<usize>> for Slice<T> {
 
 impl<T> ops::IndexMut<ops::RangeFull> for Slice<T> {
     fn index_mut(&mut self, _: ops::RangeFull) -> &mut Slice<T> {
-        self.get_slice_mut(None, None)
+        self.get_mut_slice(None, None)
     }
 }
 
 impl<T> ops::IndexMut<ops::Range<usize>> for Slice<T> {
     fn index_mut(&mut self, index: ops::Range<usize>) -> &mut Slice<T> {
-        self.get_slice_mut(Some(index.start), Some(index.end))
+        self.get_mut_slice(Some(index.start), Some(index.end))
     }
 }
 
 impl<T> ops::IndexMut<ops::RangeFrom<usize>> for Slice<T> {
     fn index_mut(&mut self, index: ops::RangeFrom<usize>) -> &mut Slice<T> {
-        self.get_slice_mut(Some(index.start), None)
+        self.get_mut_slice(Some(index.start), None)
     }
 }
 
 impl<T> ops::IndexMut<ops::RangeTo<usize>> for Slice<T> {
     fn index_mut(&mut self, index: ops::RangeTo<usize>) -> &mut Slice<T> {
-        self.get_slice_mut(None, Some(index.end))
+        self.get_mut_slice(None, Some(index.end))
     }
 }
