@@ -6,6 +6,7 @@ pub enum cudaError {
     cudaErrorMemoryAllocation = 2,
     cudaErrorInitializationError = 3,
     cudaErrorInvalidDevicePointer = 17,
+    cudaErrorUnknown = 30,
 }
 
 #[repr(C)]
