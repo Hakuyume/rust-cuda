@@ -2,7 +2,8 @@ use std::mem;
 use std::ptr;
 
 use cuda_sys;
-use cuda_sys::{cudaError, c_void, size_t};
+use cuda_sys::cudaError;
+use cuda_sys::{c_void, size_t};
 
 use Error;
 use Result;

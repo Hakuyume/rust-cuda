@@ -1,4 +1,5 @@
 use std;
+
 use cuda_sys::cudaError;
 
 #[derive(Debug)]
