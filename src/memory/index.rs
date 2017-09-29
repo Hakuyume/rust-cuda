@@ -1,85 +1,8 @@
 use std::mem;
 use std::ops;
-use std::ptr;
-
-use cuda_sys;
-use cuda_sys::{cudaError, c_void, size_t};
-
-use Error;
-use Result;
-
-pub struct Memory<T> {
-    ptr: *mut T,
-    len: usize,
-}
-
-pub struct Slice<T> {
-    _stub: [T],
-}
-
-#[repr(C)]
-struct Repr<T> {
-    ptr: *mut T,
-    len: usize,
-}
-
-impl<T> Memory<T> {
-    pub fn new(len: usize) -> Result<Memory<T>> {
-        let mut ptr = ptr::null_mut::<c_void>();
-        let error =
-            unsafe { cuda_sys::cudaMalloc(&mut ptr, (mem::size_of::<T>() * len) as size_t) };
-        match error {
-            cudaError::cudaSuccess => {
-                Ok(Memory {
-                       ptr: ptr as *mut T,
-                       len,
-                   })
-            }
-            e => Err(Error::from(e)),
-        }
-    }
-}
-
-impl<T> Drop for Memory<T> {
-    fn drop(&mut self) {
-        unsafe { cuda_sys::cudaFree(self.ptr as *mut c_void) };
-    }
-}
-
-impl<T> ops::Deref for Memory<T> {
-    type Target = Slice<T>;
-    fn deref(&self) -> &Slice<T> {
-        unsafe { Slice::new(self.ptr, self.len) }
-    }
-}
-
-impl<T> ops::DerefMut for Memory<T> {
-    fn deref_mut(&mut self) -> &mut Slice<T> {
-        unsafe { Slice::new_mut(self.ptr, self.len) }
-    }
-}
+use super::{Repr, Slice};
 
 impl<T> Slice<T> {
-    unsafe fn new<'a>(ptr: *mut T, len: usize) -> &'a Slice<T> {
-        mem::transmute::<Repr<T>, &Slice<T>>(Repr { ptr, len })
-    }
-
-    unsafe fn new_mut<'a>(ptr: *mut T, len: usize) -> &'a mut Slice<T> {
-        mem::transmute::<Repr<T>, &mut Slice<T>>(Repr { ptr, len })
-    }
-
-    pub fn as_ptr(&self) -> *const T {
-        unsafe { mem::transmute::<&Slice<T>, Repr<T>>(self).ptr as *const T }
-    }
-
-    pub fn as_mut_ptr(&mut self) -> *mut T {
-        unsafe { mem::transmute::<&Slice<T>, Repr<T>>(self).ptr }
-    }
-
-    pub fn len(&self) -> usize {
-        unsafe { mem::transmute::<&Slice<T>, Repr<T>>(self).len }
-    }
-
     fn get_slice(&self, start: Option<usize>, end: Option<usize>) -> &Slice<T> {
         unsafe {
             let repr = mem::transmute::<&Slice<T>, Repr<T>>(self);
