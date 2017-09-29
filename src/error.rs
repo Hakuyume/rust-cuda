@@ -1,5 +1,6 @@
 use std;
 
+use cuda_sys;
 use cuda_sys::cudaError;
 
 use Result;
@@ -14,11 +15,16 @@ pub enum Error {
 
 impl std::error::Error for Error {
     fn description(&self) -> &str {
-        match *self {
-            Error::MemoryAllocation => "It was unable to allocate enough memory",
-            Error::InitializationError => "The CUDA driver and runtime could not be initialized",
-            Error::InvalidDevicePointer => "At least one device pointer is not a valid device pointer",
-            Error::Unknown => "Unknown error",
+        let err = match *self {
+            Error::MemoryAllocation => cudaError::cudaErrorMemoryAllocation,
+            Error::InitializationError => cudaError::cudaErrorInitializationError,
+            Error::InvalidDevicePointer => cudaError::cudaErrorInvalidDevicePointer,
+            Error::Unknown => cudaError::cudaErrorUnknown,
+        };
+        unsafe {
+            let ptr = cuda_sys::cudaGetErrorString(err);
+            let c_str = std::ffi::CStr::from_ptr(ptr);
+            c_str.to_str().unwrap_or("[Non UTF8 description]")
         }
     }
 }
