@@ -73,3 +73,31 @@ impl<T> Slice<T> {
 
 mod deref;
 mod index;
+
+pub fn copy_host_to_device<T>(dst: &mut Slice<T>, src: &[T]) -> Result<()> {
+    assert_eq!(src.len(), dst.len());
+    let error = unsafe {
+        cuda_sys::cudaMemcpy(dst.as_mut_ptr() as *mut c_void,
+                             src.as_ptr() as *const c_void,
+                             mem::size_of::<T>() * src.len(),
+                             cuda_sys::cudaMemcpyKind::cudaMemcpyHostToDevice)
+    };
+    match error {
+        cudaError::cudaSuccess => Ok(()),
+        e => Err(Error::from(e)),
+    }
+}
+
+pub fn copy_device_to_host<T>(dst: &mut [T], src: &Slice<T>) -> Result<()> {
+    assert_eq!(src.len(), dst.len());
+    let error = unsafe {
+        cuda_sys::cudaMemcpy(dst.as_mut_ptr() as *mut c_void,
+                             src.as_ptr() as *const c_void,
+                             mem::size_of::<T>() * src.len(),
+                             cuda_sys::cudaMemcpyKind::cudaMemcpyDeviceToHost)
+    };
+    match error {
+        cudaError::cudaSuccess => Ok(()),
+        e => Err(Error::from(e)),
+    }
+}
