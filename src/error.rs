@@ -2,6 +2,8 @@ use std;
 
 use cuda_sys::cudaError;
 
+use Result;
+
 #[derive(Debug)]
 pub enum Error {
     MemoryAllocation,
@@ -27,13 +29,17 @@ impl std::fmt::Display for Error {
     }
 }
 
-impl From<cudaError> for Error {
-    fn from(error: cudaError) -> Self {
-        match error {
-            cudaError::cudaErrorMemoryAllocation => Error::MemoryAllocation,
-            cudaError::cudaErrorInitializationError => Error::InitializationError,
-            cudaError::cudaErrorInvalidDevicePointer => Error::InvalidDevicePointer,
-            _ => Error::Unknown,
-        }
+pub fn wrap_error(err: cudaError) -> Result<()> {
+    match err {
+        cudaError::cudaSuccess => Ok(()),
+        cudaError::cudaErrorMemoryAllocation => Err(Error::MemoryAllocation),
+        cudaError::cudaErrorInitializationError => Err(Error::InitializationError),
+        cudaError::cudaErrorInvalidDevicePointer => Err(Error::InvalidDevicePointer),
+        cudaError::cudaErrorUnknown => Err(Error::Unknown),
     }
+}
+
+#[macro_export]
+macro_rules! safe_call {
+    ($call:expr) => {try!($crate::error::wrap_error($call))};
 }
