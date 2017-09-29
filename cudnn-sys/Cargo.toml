@@ -1,0 +1,6 @@
+[package]
+name = "cudnn-sys"
+version = "0.1.0"
+authors = ["Toru Ogawa <Hakuyume@users.noreply.github.com>"]
+
+[dependencies]
