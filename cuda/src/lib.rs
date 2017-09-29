@@ -1,7 +1,7 @@
 extern crate cuda_sys;
 
 #[macro_use]
-pub mod error;
+mod error;
 pub mod memory;
 
 pub use error::Error;

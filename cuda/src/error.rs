@@ -45,7 +45,6 @@ pub fn wrap_error(err: cudaError) -> Result<()> {
     }
 }
 
-#[macro_export]
 macro_rules! safe_call {
-    ($call:expr) => {try!($crate::error::wrap_error($call))};
+    ($call:expr) => {try!(::error::wrap_error($call))};
 }
