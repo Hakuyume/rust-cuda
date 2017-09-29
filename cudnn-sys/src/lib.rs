@@ -20,6 +20,6 @@ pub enum cudnnStatus {
 
 #[link(name = "cudnn")]
 extern "system" {
-    cudnnCreate(handle: *mut *mut cudnnHandle) ->  cudnnStatus;
-    cudnnDestroy(handle: *mut cudnnHandle) -> cudnnStatus;
+    pub fn cudnnCreate(handle: *mut *mut cudnnHandle) -> cudnnStatus;
+    pub fn cudnnDestroy(handle: *mut cudnnHandle) -> cudnnStatus;
 }
