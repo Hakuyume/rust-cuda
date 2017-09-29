@@ -4,4 +4,4 @@ version = "0.1.0"
 authors = ["Toru Ogawa <Hakuyume@users.noreply.github.com>"]
 
 [dependencies]
-cuda-sys = { path = "cuda-sys" }
+cuda-sys = { path = "../cuda-sys" }
