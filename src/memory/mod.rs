@@ -14,7 +14,7 @@ pub struct Memory<T> {
 }
 
 pub struct Slice<T> {
-    _stub: [T],
+    _dummy: [T],
 }
 
 #[repr(C)]
