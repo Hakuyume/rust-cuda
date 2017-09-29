@@ -1,6 +1,7 @@
 #![allow(non_camel_case_types)]
 
-pub enum cudnnHandle {}
+pub enum cudnnContext {}
+pub type cudnnHandle = *mut cudnnContext;
 
 #[repr(C)]
 pub enum cudnnStatus {
@@ -20,6 +21,6 @@ pub enum cudnnStatus {
 
 #[link(name = "cudnn")]
 extern "system" {
-    pub fn cudnnCreate(handle: *mut *mut cudnnHandle) -> cudnnStatus;
-    pub fn cudnnDestroy(handle: *mut cudnnHandle) -> cudnnStatus;
+    pub fn cudnnCreate(handle: *mut cudnnHandle) -> cudnnStatus;
+    pub fn cudnnDestroy(handle: cudnnHandle) -> cudnnStatus;
 }
