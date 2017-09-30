@@ -1,5 +1,8 @@
 #![allow(non_camel_case_types)]
 
+extern crate libc;
+pub use libc::c_char;
+
 pub enum cudnnContext {}
 pub type cudnnHandle = *mut cudnnContext;
 
@@ -21,6 +24,7 @@ pub enum cudnnStatus {
 
 #[link(name = "cudnn")]
 extern "system" {
+    pub fn cudnnGetErrorString(status: cudnnStatus) -> *const c_char;
     pub fn cudnnCreate(handle: *mut cudnnHandle) -> cudnnStatus;
     pub fn cudnnDestroy(handle: cudnnHandle) -> cudnnStatus;
 }
