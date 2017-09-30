@@ -24,7 +24,11 @@ struct Repr<T> {
 impl<T> Memory<T> {
     pub fn new(len: usize) -> Result<Memory<T>> {
         let mut ptr = ptr::null_mut::<c_void>();
-        unsafe { try_call!(cuda_sys::cudaMalloc(&mut ptr, (mem::size_of::<T>() * len) as size_t)) }
+        if len > 0 {
+            unsafe {
+                try_call!(cuda_sys::cudaMalloc(&mut ptr, (mem::size_of::<T>() * len) as size_t))
+            }
+        }
         Ok(Memory {
                ptr: ptr as *mut T,
                len,
@@ -34,7 +38,9 @@ impl<T> Memory<T> {
 
 impl<T> Drop for Memory<T> {
     fn drop(&mut self) {
-        unsafe { cuda_sys::cudaFree(self.ptr as *mut c_void) };
+        if !self.ptr.is_null() {
+            unsafe { cuda_sys::cudaFree(self.ptr as *mut c_void) };
+        }
     }
 }
 
@@ -56,10 +62,12 @@ impl<T> Slice<T> {
     }
 
     unsafe fn new<'a>(ptr: *mut T, len: usize) -> &'a Slice<T> {
+        let ptr = if len > 0 { ptr } else { ptr::null_mut() };
         mem::transmute::<Repr<T>, &Slice<T>>(Repr { ptr, len })
     }
 
     unsafe fn new_mut<'a>(ptr: *mut T, len: usize) -> &'a mut Slice<T> {
+        let ptr = if len > 0 { ptr } else { ptr::null_mut() };
         mem::transmute::<Repr<T>, &mut Slice<T>>(Repr { ptr, len })
     }
 }

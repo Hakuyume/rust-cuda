@@ -8,7 +8,7 @@ impl<T> Slice<T> {
             let repr = mem::transmute::<&Slice<T>, Repr<T>>(self);
             let start = start.unwrap_or(0);
             let end = end.unwrap_or(repr.len);
-            assert!(start < end);
+            assert!(start <= end);
             assert!(end <= repr.len);
             Slice::new(repr.ptr.offset(start as isize), end - start)
         }
@@ -19,7 +19,7 @@ impl<T> Slice<T> {
             let repr = mem::transmute::<&Slice<T>, Repr<T>>(self);
             let start = start.unwrap_or(0);
             let end = end.unwrap_or(repr.len);
-            assert!(start < end);
+            assert!(start <= end);
             assert!(end <= repr.len);
             Slice::new_mut(repr.ptr.offset(start as isize), end - start)
         }
