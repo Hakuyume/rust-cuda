@@ -21,7 +21,6 @@ pub enum cudnnTensorFormat {
     CUDNN_TENSOR_NCHW_VECT_C = 2,
 }
 
-
 #[link(name = "cudnn")]
 extern "system" {
     pub fn cudnnSetTensor4dDescriptor(tensorDesc: cudnnTensorDescriptor,
