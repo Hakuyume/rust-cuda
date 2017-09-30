@@ -14,8 +14,8 @@ pub enum FwdAlgo {
 }
 
 impl FwdAlgo {
-    pub fn as_raw(self) -> cudnn_sys::cudnnConvolutionFwdAlgo {
-        match self {
+    pub fn as_raw(&self) -> cudnn_sys::cudnnConvolutionFwdAlgo {
+        match *self {
             FwdAlgo::ImplicitGemm => {
                 cudnn_sys::cudnnConvolutionFwdAlgo::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM
             }

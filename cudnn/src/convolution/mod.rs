@@ -73,7 +73,7 @@ pub fn get_forward_workspace_size<T: scalar::Scalar>(context: &context::Context,
                                                      w_desc: &filter::Descriptor<T>,
                                                      conv_desc: &Descriptor<T>,
                                                      y_desc: &tensor::Descriptor<T>,
-                                                     algo: FwdAlgo)
+                                                     algo: &FwdAlgo)
                                                      -> Result<usize> {
     let mut size: size_t = 0;
     unsafe {
@@ -93,7 +93,7 @@ pub fn forward<'a, T>(context: &context::Context,
                       x: tensor::Tensor<'a, T>,
                       w: filter::Filter<'a, T>,
                       conv_desc: &Descriptor<T>,
-                      algo: FwdAlgo,
+                      algo: &FwdAlgo,
                       workspace: &mut memory::Slice<u8>,
                       beta: T,
                       y: tensor::TensorMut<'a, T>)
