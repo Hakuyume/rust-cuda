@@ -1,8 +1,10 @@
 use std::marker;
 use std::ptr;
 
+use cuda::memory;
+
 use cudnn_sys;
-use cudnn_sys::{c_int, size_t};
+use cudnn_sys::{c_int, c_void, size_t};
 
 use scalar;
 use Result;
@@ -156,4 +158,42 @@ pub fn get_forward_workspace_size<T: scalar::Scalar>(context: &context::Context,
                                                                      &mut size))
     }
     Ok(size as usize)
+}
+
+pub fn forward<T: scalar::Float>(context: &context::Context,
+                                 alpha: T,
+                                 x_desc: &tensor::TensorDescriptor<T>,
+                                 x: &memory::Slice<T>,
+                                 w_desc: &filter::FilterDescriptor<T>,
+                                 w: &memory::Slice<T>,
+                                 conv_desc: &ConvolutionDescriptor<T>,
+                                 algo: FwdAlgo,
+                                 workspace: &mut memory::Slice<u8>,
+                                 beta: T,
+                                 y_desc: &tensor::TensorDescriptor<T>,
+                                 y: &mut memory::Slice<T>)
+                                 -> Result<()> {
+    assert_eq!(x.len(), x_desc.len());
+    assert_eq!(w.len(), w_desc.len());
+    assert_eq!(y.len(), y_desc.len());
+
+    let params: &[T::Scale] = &[alpha.into(), beta.into()];
+    unsafe {
+        try_call!(cudnn_sys::cudnnConvolutionForward(context.as_raw(),
+                                                     &params[0] as *const T::Scale as
+                                                     *const c_void,
+                                                     x_desc.as_raw(),
+                                                     x.as_ptr() as *const c_void,
+                                                     w_desc.as_raw(),
+                                                     w.as_ptr() as *const c_void,
+                                                     conv_desc.as_raw(),
+                                                     algo.as_raw(),
+                                                     workspace.as_mut_ptr() as *mut c_void,
+                                                     workspace.len(),
+                                                     &params[1] as *const T::Scale as
+                                                     *const c_void,
+                                                     y_desc.as_raw(),
+                                                     y.as_mut_ptr() as *mut c_void))
+    }
+    Ok(())
 }

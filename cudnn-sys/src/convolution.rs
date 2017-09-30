@@ -1,6 +1,6 @@
 #![allow(non_camel_case_types)]
 
-use {c_int, size_t};
+use {c_int, c_void, size_t};
 
 use cudnnDataType;
 use cudnnStatus;
@@ -73,4 +73,18 @@ extern "system" {
                                                    algo: cudnnConvolutionFwdAlgo,
                                                    sizeInBytes: *mut size_t)
                                                    -> cudnnStatus;
+    pub fn cudnnConvolutionForward(handle: cudnnHandle,
+                                   alpha: *const c_void,
+                                   xDesc: cudnnTensorDescriptor,
+                                   x: *const c_void,
+                                   wDesc: cudnnFilterDescriptor,
+                                   w: *const c_void,
+                                   convDesc: cudnnConvolutionDescriptor,
+                                   algo: cudnnConvolutionFwdAlgo,
+                                   workspace: *mut c_void,
+                                   workSpaceSizeInBytes: size_t,
+                                   beta: *const c_void,
+                                   yDesc: cudnnTensorDescriptor,
+                                   y: *mut c_void)
+                                   -> cudnnStatus;
 }
