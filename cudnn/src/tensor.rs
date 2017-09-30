@@ -42,7 +42,7 @@ impl<T: scalar::Scalar> TensorDescriptor<T> {
             Format::NHWC => cudnn_sys::cudnnTensorFormat::CUDNN_TENSOR_NHWC,
         };
         unsafe {
-            try_call!(cudnn_sys::cudnnSetTensor4dDescriptor(desc.desc,
+            try_call!(cudnn_sys::cudnnSetTensor4dDescriptor(desc.as_raw(),
                                                             format,
                                                             T::DATA_TYPE,
                                                             n as c_int,
