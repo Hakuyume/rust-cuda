@@ -10,10 +10,6 @@ pub trait MemcpyFrom<S: ?Sized> {
     fn memcpy_from(&mut self, src: &S) -> Result<()>;
 }
 
-pub fn memcpy<S: ?Sized, D: ?Sized + MemcpyFrom<S>>(dst: &mut D, src: &S) -> Result<()> {
-    dst.memcpy_from(src)
-}
-
 impl<T> MemcpyFrom<[T]> for Slice<T> {
     fn memcpy_from(&mut self, src: &[T]) -> Result<()> {
         assert_eq!(src.len(), self.len());
