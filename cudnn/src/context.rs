@@ -14,6 +14,10 @@ impl Context {
         unsafe { try_call!(cudnn_sys::cudnnCreate(&mut handle)) };
         Ok(Context { handle })
     }
+
+    pub fn handle(&self) -> cudnn_sys::cudnnHandle {
+        self.handle
+    }
 }
 
 impl Drop for Context {
