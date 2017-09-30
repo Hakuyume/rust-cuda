@@ -67,24 +67,36 @@ impl<T> Slice<T> {
 mod deref;
 mod index;
 
-pub fn copy_host_to_device<T>(dst: &mut Slice<T>, src: &[T]) -> Result<()> {
-    assert_eq!(src.len(), dst.len());
-    unsafe {
-        try_call!(cuda_sys::cudaMemcpy(dst.as_mut_ptr() as *mut c_void,
-                                       src.as_ptr() as *const c_void,
-                                       mem::size_of::<T>() * src.len(),
-                                       cuda_sys::cudaMemcpyKind::cudaMemcpyHostToDevice))
-    }
-    Ok(())
+pub trait MemcpyFrom<S: ?Sized> {
+    fn memcpy_from(&mut self, src: &S) -> Result<()>;
 }
 
-pub fn copy_device_to_host<T>(dst: &mut [T], src: &Slice<T>) -> Result<()> {
-    assert_eq!(src.len(), dst.len());
-    unsafe {
-        try_call!(cuda_sys::cudaMemcpy(dst.as_mut_ptr() as *mut c_void,
-                                       src.as_ptr() as *const c_void,
-                                       mem::size_of::<T>() * src.len(),
-                                       cuda_sys::cudaMemcpyKind::cudaMemcpyDeviceToHost))
+impl<T> MemcpyFrom<[T]> for Slice<T> {
+    fn memcpy_from(&mut self, src: &[T]) -> Result<()> {
+        assert_eq!(src.len(), self.len());
+        unsafe {
+            try_call!(cuda_sys::cudaMemcpy(self.as_mut_ptr() as *mut c_void,
+                                           src.as_ptr() as *const c_void,
+                                           mem::size_of::<T>() * self.len(),
+                                           cuda_sys::cudaMemcpyKind::cudaMemcpyHostToDevice))
+        }
+        Ok(())
     }
-    Ok(())
+}
+
+impl<T> MemcpyFrom<Slice<T>> for [T] {
+    fn memcpy_from(&mut self, src: &Slice<T>) -> Result<()> {
+        assert_eq!(src.len(), self.len());
+        unsafe {
+            try_call!(cuda_sys::cudaMemcpy(self.as_mut_ptr() as *mut c_void,
+                                           src.as_ptr() as *const c_void,
+                                           mem::size_of::<T>() * self.len(),
+                                           cuda_sys::cudaMemcpyKind::cudaMemcpyDeviceToHost))
+        }
+        Ok(())
+    }
+}
+
+pub fn memcpy<S, D: MemcpyFrom<S>>(dst: &mut D, src: S) -> Result<()> {
+    dst.memcpy_from(&src)
 }
