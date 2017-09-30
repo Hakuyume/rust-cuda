@@ -97,6 +97,6 @@ impl<T> MemcpyFrom<Slice<T>> for [T] {
     }
 }
 
-pub fn memcpy<S, D: MemcpyFrom<S>>(dst: &mut D, src: S) -> Result<()> {
-    dst.memcpy_from(&src)
+pub fn memcpy<S, D: MemcpyFrom<S>>(dst: &mut D, src: &S) -> Result<()> {
+    dst.memcpy_from(src)
 }
