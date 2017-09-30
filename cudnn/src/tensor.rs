@@ -12,6 +12,15 @@ pub enum Format {
     NHWC,
 }
 
+impl Format {
+    pub fn as_raw(self) -> cudnn_sys::cudnnTensorFormat {
+        match self {
+            Format::NCHW => cudnn_sys::cudnnTensorFormat::CUDNN_TENSOR_NCHW,
+            Format::NHWC => cudnn_sys::cudnnTensorFormat::CUDNN_TENSOR_NHWC,
+        }
+    }
+}
+
 pub struct TensorDescriptor<T: scalar::Scalar> {
     desc: cudnn_sys::cudnnTensorDescriptor,
     len: usize,
@@ -36,14 +45,9 @@ impl<T: scalar::Scalar> TensorDescriptor<T> {
                   w: usize)
                   -> Result<TensorDescriptor<T>> {
         let mut desc = try!(TensorDescriptor::new());
-
-        let format = match format {
-            Format::NCHW => cudnn_sys::cudnnTensorFormat::CUDNN_TENSOR_NCHW,
-            Format::NHWC => cudnn_sys::cudnnTensorFormat::CUDNN_TENSOR_NHWC,
-        };
         unsafe {
             try_call!(cudnn_sys::cudnnSetTensor4dDescriptor(desc.as_raw(),
-                                                            format,
+                                                            format.as_raw(),
                                                             T::DATA_TYPE,
                                                             n as c_int,
                                                             c as c_int,

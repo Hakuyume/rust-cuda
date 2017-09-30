@@ -13,6 +13,9 @@ pub use context::*;
 mod tensor;
 pub use tensor::*;
 
+mod filter;
+pub use filter::*;
+
 mod convolution;
 pub use convolution::*;
 
