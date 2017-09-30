@@ -1,5 +1,5 @@
 extern crate libc;
-pub use libc::{c_char, c_int, c_void};
+pub use libc::{c_char, c_int, c_void, size_t};
 
 mod enums;
 pub use enums::*;
