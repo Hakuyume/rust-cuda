@@ -25,10 +25,10 @@ extern "system" {
                                algo: cudnnSoftmaxAlgorithm,
                                mode: cudnnSoftmaxMode,
                                alpha: *const c_void,
-                               xDesc: *const cudnnTensorDescriptor,
+                               xDesc: cudnnTensorDescriptor,
                                x: *const c_void,
                                beta: *const c_void,
-                               yDesc: *const cudnnTensorDescriptor,
+                               yDesc: cudnnTensorDescriptor,
                                y: *mut c_void)
                                -> cudnnStatus;
 }
