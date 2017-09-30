@@ -26,6 +26,11 @@ impl Drop for TensorDescriptor {
     }
 }
 
+pub enum Format {
+    NCHW,
+    NHWC,
+}
+
 pub struct Tensor<'a, T: 'a + Scalar> {
     mem: &'a mut cuda::memory::Slice<T>,
     desc: TensorDescriptor,
@@ -33,6 +38,7 @@ pub struct Tensor<'a, T: 'a + Scalar> {
 
 impl<'a, T: Scalar> Tensor<'a, T> {
     pub fn new_4d(mem: &'a mut cuda::memory::Slice<T>,
+                  format: Format,
                   n: usize,
                   c: usize,
                   h: usize,
@@ -40,11 +46,18 @@ impl<'a, T: Scalar> Tensor<'a, T> {
                   -> Result<Tensor<'a, T>> {
         assert_eq!(mem.len(), n * c * h * w);
         let desc = try!(TensorDescriptor::new());
+        let format = match format {
+            Format::NCHW => cudnn_sys::cudnnTensorFormat::CUDNN_TENSOR_NCHW,
+            Format::NHWC => cudnn_sys::cudnnTensorFormat::CUDNN_TENSOR_NHWC,
+        };
         unsafe {
             try_call!(cudnn_sys::cudnnSetTensor4dDescriptor(desc.desc,
-                                                            cudnn_sys::cudnnTensorFormat::CUDNN_TENSOR_NCHW,
+                                                            format,
                                                             T::DATA_TYPE,
-                                                            n as c_int,c as c_int,h as c_int,w as c_int))
+                                                            n as c_int,
+                                                            c as c_int,
+                                                            h as c_int,
+                                                            w as c_int))
         };
         Ok(Tensor { mem, desc })
     }
