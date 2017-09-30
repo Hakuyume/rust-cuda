@@ -23,11 +23,11 @@ pub fn forward<T: scalar::Float>(context: &context::Context,
                                  algo: Algorithm,
                                  mode: Mode,
                                  alpha: T,
-                                 x: &memory::Slice<T>,
                                  x_desc: &tensor::TensorDescriptor<T>,
+                                 x: &memory::Slice<T>,
                                  beta: T,
-                                 y: &mut memory::Slice<T>,
-                                 y_desc: &tensor::TensorDescriptor<T>)
+                                 y_desc: &tensor::TensorDescriptor<T>,
+                                 y: &mut memory::Slice<T>)
                                  -> Result<()> {
     assert_eq!(x.len(), x_desc.len());
     assert_eq!(y.len(), y_desc.len());
