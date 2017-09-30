@@ -1,4 +1,3 @@
-extern crate libc;
 extern crate cuda;
 extern crate cudnn_sys;
 

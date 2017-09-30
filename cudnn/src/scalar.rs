@@ -1,5 +1,4 @@
-use libc::c_float;
-
+use cudnn_sys::c_float;
 use cudnn_sys::cudnnDataType;
 
 pub trait Scalar {

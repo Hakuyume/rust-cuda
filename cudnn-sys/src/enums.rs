@@ -9,3 +9,9 @@ pub enum cudnnDataType {
     CUDNN_DATA_INT32 = 4,
     CUDNN_DATA_INT8x4 = 5,
 }
+
+#[repr(C)]
+pub enum cudnnDeterminism {
+    CUDNN_NON_DETERMINISTIC = 0,
+    CUDNN_DETERMINISTIC = 1,
+}

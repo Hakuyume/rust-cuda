@@ -1,8 +1,9 @@
 #![allow(non_camel_case_types)]
 
-use {c_int, c_void, size_t};
+use {c_float, c_int, c_void, size_t};
 
 use cudnnDataType;
+use cudnnDeterminism;
 use cudnnStatus;
 use cudnnHandle;
 use cudnnTensorDescriptor;
@@ -63,8 +64,27 @@ pub enum cudnnConvolutionFwdAlgo {
     CUDNN_CONVOLUTION_FWD_ALGO_COUNT = 8,
 }
 
+#[repr(C)]
+pub struct cudnnConvolutionFwdAlgoPerf {
+    algo: cudnnConvolutionFwdAlgo,
+    status: cudnnStatus,
+    time: c_float,
+    memory: size_t,
+    determinism: cudnnDeterminism,
+    reserved: [c_int; 4],
+}
+
 #[link(name = "cudnn")]
 extern "system" {
+    pub fn cudnnFindConvolutionForwardAlgorithm(handle: cudnnHandle,
+                                                xDesc: cudnnTensorDescriptor,
+                                                wDesc: cudnnFilterDescriptor,
+                                                convDesc: cudnnConvolutionDescriptor,
+                                                yDesc: cudnnTensorDescriptor,
+                                                requestedAlgoCount: c_int,
+                                                returnedAlgoCount: *mut c_int,
+                                                perfResults: *mut cudnnConvolutionFwdAlgoPerf)
+                                                -> cudnnStatus;
     pub fn cudnnGetConvolutionForwardWorkspaceSize(handle: cudnnHandle,
                                                    xDesc: cudnnTensorDescriptor,
                                                    wDesc: cudnnFilterDescriptor,
