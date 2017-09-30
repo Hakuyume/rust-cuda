@@ -8,17 +8,17 @@ use scalar;
 use Result;
 use tensor;
 
-pub struct FilterDescriptor<T: scalar::Scalar> {
+pub struct Descriptor<T: scalar::Scalar> {
     desc: cudnn_sys::cudnnFilterDescriptor,
     len: usize,
     _dummy: marker::PhantomData<T>,
 }
 
-impl<T: scalar::Scalar> FilterDescriptor<T> {
-    fn new() -> Result<FilterDescriptor<T>> {
+impl<T: scalar::Scalar> Descriptor<T> {
+    fn new() -> Result<Descriptor<T>> {
         let mut desc = ptr::null_mut();
         unsafe { try_call!(cudnn_sys::cudnnCreateFilterDescriptor(&mut desc)) }
-        Ok(FilterDescriptor {
+        Ok(Descriptor {
                desc,
                len: 0,
                _dummy: marker::PhantomData::default(),
@@ -30,8 +30,8 @@ impl<T: scalar::Scalar> FilterDescriptor<T> {
                   c: usize,
                   h: usize,
                   w: usize)
-                  -> Result<FilterDescriptor<T>> {
-        let mut desc = try!(FilterDescriptor::new());
+                  -> Result<Descriptor<T>> {
+        let mut desc = try!(Descriptor::new());
         unsafe {
             try_call!(cudnn_sys::cudnnSetFilter4dDescriptor(desc.as_raw(),
                                                             T::DATA_TYPE,
@@ -55,7 +55,7 @@ impl<T: scalar::Scalar> FilterDescriptor<T> {
     }
 }
 
-impl<T: scalar::Scalar> Drop for FilterDescriptor<T> {
+impl<T: scalar::Scalar> Drop for Descriptor<T> {
     fn drop(&mut self) {
         unsafe { cudnn_sys::cudnnDestroyFilterDescriptor(self.desc) };
     }

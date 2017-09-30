@@ -2,23 +2,23 @@ use cuda::memory;
 
 use scalar;
 
-use super::TensorDescriptor;
+use super::Descriptor;
 use super::{Tensor, TensorMut};
 
 pub struct BorrowedTensor<'a, T: 'a + scalar::Scalar> {
-    desc: &'a TensorDescriptor<T>,
+    desc: &'a Descriptor<T>,
     mem: &'a memory::Slice<T>,
 }
 
 impl<'a, T: scalar::Scalar> BorrowedTensor<'a, T> {
-    pub fn new(desc: &'a TensorDescriptor<T>, mem: &'a memory::Slice<T>) -> BorrowedTensor<'a, T> {
+    pub fn new(desc: &'a Descriptor<T>, mem: &'a memory::Slice<T>) -> BorrowedTensor<'a, T> {
         assert_eq!(desc.len(), mem.len());
         BorrowedTensor { desc, mem }
     }
 }
 
 impl<'a, T: scalar::Scalar> Tensor<T> for BorrowedTensor<'a, T> {
-    fn desc(&self) -> &TensorDescriptor<T> {
+    fn desc(&self) -> &Descriptor<T> {
         self.desc
     }
     fn mem(&self) -> &memory::Slice<T> {
@@ -27,21 +27,19 @@ impl<'a, T: scalar::Scalar> Tensor<T> for BorrowedTensor<'a, T> {
 }
 
 pub struct BorrowedTensorMut<'a, T: 'a + scalar::Scalar> {
-    desc: &'a TensorDescriptor<T>,
+    desc: &'a Descriptor<T>,
     mem: &'a mut memory::Slice<T>,
 }
 
 impl<'a, T: scalar::Scalar> BorrowedTensorMut<'a, T> {
-    pub fn new(desc: &'a TensorDescriptor<T>,
-               mem: &'a mut memory::Slice<T>)
-               -> BorrowedTensorMut<'a, T> {
+    pub fn new(desc: &'a Descriptor<T>, mem: &'a mut memory::Slice<T>) -> BorrowedTensorMut<'a, T> {
         assert_eq!(desc.len(), mem.len());
         BorrowedTensorMut { desc, mem }
     }
 }
 
 impl<'a, T: scalar::Scalar> Tensor<T> for BorrowedTensorMut<'a, T> {
-    fn desc(&self) -> &TensorDescriptor<T> {
+    fn desc(&self) -> &Descriptor<T> {
         self.desc
     }
     fn mem(&self) -> &memory::Slice<T> {
