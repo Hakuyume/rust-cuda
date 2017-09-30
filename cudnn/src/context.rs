@@ -2,15 +2,17 @@ use std::ptr;
 
 use cudnn_sys;
 
+use Result;
+
 pub struct Context {
     handle: cudnn_sys::cudnnHandle,
 }
 
 impl Context {
-    pub fn new() -> Context {
+    pub fn new() -> Result<Context> {
         let mut handle = ptr::null_mut();
-        unsafe { cudnn_sys::cudnnCreate(&mut handle) };
-        Context { handle }
+        unsafe { try_call!(cudnn_sys::cudnnCreate(&mut handle)) };
+        Ok(Context { handle })
     }
 }
 
