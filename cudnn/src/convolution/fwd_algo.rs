@@ -4,7 +4,7 @@ use cudnn_sys;
 pub enum FwdAlgo {
     ImplicitGemm,
     ImplicitPrecompGemm,
-    AlgoGemm,
+    Gemm,
     Direct,
     Fft,
     FftTiling,
@@ -22,9 +22,7 @@ impl FwdAlgo {
             FwdAlgo::ImplicitPrecompGemm => {
                 cudnn_sys::cudnnConvolutionFwdAlgo::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM
             }
-            FwdAlgo::AlgoGemm => {
-                cudnn_sys::cudnnConvolutionFwdAlgo::CUDNN_CONVOLUTION_FWD_ALGO_GEMM
-            }
+            FwdAlgo::Gemm => cudnn_sys::cudnnConvolutionFwdAlgo::CUDNN_CONVOLUTION_FWD_ALGO_GEMM,
             FwdAlgo::Direct => {
                 cudnn_sys::cudnnConvolutionFwdAlgo::CUDNN_CONVOLUTION_FWD_ALGO_DIRECT
             }
@@ -49,9 +47,7 @@ impl FwdAlgo {
             }
             cudnn_sys::cudnnConvolutionFwdAlgo::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM =>
             FwdAlgo::ImplicitPrecompGemm,
-            cudnn_sys::cudnnConvolutionFwdAlgo::CUDNN_CONVOLUTION_FWD_ALGO_GEMM => {
-                FwdAlgo::AlgoGemm
-            }
+            cudnn_sys::cudnnConvolutionFwdAlgo::CUDNN_CONVOLUTION_FWD_ALGO_GEMM => FwdAlgo::Gemm,
             cudnn_sys::cudnnConvolutionFwdAlgo::CUDNN_CONVOLUTION_FWD_ALGO_DIRECT => {
                 FwdAlgo::Direct
             }
