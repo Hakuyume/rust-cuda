@@ -58,23 +58,21 @@ pub fn get_forward_workspace_size<T: scalar::Scalar>(context: &context::Context,
     Ok(size as usize)
 }
 
-pub fn forward<T, X, Y>(context: &context::Context,
-                        alpha: T,
-                        x: &X,
-                        w_desc: &filter::Descriptor<T>,
-                        w: &memory::Slice<T>,
-                        conv_desc: &Descriptor<T>,
-                        algo: FwdAlgo,
-                        workspace: &mut memory::Slice<u8>,
-                        beta: T,
-                        y: &mut Y)
-                        -> Result<()>
+pub fn forward<T, X, W, Y>(context: &context::Context,
+                           alpha: T,
+                           x: &X,
+                           w: &W,
+                           conv_desc: &Descriptor<T>,
+                           algo: FwdAlgo,
+                           workspace: &mut memory::Slice<u8>,
+                           beta: T,
+                           y: &mut Y)
+                           -> Result<()>
     where T: scalar::Float,
           X: tensor::Tensor<T>,
+          W: filter::Filter<T>,
           Y: tensor::TensorMut<T>
 {
-    assert_eq!(w.len(), w_desc.len());
-
     let params: &[T::Scale] = &[alpha.into(), beta.into()];
     unsafe {
         try_call!(cudnn_sys::cudnnConvolutionForward(context.as_raw(),
@@ -82,8 +80,8 @@ pub fn forward<T, X, Y>(context: &context::Context,
                                                      *const c_void,
                                                      x.desc().as_raw(),
                                                      x.mem().as_ptr() as *const c_void,
-                                                     w_desc.as_raw(),
-                                                     w.as_ptr() as *const c_void,
+                                                     w.desc().as_raw(),
+                                                     w.mem().as_ptr() as *const c_void,
                                                      conv_desc.as_raw(),
                                                      algo.as_raw(),
                                                      workspace.as_mut_ptr() as *mut c_void,
