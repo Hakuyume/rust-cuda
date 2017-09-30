@@ -1,51 +1,42 @@
+use std::marker;
 use std::ptr;
-
-use cuda;
 
 use cudnn_sys;
 use cudnn_sys::c_int;
 
-use scalar::Scalar;
+use scalar;
 use Result;
-
-struct TensorDescriptor {
-    desc: cudnn_sys::cudnnTensorDescriptor,
-}
-
-impl TensorDescriptor {
-    fn new() -> Result<TensorDescriptor> {
-        let mut desc = ptr::null_mut();
-        unsafe { try_call!(cudnn_sys::cudnnCreateTensorDescriptor(&mut desc)) }
-        Ok(TensorDescriptor { desc })
-    }
-}
-
-impl Drop for TensorDescriptor {
-    fn drop(&mut self) {
-        unsafe { cudnn_sys::cudnnDestroyTensorDescriptor(self.desc) };
-    }
-}
 
 pub enum Format {
     NCHW,
     NHWC,
 }
 
-pub struct Tensor<'a, T: 'a + Scalar> {
-    mem: &'a mut cuda::memory::Slice<T>,
-    desc: TensorDescriptor,
+pub struct TensorDescriptor<T> {
+    desc: cudnn_sys::cudnnTensorDescriptor,
+    len: usize,
+    _dummy: marker::PhantomData<T>,
 }
 
-impl<'a, T: Scalar> Tensor<'a, T> {
-    pub fn new_4d(mem: &'a mut cuda::memory::Slice<T>,
-                  format: Format,
+impl<T: scalar::Scalar> TensorDescriptor<T> {
+    fn new() -> Result<TensorDescriptor<T>> {
+        let mut desc = ptr::null_mut();
+        unsafe { try_call!(cudnn_sys::cudnnCreateTensorDescriptor(&mut desc)) }
+        Ok(TensorDescriptor {
+               desc,
+               len: 0,
+               _dummy: marker::PhantomData::default(),
+           })
+    }
+
+    pub fn new_4d(format: Format,
                   n: usize,
                   c: usize,
                   h: usize,
                   w: usize)
-                  -> Result<Tensor<'a, T>> {
-        assert_eq!(mem.len(), n * c * h * w);
-        let desc = try!(TensorDescriptor::new());
+                  -> Result<TensorDescriptor<T>> {
+        let mut desc = try!(TensorDescriptor::new());
+
         let format = match format {
             Format::NCHW => cudnn_sys::cudnnTensorFormat::CUDNN_TENSOR_NCHW,
             Format::NHWC => cudnn_sys::cudnnTensorFormat::CUDNN_TENSOR_NHWC,
@@ -59,18 +50,22 @@ impl<'a, T: Scalar> Tensor<'a, T> {
                                                             h as c_int,
                                                             w as c_int))
         };
-        Ok(Tensor { mem, desc })
-    }
+        desc.len = n * c * h * w;
 
-    pub fn as_ptr(&self) -> *const T {
-        self.mem.as_ptr()
-    }
-
-    pub fn as_mut_ptr(&mut self) -> *mut T {
-        self.mem.as_mut_ptr()
+        Ok(desc)
     }
 
     pub fn desc(&self) -> cudnn_sys::cudnnTensorDescriptor {
-        self.desc.desc
+        self.desc
+    }
+
+    pub fn len(&self) -> usize {
+        self.len
+    }
+}
+
+impl<T> Drop for TensorDescriptor<T> {
+    fn drop(&mut self) {
+        unsafe { cudnn_sys::cudnnDestroyTensorDescriptor(self.desc) };
     }
 }
