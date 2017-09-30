@@ -2,6 +2,7 @@ use cudnn_sys;
 
 use super::FwdAlgo;
 
+#[derive(Debug)]
 pub struct FwdAlgoPerf {
     pub algo: FwdAlgo,
     pub time: f64,
