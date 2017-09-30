@@ -5,7 +5,7 @@ use Result;
 
 use super::FwdAlgo;
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct FwdAlgoPerf {
     pub algo: FwdAlgo,
     pub status: Result<()>,

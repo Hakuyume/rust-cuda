@@ -1,5 +1,6 @@
 use cudnn_sys;
 
+#[derive(Clone, Copy, Debug)]
 pub enum Format {
     NCHW,
     NHWC,

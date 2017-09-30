@@ -5,7 +5,7 @@ use cudnn_sys::cudnnStatus;
 
 use Result;
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Error {
     NotInitialized,
     AllocFailed,
