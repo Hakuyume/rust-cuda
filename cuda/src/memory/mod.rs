@@ -24,7 +24,7 @@ struct Repr<T> {
 impl<T> Memory<T> {
     pub fn new(len: usize) -> Result<Memory<T>> {
         let mut ptr = ptr::null_mut::<c_void>();
-        unsafe { safe_call!(cuda_sys::cudaMalloc(&mut ptr, (mem::size_of::<T>() * len) as size_t)) }
+        unsafe { try_call!(cuda_sys::cudaMalloc(&mut ptr, (mem::size_of::<T>() * len) as size_t)) }
         Ok(Memory {
                ptr: ptr as *mut T,
                len,
@@ -70,10 +70,10 @@ mod index;
 pub fn copy_host_to_device<T>(dst: &mut Slice<T>, src: &[T]) -> Result<()> {
     assert_eq!(src.len(), dst.len());
     unsafe {
-        safe_call!(cuda_sys::cudaMemcpy(dst.as_mut_ptr() as *mut c_void,
-                                        src.as_ptr() as *const c_void,
-                                        mem::size_of::<T>() * src.len(),
-                                        cuda_sys::cudaMemcpyKind::cudaMemcpyHostToDevice))
+        try_call!(cuda_sys::cudaMemcpy(dst.as_mut_ptr() as *mut c_void,
+                                       src.as_ptr() as *const c_void,
+                                       mem::size_of::<T>() * src.len(),
+                                       cuda_sys::cudaMemcpyKind::cudaMemcpyHostToDevice))
     }
     Ok(())
 }
@@ -81,10 +81,10 @@ pub fn copy_host_to_device<T>(dst: &mut Slice<T>, src: &[T]) -> Result<()> {
 pub fn copy_device_to_host<T>(dst: &mut [T], src: &Slice<T>) -> Result<()> {
     assert_eq!(src.len(), dst.len());
     unsafe {
-        safe_call!(cuda_sys::cudaMemcpy(dst.as_mut_ptr() as *mut c_void,
-                                        src.as_ptr() as *const c_void,
-                                        mem::size_of::<T>() * src.len(),
-                                        cuda_sys::cudaMemcpyKind::cudaMemcpyDeviceToHost))
+        try_call!(cuda_sys::cudaMemcpy(dst.as_mut_ptr() as *mut c_void,
+                                       src.as_ptr() as *const c_void,
+                                       mem::size_of::<T>() * src.len(),
+                                       cuda_sys::cudaMemcpyKind::cudaMemcpyDeviceToHost))
     }
     Ok(())
 }
