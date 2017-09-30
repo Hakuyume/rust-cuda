@@ -11,4 +11,5 @@ pub mod scalar;
 pub mod context;
 pub mod tensor;
 
+pub mod convolution;
 pub mod softmax;

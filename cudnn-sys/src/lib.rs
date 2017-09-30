@@ -13,5 +13,8 @@ pub use context::*;
 mod tensor;
 pub use tensor::*;
 
+mod convolution;
+pub use convolution::*;
+
 mod softmax;
 pub use softmax::*;
