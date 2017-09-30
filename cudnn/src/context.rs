@@ -15,7 +15,7 @@ impl Context {
         Ok(Context { handle })
     }
 
-    pub fn handle(&self) -> cudnn_sys::cudnnHandle {
+    pub fn as_raw(&self) -> cudnn_sys::cudnnHandle {
         self.handle
     }
 }

@@ -10,3 +10,5 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub mod scalar;
 pub mod context;
 pub mod tensor;
+
+pub mod softmax;

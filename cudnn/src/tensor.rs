@@ -12,7 +12,7 @@ pub enum Format {
     NHWC,
 }
 
-pub struct TensorDescriptor<T> {
+pub struct TensorDescriptor<T: scalar::Scalar> {
     desc: cudnn_sys::cudnnTensorDescriptor,
     len: usize,
     _dummy: marker::PhantomData<T>,
@@ -55,7 +55,7 @@ impl<T: scalar::Scalar> TensorDescriptor<T> {
         Ok(desc)
     }
 
-    pub fn desc(&self) -> cudnn_sys::cudnnTensorDescriptor {
+    pub fn as_raw(&self) -> cudnn_sys::cudnnTensorDescriptor {
         self.desc
     }
 
@@ -64,7 +64,7 @@ impl<T: scalar::Scalar> TensorDescriptor<T> {
     }
 }
 
-impl<T> Drop for TensorDescriptor<T> {
+impl<T: scalar::Scalar> Drop for TensorDescriptor<T> {
     fn drop(&mut self) {
         unsafe { cudnn_sys::cudnnDestroyTensorDescriptor(self.desc) };
     }
