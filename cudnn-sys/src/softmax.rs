@@ -2,8 +2,8 @@
 
 use c_void;
 
-use cudnnHandle;
 use cudnnStatus;
+use cudnnHandle;
 use cudnnTensorDescriptor;
 
 #[repr(C)]
