@@ -58,16 +58,16 @@ pub fn get_forward_workspace_size<T: scalar::Scalar>(context: &context::Context,
     Ok(size as usize)
 }
 
-pub fn forward<'a, T, W>(context: &context::Context,
-                         alpha: T,
-                         x: tensor::Tensor<'a, T>,
-                         w: filter::Filter<'a, T>,
-                         conv_desc: &Descriptor<T>,
-                         algo: FwdAlgo,
-                         workspace: &mut memory::Slice<u8>,
-                         beta: T,
-                         y: tensor::TensorMut<'a, T>)
-                         -> Result<()>
+pub fn forward<'a, T>(context: &context::Context,
+                      alpha: T,
+                      x: tensor::Tensor<'a, T>,
+                      w: filter::Filter<'a, T>,
+                      conv_desc: &Descriptor<T>,
+                      algo: FwdAlgo,
+                      workspace: &mut memory::Slice<u8>,
+                      beta: T,
+                      y: tensor::TensorMut<'a, T>)
+                      -> Result<()>
     where T: scalar::Float
 {
     let params: &[T::Scale] = &[alpha.into(), beta.into()];
