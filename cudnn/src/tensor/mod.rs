@@ -1,6 +1,8 @@
 use std::marker;
 use std::ptr;
 
+use cuda::memory;
+
 use cudnn_sys;
 use cudnn_sys::c_int;
 
@@ -73,3 +75,15 @@ impl<T: scalar::Scalar> Drop for TensorDescriptor<T> {
         unsafe { cudnn_sys::cudnnDestroyTensorDescriptor(self.desc) };
     }
 }
+
+pub trait Tensor<T: scalar::Scalar> {
+    fn desc(&self) -> &TensorDescriptor<T>;
+    fn mem(&self) -> &memory::Slice<T>;
+}
+
+pub trait TensorMut<T: scalar::Scalar>: Tensor<T> {
+    fn mem_mut(&mut self) -> &mut memory::Slice<T>;
+}
+
+mod borrowed_tensor;
+pub use self::borrowed_tensor::*;

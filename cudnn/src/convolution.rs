@@ -160,30 +160,30 @@ pub fn get_forward_workspace_size<T: scalar::Scalar>(context: &context::Context,
     Ok(size as usize)
 }
 
-pub fn forward<T: scalar::Float>(context: &context::Context,
-                                 alpha: T,
-                                 x_desc: &tensor::TensorDescriptor<T>,
-                                 x: &memory::Slice<T>,
-                                 w_desc: &filter::FilterDescriptor<T>,
-                                 w: &memory::Slice<T>,
-                                 conv_desc: &ConvolutionDescriptor<T>,
-                                 algo: FwdAlgo,
-                                 workspace: &mut memory::Slice<u8>,
-                                 beta: T,
-                                 y_desc: &tensor::TensorDescriptor<T>,
-                                 y: &mut memory::Slice<T>)
-                                 -> Result<()> {
-    assert_eq!(x.len(), x_desc.len());
+pub fn forward<T, X, Y>(context: &context::Context,
+                        alpha: T,
+                        x: &X,
+                        w_desc: &filter::FilterDescriptor<T>,
+                        w: &memory::Slice<T>,
+                        conv_desc: &ConvolutionDescriptor<T>,
+                        algo: FwdAlgo,
+                        workspace: &mut memory::Slice<u8>,
+                        beta: T,
+                        y: &mut Y)
+                        -> Result<()>
+    where T: scalar::Float,
+          X: tensor::Tensor<T>,
+          Y: tensor::TensorMut<T>
+{
     assert_eq!(w.len(), w_desc.len());
-    assert_eq!(y.len(), y_desc.len());
 
     let params: &[T::Scale] = &[alpha.into(), beta.into()];
     unsafe {
         try_call!(cudnn_sys::cudnnConvolutionForward(context.as_raw(),
                                                      &params[0] as *const T::Scale as
                                                      *const c_void,
-                                                     x_desc.as_raw(),
-                                                     x.as_ptr() as *const c_void,
+                                                     x.desc().as_raw(),
+                                                     x.mem().as_ptr() as *const c_void,
                                                      w_desc.as_raw(),
                                                      w.as_ptr() as *const c_void,
                                                      conv_desc.as_raw(),
@@ -192,8 +192,8 @@ pub fn forward<T: scalar::Float>(context: &context::Context,
                                                      workspace.len(),
                                                      &params[1] as *const T::Scale as
                                                      *const c_void,
-                                                     y_desc.as_raw(),
-                                                     y.as_mut_ptr() as *mut c_void))
+                                                     y.desc().as_raw(),
+                                                     y.mem_mut().as_mut_ptr() as *mut c_void))
     }
     Ok(())
 }
