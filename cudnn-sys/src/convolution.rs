@@ -66,11 +66,11 @@ pub enum cudnnConvolutionFwdAlgo {
 
 #[repr(C)]
 pub struct cudnnConvolutionFwdAlgoPerf {
-    algo: cudnnConvolutionFwdAlgo,
-    status: cudnnStatus,
-    time: c_float,
-    memory: size_t,
-    determinism: cudnnDeterminism,
+    pub algo: cudnnConvolutionFwdAlgo,
+    pub status: cudnnStatus,
+    pub time: c_float,
+    pub memory: size_t,
+    pub determinism: cudnnDeterminism,
     reserved: [c_int; 4],
 }
 

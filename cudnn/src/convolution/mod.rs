@@ -18,6 +18,9 @@ pub use self::descriptor::Descriptor;
 mod fwd_algo;
 pub use self::fwd_algo::FwdAlgo;
 
+mod fwd_algo_perf;
+pub use self::fwd_algo_perf::FwdAlgoPerf;
+
 pub fn get_2d_forward_output_dim<T: scalar::Scalar>(conv_desc: &Descriptor<T>,
                                                     input_tensor_desc: &tensor::Descriptor<T>,
                                                     filter_desc: &filter::Descriptor<T>)
@@ -36,6 +39,33 @@ pub fn get_2d_forward_output_dim<T: scalar::Scalar>(conv_desc: &Descriptor<T>,
                                                                    &mut w))
     }
     Ok((n as usize, c as usize, h as usize, w as usize))
+}
+
+pub fn get_forward_algorithm<T: scalar::Scalar>(context: &context::Context,
+                                                x_desc: &tensor::Descriptor<T>,
+                                                w_desc: &filter::Descriptor<T>,
+                                                conv_desc: &Descriptor<T>,
+                                                y_desc: &tensor::Descriptor<T>,
+                                                requested_algo_count: usize)
+                                                -> Result<Vec<FwdAlgoPerf>> {
+    let mut returned_algo_count = 0;
+    let mut perf_results: Vec<cudnn_sys::cudnnConvolutionFwdAlgoPerf> =
+        Vec::with_capacity(requested_algo_count);
+    unsafe {
+        try_call!(cudnn_sys::cudnnFindConvolutionForwardAlgorithm(context.as_raw(),
+                                                                  x_desc.as_raw(),
+                                                                  w_desc.as_raw(),
+                                                                  conv_desc.as_raw(),
+                                                                  y_desc.as_raw(),
+                                                                  requested_algo_count as c_int,
+                                                                  &mut returned_algo_count,
+                                                                  perf_results.as_mut_ptr()));
+        perf_results.set_len(returned_algo_count as usize);
+    }
+    Ok(perf_results
+           .into_iter()
+           .map(|fwd_algo_perf| FwdAlgoPerf::from_raw(fwd_algo_perf))
+           .collect())
 }
 
 pub fn get_forward_workspace_size<T: scalar::Scalar>(context: &context::Context,
