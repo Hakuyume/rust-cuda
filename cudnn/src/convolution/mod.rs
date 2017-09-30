@@ -58,38 +58,35 @@ pub fn get_forward_workspace_size<T: scalar::Scalar>(context: &context::Context,
     Ok(size as usize)
 }
 
-pub fn forward<T, X, W, Y>(context: &context::Context,
-                           alpha: T,
-                           x: &X,
-                           w: &W,
-                           conv_desc: &Descriptor<T>,
-                           algo: FwdAlgo,
-                           workspace: &mut memory::Slice<u8>,
-                           beta: T,
-                           y: &mut Y)
-                           -> Result<()>
-    where T: scalar::Float,
-          X: tensor::Tensor<T>,
-          W: filter::Filter<T>,
-          Y: tensor::TensorMut<T>
+pub fn forward<'a, T, W>(context: &context::Context,
+                         alpha: T,
+                         x: tensor::Tensor<'a, T>,
+                         w: filter::Filter<'a, T>,
+                         conv_desc: &Descriptor<T>,
+                         algo: FwdAlgo,
+                         workspace: &mut memory::Slice<u8>,
+                         beta: T,
+                         y: &mut tensor::TensorMut<'a, T>)
+                         -> Result<()>
+    where T: scalar::Float
 {
     let params: &[T::Scale] = &[alpha.into(), beta.into()];
     unsafe {
         try_call!(cudnn_sys::cudnnConvolutionForward(context.as_raw(),
                                                      &params[0] as *const T::Scale as
                                                      *const c_void,
-                                                     x.desc().as_raw(),
-                                                     x.mem().as_ptr() as *const c_void,
-                                                     w.desc().as_raw(),
-                                                     w.mem().as_ptr() as *const c_void,
+                                                     x.desc.as_raw(),
+                                                     x.mem.as_ptr() as *const c_void,
+                                                     w.desc.as_raw(),
+                                                     w.mem.as_ptr() as *const c_void,
                                                      conv_desc.as_raw(),
                                                      algo.as_raw(),
                                                      workspace.as_mut_ptr() as *mut c_void,
                                                      workspace.len(),
                                                      &params[1] as *const T::Scale as
                                                      *const c_void,
-                                                     y.desc().as_raw(),
-                                                     y.mem_mut().as_mut_ptr() as *mut c_void))
+                                                     y.desc.as_raw(),
+                                                     y.mem.as_mut_ptr() as *mut c_void))
     }
     Ok(())
 }
