@@ -66,7 +66,7 @@ pub fn forward<'a, T, W>(context: &context::Context,
                          algo: FwdAlgo,
                          workspace: &mut memory::Slice<u8>,
                          beta: T,
-                         y: &mut tensor::TensorMut<'a, T>)
+                         y: tensor::TensorMut<'a, T>)
                          -> Result<()>
     where T: scalar::Float
 {
