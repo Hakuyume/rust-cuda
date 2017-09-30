@@ -5,6 +5,7 @@ use cuda;
 use cudnn_sys;
 use cudnn_sys::c_int;
 
+use scalar::Scalar;
 use Result;
 
 struct TensorDescriptor {
@@ -25,12 +26,12 @@ impl Drop for TensorDescriptor {
     }
 }
 
-pub struct Tensor<'a, T: 'a> {
+pub struct Tensor<'a, T: 'a + Scalar> {
     mem: &'a mut cuda::memory::Slice<T>,
     desc: TensorDescriptor,
 }
 
-impl<'a, T> Tensor<'a, T> {
+impl<'a, T: Scalar> Tensor<'a, T> {
     pub fn new_4d(mem: &'a mut cuda::memory::Slice<T>,
                   n: usize,
                   c: usize,
@@ -41,9 +42,9 @@ impl<'a, T> Tensor<'a, T> {
         let desc = try!(TensorDescriptor::new());
         unsafe {
             try_call!(cudnn_sys::cudnnSetTensor4dDescriptor(desc.desc,
-                                              cudnn_sys::cudnnTensorFormat::CUDNN_TENSOR_NCHW,
-                                              cudnn_sys::cudnnDataType::CUDNN_DATA_FLOAT,
-                                              n as c_int,c as c_int,h as c_int,w as c_int))
+                                                            cudnn_sys::cudnnTensorFormat::CUDNN_TENSOR_NCHW,
+                                                            T::DATA_TYPE,
+                                                            n as c_int,c as c_int,h as c_int,w as c_int))
         };
         Ok(Tensor { mem, desc })
     }
