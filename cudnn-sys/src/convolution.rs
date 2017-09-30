@@ -38,6 +38,18 @@ extern "system" {
                                            -> cudnnStatus;
 }
 
+#[link(name = "cudnn")]
+extern "system" {
+    pub fn cudnnGetConvolution2dForwardOutputDim(convDesc: cudnnConvolutionDescriptor,
+                                                 inputTensorDesc: cudnnTensorDescriptor,
+                                                 filterDesc: cudnnFilterDescriptor,
+                                                 n: *mut c_int,
+                                                 c: *mut c_int,
+                                                 h: *mut c_int,
+                                                 w: *mut c_int)
+                                                 -> cudnnStatus;
+}
+
 #[repr(C)]
 pub enum cudnnConvolutionFwdAlgo {
     CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM = 0,

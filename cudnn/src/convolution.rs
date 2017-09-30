@@ -74,6 +74,27 @@ impl<T: scalar::Scalar> Drop for ConvolutionDescriptor<T> {
     }
 }
 
+pub fn get_2d_forward_output_dim<T: scalar::Scalar>(conv_desc: &ConvolutionDescriptor<T>,
+                                                    input_tensor_desc: &tensor::TensorDescriptor<T>,
+                                                    filter_desc: &filter::FilterDescriptor<T>)
+-> Result<(usize, usize, usize, usize)>{
+    let mut n: c_int = 0;
+    let mut c: c_int = 0;
+    let mut h: c_int = 0;
+    let mut w: c_int = 0;
+    unsafe {
+        try_call!(cudnn_sys::cudnnGetConvolution2dForwardOutputDim(conv_desc.as_raw(),
+                                                                   input_tensor_desc.as_raw(),
+                                                                   filter_desc.as_raw(),
+                                                                   &mut n,
+                                                                   &mut c,
+                                                                   &mut h,
+                                                                   &mut w))
+    }
+    Ok((n as usize, c as usize, h as usize, w as usize))
+}
+
+
 #[repr(C)]
 pub enum FwdAlgo {
     ImplicitGemm,
