@@ -46,7 +46,8 @@ impl<T> MemcpyFrom<Slice<T>> for [T] {
 
 impl<D, R, S> MemcpyFrom<S> for D
     where D: ?Sized + ops::DerefMut<Target = R>,
-          R: ?Sized + MemcpyFrom<S>
+          R: ?Sized + MemcpyFrom<S>,
+          S: ?Sized
 {
     fn memcpy_from(&mut self, src: &S) -> Result<()> {
         self.deref_mut().memcpy_from(src)
