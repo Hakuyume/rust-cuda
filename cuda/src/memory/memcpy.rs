@@ -27,7 +27,7 @@ impl<T, D> MemcpyFrom<[T]> for D
         unsafe {
             try_call!(cuda_sys::cudaMemcpy(dst.as_mut_ptr() as *mut c_void,
                                            src.as_ptr() as *const c_void,
-                                           mem::size_of::<T>() * self.len(),
+                                           mem::size_of::<T>() * src.len(),
                                            cuda_sys::cudaMemcpyKind::cudaMemcpyHostToDevice))
         }
         Ok(())
