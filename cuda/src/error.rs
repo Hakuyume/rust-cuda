@@ -5,7 +5,7 @@ use cuda_sys::cudaError;
 
 use Result;
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Error {
     MemoryAllocation,
     InitializationError,
