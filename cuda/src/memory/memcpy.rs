@@ -6,11 +6,11 @@ use cuda_sys::c_void;
 use Result;
 use super::Slice;
 
-pub trait MemcpyInto<D> {
-    fn memcpy_into(&self, dst: D) -> Result<()>;
+pub trait MemcpyInto<D: ?Sized> {
+    fn memcpy_into(&self, dst: &mut D) -> Result<()>;
 }
 
-impl<'a, T> MemcpyInto<&'a mut Slice<T>> for [T] {
+impl<T> MemcpyInto<Slice<T>> for [T] {
     fn memcpy_into(&self, dst: &mut Slice<T>) -> Result<()> {
         assert_eq!(self.len(), dst.len());
         unsafe {
@@ -23,7 +23,7 @@ impl<'a, T> MemcpyInto<&'a mut Slice<T>> for [T] {
     }
 }
 
-impl<'a, T> MemcpyInto<&'a mut [T]> for Slice<T> {
+impl<T> MemcpyInto<[T]> for Slice<T> {
     fn memcpy_into(&self, dst: &mut [T]) -> Result<()> {
         assert_eq!(self.len(), dst.len());
         unsafe {
@@ -36,6 +36,6 @@ impl<'a, T> MemcpyInto<&'a mut [T]> for Slice<T> {
     }
 }
 
-pub fn memcpy<D, S: ?Sized + MemcpyInto<D>>(dst: D, src: &S) -> Result<()> {
+pub fn memcpy<D: ?Sized, S: ?Sized + MemcpyInto<D>>(dst: &mut D, src: &S) -> Result<()> {
     src.memcpy_into(dst)
 }
