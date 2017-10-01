@@ -64,7 +64,7 @@ pub fn find_forward_algorithm<T: scalar::Scalar>(context: &context::Context,
     }
     Ok(perf_results
            .into_iter()
-           .map(|fwd_algo_perf| FwdAlgoPerf::from_raw(fwd_algo_perf))
+           .map(|fwd_algo_perf| FwdAlgoPerf::from(fwd_algo_perf))
            .collect())
 }
 

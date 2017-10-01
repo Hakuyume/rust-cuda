@@ -13,10 +13,10 @@ pub struct FwdAlgoPerf {
     pub memory: usize,
 }
 
-impl FwdAlgoPerf {
-    pub fn from_raw(fwd_algo_perf: cudnn_sys::cudnnConvolutionFwdAlgoPerf) -> FwdAlgoPerf {
+impl From<cudnn_sys::cudnnConvolutionFwdAlgoPerf> for FwdAlgoPerf {
+    fn from(fwd_algo_perf: cudnn_sys::cudnnConvolutionFwdAlgoPerf) -> FwdAlgoPerf {
         FwdAlgoPerf {
-            algo: FwdAlgo::from_raw(fwd_algo_perf.algo),
+            algo: FwdAlgo::from(fwd_algo_perf.algo),
             status: error::wrap_status(fwd_algo_perf.status),
             time: fwd_algo_perf.time as f64,
             memory: fwd_algo_perf.memory as usize,

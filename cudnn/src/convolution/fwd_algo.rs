@@ -39,8 +39,10 @@ impl FwdAlgo {
             FwdAlgo::Count => cudnn_sys::cudnnConvolutionFwdAlgo::CUDNN_CONVOLUTION_FWD_ALGO_COUNT,
         }
     }
+}
 
-    pub fn from_raw(fwd_algo: cudnn_sys::cudnnConvolutionFwdAlgo) -> FwdAlgo {
+impl From<cudnn_sys::cudnnConvolutionFwdAlgo> for FwdAlgo {
+    fn from(fwd_algo: cudnn_sys::cudnnConvolutionFwdAlgo) -> FwdAlgo {
         match fwd_algo {
             cudnn_sys::cudnnConvolutionFwdAlgo::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM => {
                 FwdAlgo::ImplicitGemm
