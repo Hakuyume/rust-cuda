@@ -41,13 +41,13 @@ pub fn get_2d_forward_output_dim<T: scalar::Scalar>(conv_desc: &Descriptor<T>,
     Ok((n as usize, c as usize, h as usize, w as usize))
 }
 
-pub fn get_forward_algorithm<T: scalar::Scalar>(context: &context::Context,
-                                                x_desc: &tensor::Descriptor<T>,
-                                                w_desc: &filter::Descriptor<T>,
-                                                conv_desc: &Descriptor<T>,
-                                                y_desc: &tensor::Descriptor<T>,
-                                                requested_algo_count: usize)
-                                                -> Result<Vec<FwdAlgoPerf>> {
+pub fn find_forward_algorithm<T: scalar::Scalar>(context: &context::Context,
+                                                 x_desc: &tensor::Descriptor<T>,
+                                                 w_desc: &filter::Descriptor<T>,
+                                                 conv_desc: &Descriptor<T>,
+                                                 y_desc: &tensor::Descriptor<T>,
+                                                 requested_algo_count: usize)
+                                                 -> Result<Vec<FwdAlgoPerf>> {
     let mut returned_algo_count = 0;
     let mut perf_results: Vec<cudnn_sys::cudnnConvolutionFwdAlgoPerf> =
         Vec::with_capacity(requested_algo_count);
