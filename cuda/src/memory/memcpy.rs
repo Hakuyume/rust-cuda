@@ -6,16 +6,16 @@ use cuda_sys::c_void;
 use Result;
 use super::Slice;
 
-pub trait MemcpyInto<D: ?Sized> {
-    fn memcpy_into(&self, dst: &mut D) -> Result<()>;
+pub trait MemcpyFrom<S: ?Sized> {
+    fn memcpy_from(&mut self, src: &S) -> Result<()>;
 }
 
-impl<T> MemcpyInto<Slice<T>> for [T] {
-    fn memcpy_into(&self, dst: &mut Slice<T>) -> Result<()> {
-        assert_eq!(self.len(), dst.len());
+impl<T> MemcpyFrom<[T]> for Slice<T> {
+    fn memcpy_from(&mut self, src: &[T]) -> Result<()> {
+        assert_eq!(src.len(), self.len());
         unsafe {
-            try_call!(cuda_sys::cudaMemcpy(dst.as_mut_ptr() as *mut c_void,
-                                           self.as_ptr() as *const c_void,
+            try_call!(cuda_sys::cudaMemcpy(self.as_mut_ptr() as *mut c_void,
+                                           src.as_ptr() as *const c_void,
                                            mem::size_of::<T>() * self.len(),
                                            cuda_sys::cudaMemcpyKind::cudaMemcpyHostToDevice))
         }
@@ -23,12 +23,12 @@ impl<T> MemcpyInto<Slice<T>> for [T] {
     }
 }
 
-impl<T> MemcpyInto<[T]> for Slice<T> {
-    fn memcpy_into(&self, dst: &mut [T]) -> Result<()> {
-        assert_eq!(self.len(), dst.len());
+impl<T> MemcpyFrom<Slice<T>> for [T] {
+    fn memcpy_from(&mut self, src: &Slice<T>) -> Result<()> {
+        assert_eq!(src.len(), self.len());
         unsafe {
-            try_call!(cuda_sys::cudaMemcpy(dst.as_mut_ptr() as *mut c_void,
-                                           self.as_ptr() as *const c_void,
+            try_call!(cuda_sys::cudaMemcpy(self.as_mut_ptr() as *mut c_void,
+                                           src.as_ptr() as *const c_void,
                                            mem::size_of::<T>() * self.len(),
                                            cuda_sys::cudaMemcpyKind::cudaMemcpyDeviceToHost))
         }
@@ -36,6 +36,6 @@ impl<T> MemcpyInto<[T]> for Slice<T> {
     }
 }
 
-pub fn memcpy<D: ?Sized, S: ?Sized + MemcpyInto<D>>(dst: &mut D, src: &S) -> Result<()> {
-    src.memcpy_into(dst)
+pub fn memcpy<S: ?Sized, D: ?Sized + MemcpyFrom<S>>(dst: &mut D, src: &S) -> Result<()> {
+    dst.memcpy_from(src)
 }
