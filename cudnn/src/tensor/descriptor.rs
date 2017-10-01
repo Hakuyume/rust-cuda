@@ -55,8 +55,7 @@ impl<T: scalar::Scalar> Descriptor<T> {
         Ok(desc)
     }
 
-    pub fn new_4d_ex(format: Format,
-                     n: usize,
+    pub fn new_4d_ex(n: usize,
                      c: usize,
                      h: usize,
                      w: usize,
@@ -68,7 +67,6 @@ impl<T: scalar::Scalar> Descriptor<T> {
         let mut desc = try!(Descriptor::new());
         unsafe {
             try_call!(cudnn_sys::cudnnSetTensor4dDescriptorEx(desc.as_raw(),
-                                                              format.as_raw(),
                                                               T::DATA_TYPE,
                                                               n as c_int,
                                                               c as c_int,

@@ -32,7 +32,6 @@ extern "system" {
                                       w: c_int)
                                       -> cudnnStatus;
     pub fn cudnnSetTensor4dDescriptorEx(tensorDesc: cudnnTensorDescriptor,
-                                        format: cudnnTensorFormat,
                                         dataType: cudnnDataType,
                                         n: c_int,
                                         c: c_int,
