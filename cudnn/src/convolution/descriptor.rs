@@ -15,7 +15,7 @@ pub struct Descriptor<T: scalar::Scalar> {
 }
 
 impl<T: scalar::Scalar> Descriptor<T> {
-    fn new() -> Result<Descriptor<T>> {
+    pub fn new() -> Result<Descriptor<T>> {
         let mut desc = ptr::null_mut();
         unsafe { try_call!(cudnn_sys::cudnnCreateConvolutionDescriptor(&mut desc)) }
         Ok(Descriptor {
@@ -24,17 +24,21 @@ impl<T: scalar::Scalar> Descriptor<T> {
            })
     }
 
-    pub fn new_2d(pad_h: usize,
+    pub fn as_raw(&self) -> cudnn_sys::cudnnConvolutionDescriptor {
+        self.desc
+    }
+
+    pub fn set_2d(&mut self,
+                  pad_h: usize,
                   pad_w: usize,
                   u: usize,
                   v: usize,
                   dilation_h: usize,
                   dilation_w: usize,
                   mode: Mode)
-                  -> Result<Descriptor<T>> {
-        let desc = try!(Descriptor::new());
+                  -> Result<()> {
         unsafe {
-            try_call!(cudnn_sys::cudnnSetConvolution2dDescriptor(desc.as_raw(),
+            try_call!(cudnn_sys::cudnnSetConvolution2dDescriptor(self.as_raw(),
                                                                  pad_h as c_int,
                                                                  pad_w as c_int,
                                                                  u as c_int,
@@ -43,13 +47,8 @@ impl<T: scalar::Scalar> Descriptor<T> {
                                                                  dilation_w as c_int,
                                                                  mode.as_raw(),
                                                                  T::DATA_TYPE))
-        };
-
-        Ok(desc)
-    }
-
-    pub fn as_raw(&self) -> cudnn_sys::cudnnConvolutionDescriptor {
-        self.desc
+        }
+        Ok(())
     }
 }
 
