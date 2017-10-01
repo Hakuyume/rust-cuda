@@ -1,4 +1,5 @@
 use std::mem;
+use std::ops;
 
 use cuda_sys;
 use cuda_sys::c_void;
@@ -8,6 +9,13 @@ use super::Slice;
 
 pub trait MemcpyFrom<S: ?Sized> {
     fn memcpy_from(&mut self, src: &S) -> Result<()>;
+}
+
+pub fn memcpy<D, S>(dst: &mut D, src: &S) -> Result<()>
+    where S: ?Sized,
+          D: ?Sized + MemcpyFrom<S>
+{
+    dst.memcpy_from(src)
 }
 
 impl<T> MemcpyFrom<[T]> for Slice<T> {
@@ -36,6 +44,10 @@ impl<T> MemcpyFrom<Slice<T>> for [T] {
     }
 }
 
-pub fn memcpy<S: ?Sized, D: ?Sized + MemcpyFrom<S>>(dst: &mut D, src: &S) -> Result<()> {
-    dst.memcpy_from(src)
+impl<T, D> MemcpyFrom<[T]> for D
+    where D: ops::DerefMut<Target = Slice<T>>
+{
+    fn memcpy_from(&mut self, src: &[T]) -> Result<()> {
+        self.deref_mut().memcpy_from(src)
+    }
 }
