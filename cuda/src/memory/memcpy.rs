@@ -34,13 +34,17 @@ impl<T, D> MemcpyFrom<[T]> for D
     }
 }
 
-impl<T> MemcpyFrom<Slice<T>> for [T] {
+impl<T, D> MemcpyFrom<Slice<T>> for D
+    where D: ?Sized + ops::DerefMut<Target = [T]>
+{
     fn memcpy_from(&mut self, src: &Slice<T>) -> Result<()> {
-        assert_eq!(src.len(), self.len());
+        let dst = self.deref_mut();
+
+        assert_eq!(src.len(), dst.len());
         unsafe {
-            try_call!(cuda_sys::cudaMemcpy(self.as_mut_ptr() as *mut c_void,
+            try_call!(cuda_sys::cudaMemcpy(dst.as_mut_ptr() as *mut c_void,
                                            src.as_ptr() as *const c_void,
-                                           mem::size_of::<T>() * self.len(),
+                                           mem::size_of::<T>() * src.len(),
                                            cuda_sys::cudaMemcpyKind::cudaMemcpyDeviceToHost))
         }
         Ok(())
