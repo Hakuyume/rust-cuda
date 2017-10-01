@@ -76,4 +76,4 @@ mod deref;
 mod index;
 
 mod memcpy;
-pub use self::memcpy::*;
+pub use self::memcpy::memcpy;

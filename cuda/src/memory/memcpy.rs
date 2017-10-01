@@ -35,3 +35,7 @@ impl<T> MemcpyFrom<Slice<T>> for [T] {
         Ok(())
     }
 }
+
+pub fn memcpy<S, D: MemcpyFrom<S>>(dst: &mut D, src: &S) -> Result<()> {
+    dst.memcpy_from(src)
+}
