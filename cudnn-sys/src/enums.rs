@@ -1,6 +1,7 @@
 #![allow(non_camel_case_types)]
 
 #[repr(C)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum cudnnDataType {
     CUDNN_DATA_FLOAT = 0,
     CUDNN_DATA_DOUBLE = 1,

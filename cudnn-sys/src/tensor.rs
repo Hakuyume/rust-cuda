@@ -31,6 +31,17 @@ extern "system" {
                                       h: c_int,
                                       w: c_int)
                                       -> cudnnStatus;
+    pub fn cudnnGetTensor4dDescriptor(tensorDesc: cudnnTensorDescriptor,
+                                      dataType: *mut cudnnDataType,
+                                      n: *mut c_int,
+                                      c: *mut c_int,
+                                      h: *mut c_int,
+                                      w: *mut c_int,
+                                      nStride: *mut c_int,
+                                      cStride: *mut c_int,
+                                      hStride: *mut c_int,
+                                      wStride: *mut c_int)
+                                      -> cudnnStatus;
     pub fn cudnnSetTensor4dDescriptorEx(tensorDesc: cudnnTensorDescriptor,
                                         dataType: cudnnDataType,
                                         n: c_int,

@@ -16,6 +16,18 @@ pub struct Descriptor<T: scalar::Scalar> {
     _dummy: marker::PhantomData<T>,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Get4DOutput {
+    pub n: usize,
+    pub c: usize,
+    pub h: usize,
+    pub w: usize,
+    pub n_stride: usize,
+    pub c_stride: usize,
+    pub h_stride: usize,
+    pub w_stride: usize,
+}
+
 impl<T: scalar::Scalar> Descriptor<T> {
     pub fn new() -> Result<Descriptor<T>> {
         let mut desc = ptr::null_mut();
@@ -55,6 +67,41 @@ impl<T: scalar::Scalar> Descriptor<T> {
         assert_eq!(size % mem::size_of::<T>(), 0);
         self.len = size / mem::size_of::<T>();
         Ok(())
+    }
+
+    pub fn get_4d(&self) -> Result<Get4DOutput> {
+        let mut data_type = T::DATA_TYPE;
+        let mut n = 0;
+        let mut c = 0;
+        let mut h = 0;
+        let mut w = 0;
+        let mut n_stride = 0;
+        let mut c_stride = 0;
+        let mut h_stride = 0;
+        let mut w_stride = 0;
+        unsafe {
+            try_call!(cudnn_sys::cudnnGetTensor4dDescriptor(self.as_ptr(),
+                                                            &mut data_type,
+                                                            &mut n,
+                                                            &mut c,
+                                                            &mut h,
+                                                            &mut w,
+                                                            &mut n_stride,
+                                                            &mut c_stride,
+                                                            &mut h_stride,
+                                                            &mut w_stride))
+        }
+        assert_eq!(data_type, T::DATA_TYPE);
+        Ok(Get4DOutput {
+               n: n as usize,
+               c: c as usize,
+               h: h as usize,
+               w: w as usize,
+               n_stride: n_stride as usize,
+               c_stride: c_stride as usize,
+               h_stride: h_stride as usize,
+               w_stride: w_stride as usize,
+           })
     }
 
     pub fn set_4d_ex(&mut self,
