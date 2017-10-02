@@ -24,7 +24,11 @@ impl<T: scalar::Scalar> Descriptor<T> {
            })
     }
 
-    pub fn as_raw(&self) -> cudnn_sys::cudnnConvolutionDescriptor {
+    pub fn as_ptr(&self) -> cudnn_sys::cudnnConvolutionDescriptor {
+        self.desc
+    }
+
+    pub fn as_mut_ptr(&mut self) -> cudnn_sys::cudnnConvolutionDescriptor {
         self.desc
     }
 
@@ -38,14 +42,14 @@ impl<T: scalar::Scalar> Descriptor<T> {
                   mode: Mode)
                   -> Result<()> {
         unsafe {
-            try_call!(cudnn_sys::cudnnSetConvolution2dDescriptor(self.as_raw(),
+            try_call!(cudnn_sys::cudnnSetConvolution2dDescriptor(self.as_mut_ptr(),
                                                                  pad_h as c_int,
                                                                  pad_w as c_int,
                                                                  u as c_int,
                                                                  v as c_int,
                                                                  dilation_h as c_int,
                                                                  dilation_w as c_int,
-                                                                 mode.as_raw(),
+                                                                 mode.into(),
                                                                  T::DATA_TYPE))
         }
         Ok(())

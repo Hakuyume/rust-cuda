@@ -27,20 +27,24 @@ impl<T: scalar::Scalar> Descriptor<T> {
            })
     }
 
-    pub fn as_raw(&self) -> cudnn_sys::cudnnTensorDescriptor {
+    pub fn as_ptr(&self) -> cudnn_sys::cudnnTensorDescriptor {
+        self.desc
+    }
+
+    pub fn as_mut_ptr(&mut self) -> cudnn_sys::cudnnTensorDescriptor {
         self.desc
     }
 
     pub fn get_size(&self) -> Result<usize> {
         let mut size = 0;
-        unsafe { try_call!(cudnn_sys::cudnnGetTensorSizeInBytes(self.as_raw(), &mut size)) }
+        unsafe { try_call!(cudnn_sys::cudnnGetTensorSizeInBytes(self.as_ptr(), &mut size)) }
         Ok(size as usize)
     }
 
     pub fn set_4d(&mut self, format: Format, n: usize, c: usize, h: usize, w: usize) -> Result<()> {
         unsafe {
-            try_call!(cudnn_sys::cudnnSetTensor4dDescriptor(self.as_raw(),
-                                                            format.as_raw(),
+            try_call!(cudnn_sys::cudnnSetTensor4dDescriptor(self.as_mut_ptr(),
+                                                            format.into(),
                                                             T::DATA_TYPE,
                                                             n as c_int,
                                                             c as c_int,
@@ -64,7 +68,7 @@ impl<T: scalar::Scalar> Descriptor<T> {
                      w_stride: usize)
                      -> Result<()> {
         unsafe {
-            try_call!(cudnn_sys::cudnnSetTensor4dDescriptorEx(self.as_raw(),
+            try_call!(cudnn_sys::cudnnSetTensor4dDescriptorEx(self.as_mut_ptr(),
                                                               T::DATA_TYPE,
                                                               n as c_int,
                                                               c as c_int,

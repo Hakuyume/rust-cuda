@@ -7,8 +7,8 @@ pub enum Algorithm {
     Log,
 }
 
-impl Algorithm {
-    pub fn as_raw(self) -> cudnn_sys::cudnnSoftmaxAlgorithm {
+impl Into<cudnn_sys::cudnnSoftmaxAlgorithm> for Algorithm {
+    fn into(self) -> cudnn_sys::cudnnSoftmaxAlgorithm {
         match self {
             Algorithm::Fast => cudnn_sys::cudnnSoftmaxAlgorithm::CUDNN_SOFTMAX_FAST,
             Algorithm::Accurate => cudnn_sys::cudnnSoftmaxAlgorithm::CUDNN_SOFTMAX_ACCURATE,

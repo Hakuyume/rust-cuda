@@ -12,7 +12,7 @@ pub use self::algorithm::Algorithm;
 mod mode;
 pub use self::mode::Mode;
 
-pub fn forward<'a, T, X, Y>(context: &context::Context,
+pub fn forward<'a, T, X, Y>(context: &mut context::Context,
                             algo: Algorithm,
                             mode: Mode,
                             alpha: T,
@@ -24,14 +24,14 @@ pub fn forward<'a, T, X, Y>(context: &context::Context,
 {
     let params: &[T::Scale] = &[alpha.into(), beta.into()];
     unsafe {
-        try_call!(cudnn_sys::cudnnSoftmaxForward(context.as_raw(),
-                                                 algo.as_raw(),
-                                                 mode.as_raw(),
+        try_call!(cudnn_sys::cudnnSoftmaxForward(context.as_mut_ptr(),
+                                                 algo.into(),
+                                                 mode.into(),
                                                  &params[0] as *const T::Scale as *const c_void,
-                                                 x.desc.as_raw(),
+                                                 x.desc.as_ptr(),
                                                  x.mem.as_ptr() as *const c_void,
                                                  &params[1] as *const T::Scale as *const c_void,
-                                                 y.desc.as_raw(),
+                                                 y.desc.as_ptr(),
                                                  y.mem.as_mut_ptr() as *mut c_void))
     }
     Ok(())

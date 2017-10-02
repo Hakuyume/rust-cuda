@@ -25,7 +25,11 @@ impl<T: scalar::Scalar> Descriptor<T> {
            })
     }
 
-    pub fn as_raw(&self) -> cudnn_sys::cudnnFilterDescriptor {
+    pub fn as_ptr(&self) -> cudnn_sys::cudnnFilterDescriptor {
+        self.desc
+    }
+
+    pub fn as_mut_ptr(&mut self) -> cudnn_sys::cudnnFilterDescriptor {
         self.desc
     }
 
@@ -37,9 +41,9 @@ impl<T: scalar::Scalar> Descriptor<T> {
                   w: usize)
                   -> Result<()> {
         unsafe {
-            try_call!(cudnn_sys::cudnnSetFilter4dDescriptor(self.as_raw(),
+            try_call!(cudnn_sys::cudnnSetFilter4dDescriptor(self.as_mut_ptr(),
                                                             T::DATA_TYPE,
-                                                            format.as_raw(),
+                                                            format.into(),
                                                             k as c_int,
                                                             c as c_int,
                                                             h as c_int,

@@ -6,8 +6,8 @@ pub enum Format {
     NHWC,
 }
 
-impl Format {
-    pub fn as_raw(self) -> cudnn_sys::cudnnTensorFormat {
+impl Into<cudnn_sys::cudnnTensorFormat> for Format {
+    fn into(self) -> cudnn_sys::cudnnTensorFormat {
         match self {
             Format::NCHW => cudnn_sys::cudnnTensorFormat::CUDNN_TENSOR_NCHW,
             Format::NHWC => cudnn_sys::cudnnTensorFormat::CUDNN_TENSOR_NHWC,

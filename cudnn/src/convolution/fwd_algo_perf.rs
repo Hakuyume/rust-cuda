@@ -14,12 +14,12 @@ pub struct FwdAlgoPerf {
 }
 
 impl From<cudnn_sys::cudnnConvolutionFwdAlgoPerf> for FwdAlgoPerf {
-    fn from(fwd_algo_perf: cudnn_sys::cudnnConvolutionFwdAlgoPerf) -> FwdAlgoPerf {
+    fn from(value: cudnn_sys::cudnnConvolutionFwdAlgoPerf) -> FwdAlgoPerf {
         FwdAlgoPerf {
-            algo: FwdAlgo::from(fwd_algo_perf.algo),
-            status: error::wrap_status(fwd_algo_perf.status),
-            time: fwd_algo_perf.time as f64,
-            memory: fwd_algo_perf.memory as usize,
+            algo: FwdAlgo::from(value.algo),
+            status: error::wrap_status(value.status),
+            time: value.time as f64,
+            memory: value.memory as usize,
         }
     }
 }
