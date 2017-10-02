@@ -11,8 +11,12 @@ impl Scalar for c_float {
 
 pub trait Float: Sized + Scalar {
     type Scale: From<Self>;
+    const ZERO: Self;
+    const ONE: Self;
 }
 
 impl Float for c_float {
     type Scale = c_float;
+    const ZERO: c_float = 0.;
+    const ONE: c_float = 1.;
 }
