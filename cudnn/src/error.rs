@@ -1,9 +1,10 @@
-use std;
+use std::error;
+use std::ffi;
+use std::fmt;
+use std::result;
 
 use cudnn_sys;
 use cudnn_sys::cudnnStatus;
-
-use Result;
 
 #[derive(Clone, Copy, Debug)]
 pub enum Error {
@@ -20,9 +21,36 @@ pub enum Error {
     RuntimePrerequisiteMissing,
 }
 
-impl std::error::Error for Error {
-    fn description(&self) -> &str {
-        let status = match *self {
+pub trait TryFrom<T>: Sized {
+    type Error;
+    fn try_from(T) -> result::Result<Self, Self::Error>;
+}
+
+impl TryFrom<cudnnStatus> for Error {
+    type Error = ();
+    fn try_from(value: cudnnStatus) -> result::Result<Error, ()> {
+        match value {
+            cudnnStatus::CUDNN_STATUS_SUCCESS => Err(()),
+            cudnnStatus::CUDNN_STATUS_NOT_INITIALIZED => Ok(Error::NotInitialized),
+            cudnnStatus::CUDNN_STATUS_ALLOC_FAILED => Ok(Error::AllocFailed),
+            cudnnStatus::CUDNN_STATUS_BAD_PARAM => Ok(Error::BadParam),
+            cudnnStatus::CUDNN_STATUS_INTERNAL_ERROR => Ok(Error::InternalError),
+            cudnnStatus::CUDNN_STATUS_INVALID_VALUE => Ok(Error::InvalidValue),
+            cudnnStatus::CUDNN_STATUS_ARCH_MISMATCH => Ok(Error::ArchMismatch),
+            cudnnStatus::CUDNN_STATUS_MAPPING_ERROR => Ok(Error::MappingError),
+            cudnnStatus::CUDNN_STATUS_EXECUTION_FAILED => Ok(Error::ExecutionFailed),
+            cudnnStatus::CUDNN_STATUS_NOT_SUPPORTED => Ok(Error::NotSupported),
+            cudnnStatus::CUDNN_STATUS_LICENSE_ERROR => Ok(Error::LicenseError),
+            cudnnStatus::CUDNN_STATUS_RUNTIME_PREREQUISITE_MISSING => {
+                Ok(Error::RuntimePrerequisiteMissing)
+            }
+        }
+    }
+}
+
+impl Into<cudnnStatus> for Error {
+    fn into(self) -> cudnnStatus {
+        match self {
             Error::NotInitialized => cudnnStatus::CUDNN_STATUS_NOT_INITIALIZED,
             Error::AllocFailed => cudnnStatus::CUDNN_STATUS_ALLOC_FAILED,
             Error::BadParam => cudnnStatus::CUDNN_STATUS_BAD_PARAM,
@@ -36,40 +64,32 @@ impl std::error::Error for Error {
             Error::RuntimePrerequisiteMissing => {
                 cudnnStatus::CUDNN_STATUS_RUNTIME_PREREQUISITE_MISSING
             }
-        };
+        }
+    }
+}
+
+impl error::Error for Error {
+    fn description(&self) -> &str {
         unsafe {
-            let ptr = cudnn_sys::cudnnGetErrorString(status);
-            let c_str = std::ffi::CStr::from_ptr(ptr);
+            let ptr = cudnn_sys::cudnnGetErrorString(Error::into(*self));
+            let c_str = ffi::CStr::from_ptr(ptr);
             c_str.to_str().unwrap_or("[Non UTF8 description]")
         }
     }
 }
 
-impl std::fmt::Display for Error {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{:?}", self)
     }
 }
 
-pub fn wrap_status(status: cudnnStatus) -> Result<()> {
-    match status {
-        cudnnStatus::CUDNN_STATUS_SUCCESS => Ok(()),
-        cudnnStatus::CUDNN_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
-        cudnnStatus::CUDNN_STATUS_ALLOC_FAILED => Err(Error::AllocFailed),
-        cudnnStatus::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam),
-        cudnnStatus::CUDNN_STATUS_INTERNAL_ERROR => Err(Error::InternalError),
-        cudnnStatus::CUDNN_STATUS_INVALID_VALUE => Err(Error::InvalidValue),
-        cudnnStatus::CUDNN_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
-        cudnnStatus::CUDNN_STATUS_MAPPING_ERROR => Err(Error::MappingError),
-        cudnnStatus::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
-        cudnnStatus::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported),
-        cudnnStatus::CUDNN_STATUS_LICENSE_ERROR => Err(Error::LicenseError),
-        cudnnStatus::CUDNN_STATUS_RUNTIME_PREREQUISITE_MISSING => {
-            Err(Error::RuntimePrerequisiteMissing)
-        }
-    }
-}
-
 macro_rules! try_call {
-    ($call:expr) => {try!(::error::wrap_status($call))};
+    ($call:expr) => {{
+        use $crate::error::TryFrom;
+        try!(match $crate::Error::try_from($call) {
+            Ok(err) => Err(err),
+            Err(_) => Ok(()),
+        })
+    }};
 }
