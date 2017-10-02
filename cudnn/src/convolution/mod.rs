@@ -1,4 +1,4 @@
-use cuda::memory;
+use cuda::slice;
 
 use cudnn_sys;
 use cudnn_sys::{c_int, c_void, size_t};
@@ -94,7 +94,7 @@ pub fn forward<'a, T: scalar::Float>(context: &mut context::Context,
                                      w: filter::Filter<'a, T>,
                                      conv_desc: &Descriptor<T>,
                                      algo: FwdAlgo,
-                                     workspace: &mut memory::Slice<u8>,
+                                     workspace: &mut slice::Slice<u8>,
                                      beta: T,
                                      y: tensor::TensorMut<'a, T>)
                                      -> Result<()> {
