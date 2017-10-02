@@ -42,6 +42,13 @@ impl<T: scalar::Scalar> Descriptor<T> {
         Ok(size as usize)
     }
 
+    fn update_len(&mut self) -> Result<()> {
+        let size = try!(self.get_size());
+        assert_eq!(size % mem::size_of::<T>(), 0);
+        self.len = size / mem::size_of::<T>();
+        Ok(())
+    }
+
     pub fn set_4d(&mut self, format: Format, n: usize, c: usize, h: usize, w: usize) -> Result<()> {
         unsafe {
             try_call!(cudnn_sys::cudnnSetTensor4dDescriptor(self.as_mut_ptr(),
@@ -52,9 +59,7 @@ impl<T: scalar::Scalar> Descriptor<T> {
                                                             h as c_int,
                                                             w as c_int))
         }
-        let size = try!(self.get_size());
-        assert_eq!(size % mem::size_of::<T>(), 0);
-        self.len = size / mem::size_of::<T>();
+        try!(self.update_len());
         Ok(())
     }
 
@@ -115,9 +120,7 @@ impl<T: scalar::Scalar> Descriptor<T> {
                                                               h_stride as c_int,
                                                               w_stride as c_int))
         }
-        let size = try!(self.get_size());
-        assert_eq!(size % mem::size_of::<T>(), 0);
-        self.len = size / mem::size_of::<T>();
+        try!(self.update_len());
         Ok(())
     }
 
