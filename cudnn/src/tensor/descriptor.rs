@@ -9,23 +9,12 @@ use scalar;
 use Result;
 
 use super::Format;
+use super::Param4D;
 
 pub struct Descriptor<T: scalar::Scalar> {
     desc: cudnn_sys::cudnnTensorDescriptor,
     len: usize,
     _dummy: marker::PhantomData<T>,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct Get4DOutput {
-    pub n: usize,
-    pub c: usize,
-    pub h: usize,
-    pub w: usize,
-    pub n_stride: usize,
-    pub c_stride: usize,
-    pub h_stride: usize,
-    pub w_stride: usize,
 }
 
 impl<T: scalar::Scalar> Descriptor<T> {
@@ -69,7 +58,7 @@ impl<T: scalar::Scalar> Descriptor<T> {
         Ok(())
     }
 
-    pub fn get_4d(&self) -> Result<Get4DOutput> {
+    pub fn get_4d(&self) -> Result<Param4D> {
         let mut data_type = T::DATA_TYPE;
         let mut n = 0;
         let mut c = 0;
@@ -92,7 +81,7 @@ impl<T: scalar::Scalar> Descriptor<T> {
                                                             &mut w_stride))
         }
         assert_eq!(data_type, T::DATA_TYPE);
-        Ok(Get4DOutput {
+        Ok(Param4D {
                n: n as usize,
                c: c as usize,
                h: h as usize,
