@@ -43,7 +43,7 @@ impl<T: scalar::Scalar> Descriptor<T> {
     }
 
     fn update_len(&mut self) -> Result<()> {
-        let size = try!(self.get_size());
+        let size = self.get_size()?;
         assert_eq!(size % mem::size_of::<T>(), 0);
         self.len = size / mem::size_of::<T>();
         Ok(())
@@ -59,7 +59,7 @@ impl<T: scalar::Scalar> Descriptor<T> {
                                                             h as c_int,
                                                             w as c_int))
         }
-        try!(self.update_len());
+        self.update_len()?;
         Ok(())
     }
 
@@ -120,7 +120,7 @@ impl<T: scalar::Scalar> Descriptor<T> {
                                                               h_stride as c_int,
                                                               w_stride as c_int))
         }
-        try!(self.update_len());
+        self.update_len()?;
         Ok(())
     }
 
