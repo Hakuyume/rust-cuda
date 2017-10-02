@@ -13,3 +13,4 @@ pub mod filter;
 
 pub mod convolution;
 pub mod softmax;
+pub mod activation;

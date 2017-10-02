@@ -12,6 +12,12 @@ pub enum cudnnDataType {
 }
 
 #[repr(C)]
+pub enum cudnnNanPropagation {
+    CUDNN_NOT_PROPAGATE_NAN = 0,
+    CUDNN_PROPAGATE_NAN = 1,
+}
+
+#[repr(C)]
 pub enum cudnnDeterminism {
     CUDNN_NON_DETERMINISTIC = 0,
     CUDNN_DETERMINISTIC = 1,

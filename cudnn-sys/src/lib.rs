@@ -1,5 +1,5 @@
 extern crate libc;
-pub use libc::{c_char, c_float, c_int, c_void, size_t};
+pub use libc::{c_char, c_double, c_float, c_int, c_void, size_t};
 
 mod enums;
 pub use enums::*;
@@ -21,3 +21,6 @@ pub use convolution::*;
 
 mod softmax;
 pub use softmax::*;
+
+mod activation;
+pub use activation::*;
