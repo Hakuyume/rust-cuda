@@ -1,6 +1,9 @@
 use {c_char, c_void, size_t};
+
 use cudaError;
 use cudaMemcpyKind;
+use cudaStream;
+use dim3;
 
 #[link(name = "cudart")]
 extern "system" {
@@ -13,4 +16,11 @@ extern "system" {
                       count: size_t,
                       kind: cudaMemcpyKind)
                       -> cudaError;
+    pub fn cudaLaunchKernel(func: *const c_void,
+                            gridDim: dim3,
+                            blockDim: dim3,
+                            args: *mut *mut c_void,
+                            sharedMem: size_t,
+                            stream: cudaStream)
+                            -> cudaError;
 }

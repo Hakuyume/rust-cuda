@@ -1,5 +1,8 @@
 #![allow(non_camel_case_types)]
 
+pub enum CUstream {}
+pub type cudaStream = *mut CUstream;
+
 #[repr(C)]
 pub enum cudaError {
     cudaSuccess = 0,
