@@ -6,15 +6,16 @@ use cuda_sys::{c_void, size_t};
 use Result;
 use stream;
 
-pub type Dim3 = cuda_sys::dim3;
+mod dim3;
+pub use self::dim3::Dim3;
 
-pub unsafe fn launch_kernel<T: ?Sized>(func: *const T,
-                                       grid_dim: Dim3,
-                                       block_dim: Dim3,
-                                       args: &mut [*mut c_void],
-                                       shared_mem: usize,
-                                       stream: Option<&mut stream::Stream>)
-                                       -> Result<()> {
+pub unsafe fn launch_kernel(func: *const c_void,
+                            grid_dim: Dim3,
+                            block_dim: Dim3,
+                            args: &mut [*mut c_void],
+                            shared_mem: usize,
+                            stream: Option<&mut stream::Stream>)
+                            -> Result<()> {
     try_call!(cuda_sys::cudaLaunchKernel(func as *const c_void,
                                          grid_dim.into(),
                                          block_dim.into(),
