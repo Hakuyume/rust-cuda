@@ -9,7 +9,7 @@ pub fn compile_library(output: &str, files: &[&str]) {
         Ok(out_dir) => path::PathBuf::from(out_dir),
         Err(_) => {
             eprintln!("nvcc: Cannot detect output directory.");
-            panic!()
+            process::exit(1)
         }
     };
 
@@ -19,7 +19,7 @@ pub fn compile_library(output: &str, files: &[&str]) {
             Some(name) => name,
             None => {
                 eprintln!("nvcc: Cannot detect stem for \"{}\".", file);
-                panic!()
+                process::exit(1)
             }
         };
         let mut obj = name.to_owned();
@@ -35,12 +35,12 @@ pub fn compile_library(output: &str, files: &[&str]) {
                     ()
                 } else {
                     eprintln!("nvcc: \"nvcc\" exited with {}.", status);
-                    panic!()
+                    process::exit(1)
                 }
             }
             Err(err) => {
                 eprintln!("nvcc: Cannot execute \"nvcc\". {}", err.description());
-                panic!()
+                process::exit(1)
             }
         }
 
@@ -58,12 +58,12 @@ pub fn compile_library(output: &str, files: &[&str]) {
                 ()
             } else {
                 eprintln!("nvcc: \"ar\" exited with {}.", status);
-                panic!()
+                process::exit(1)
             }
         }
         Err(err) => {
             eprintln!("nvcc: Cannot execute \"ar\". {}", err.description());
-            panic!()
+            process::exit(1)
         }
     }
 
