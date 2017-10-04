@@ -129,6 +129,33 @@ mod tests {
     }
 
     #[test]
+    #[should_panic]
+    fn index_range_invalid() {
+        unsafe {
+            let s = from_raw_parts(32 as *const f32, 16);
+            &s[8..24];
+        }
+    }
+
+    #[test]
+    #[should_panic]
+    fn index_range_from_invalid() {
+        unsafe {
+            let s = from_raw_parts(32 as *const f32, 16);
+            &s[24..];
+        }
+    }
+
+    #[test]
+    #[should_panic]
+    fn index_range_to_invalid() {
+        unsafe {
+            let s = from_raw_parts(32 as *const f32, 16);
+            &s[..24];
+        }
+    }
+
+    #[test]
     fn index_mut_range_full() {
         unsafe {
             let s = from_raw_parts_mut(32 as *mut f32, 16);
@@ -169,6 +196,33 @@ mod tests {
             assert_eq!(s.as_ptr(), 32 as *const f32);
             assert_eq!(s.as_mut_ptr(), 32 as *mut f32);
             assert_eq!(s.len(), 12);
+        }
+    }
+
+    #[test]
+    #[should_panic]
+    fn index_mut_range_invalid() {
+        unsafe {
+            let s = from_raw_parts_mut(32 as *mut f32, 16);
+            &mut s[8..24];
+        }
+    }
+
+    #[test]
+    #[should_panic]
+    fn index_mut_range_from_invalid() {
+        unsafe {
+            let s = from_raw_parts_mut(32 as *mut f32, 16);
+            &mut s[24..];
+        }
+    }
+
+    #[test]
+    #[should_panic]
+    fn index_mut_range_to_invalid() {
+        unsafe {
+            let s = from_raw_parts_mut(32 as *mut f32, 16);
+            &mut s[..24];
         }
     }
 }
