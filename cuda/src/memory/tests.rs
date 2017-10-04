@@ -22,13 +22,10 @@ fn malloc_huge() {
 
 #[test]
 fn memcpy() {
-    let mut host_src = vec![0.; 256];
-    {
+    let host_src: Vec<f32> = {
         let mut rng = rand::thread_rng();
-        for x in host_src.iter_mut() {
-            *x = rng.gen::<f32>();
-        }
-    }
+        (0..256).map(|_| rng.gen()).collect()
+    };
 
     let mut device = super::Memory::new(host_src.len()).unwrap();
     super::memcpy(&mut device, &host_src).unwrap();
