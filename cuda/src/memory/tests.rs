@@ -3,7 +3,7 @@ use super::*;
 use Error;
 
 #[test]
-fn alloc() {
+fn malloc() {
     match Memory::<f32>::new(16) {
         Ok(m) => assert_eq!(m.len(), 16),
         Err(e) => panic!("{:?}", e),
@@ -11,7 +11,7 @@ fn alloc() {
 }
 
 #[test]
-fn alloc_huge() {
+fn malloc_huge() {
     match Memory::<f32>::new(1 << 48) {
         Err(Error::MemoryAllocation) => (),
         Ok(_) => panic!("allocation of a huge memory returned succeccfully"),
