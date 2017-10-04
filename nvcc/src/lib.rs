@@ -28,5 +28,5 @@ pub fn compile_library(output: &str, files: &[&str]) {
         .status()
         .unwrap();
 
-    println!("cargo:rustc-link-search={}", out_dir.display());
+    println!("cargo:rustc-link-search=native={}", out_dir.display());
 }
