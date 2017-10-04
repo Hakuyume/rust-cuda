@@ -16,7 +16,7 @@ pub unsafe fn launch_kernel(func: *const c_void,
                             shared_mem: usize,
                             stream: Option<&mut stream::Stream>)
                             -> Result<()> {
-    try_call!(cuda_sys::cudaLaunchKernel(func as *const c_void,
+    try_call!(cuda_sys::cudaLaunchKernel(func,
                                          grid_dim.into(),
                                          block_dim.into(),
                                          args.as_mut_ptr(),
