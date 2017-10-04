@@ -5,3 +5,6 @@ authors = ["Toru Ogawa <Hakuyume@users.noreply.github.com>"]
 
 [dependencies]
 cuda-sys = { path = "../cuda-sys" }
+
+[dev-dependencies]
+rand = "0.3"
