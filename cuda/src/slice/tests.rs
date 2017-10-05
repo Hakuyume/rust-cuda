@@ -56,7 +56,7 @@ fn split_at_mut() {
 
 #[test]
 #[should_panic]
-fn split_at_invalid() {
+fn split_at_mut_invalid() {
     unsafe {
         let s = super::from_raw_parts_mut(32 as *mut f32, 16);
         s.split_at_mut(24);
