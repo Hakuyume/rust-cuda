@@ -11,6 +11,10 @@ struct Repr<T> {
 }
 
 impl<T> Slice<T> {
+    fn repr(&self) -> Repr<T> {
+        unsafe { mem::transmute::<&Slice<T>, Repr<T>>(self) }
+    }
+
     pub fn as_ptr(&self) -> *const T {
         self.repr().ptr as *const T
     }
@@ -23,8 +27,22 @@ impl<T> Slice<T> {
         self.repr().len
     }
 
-    fn repr(&self) -> Repr<T> {
-        unsafe { mem::transmute::<&Slice<T>, Repr<T>>(self) }
+    pub fn split_at(&self, mid: usize) -> (&Slice<T>, &Slice<T>) {
+        let repr = self.repr();
+        assert!(mid <= repr.len);
+        unsafe {
+            (from_raw_parts(repr.ptr, mid),
+             from_raw_parts(repr.ptr.offset(mid as isize), repr.len - mid))
+        }
+    }
+
+    pub fn split_at_mut(&mut self, mid: usize) -> (&mut Slice<T>, &mut Slice<T>) {
+        let repr = self.repr();
+        assert!(mid <= repr.len);
+        unsafe {
+            (from_raw_parts_mut(repr.ptr, mid),
+             from_raw_parts_mut(repr.ptr.offset(mid as isize), repr.len - mid))
+        }
     }
 }
 
