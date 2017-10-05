@@ -1,32 +1,26 @@
-use std::mem;
 use std::ops;
 
-use super::Repr;
 use super::Slice;
 use super::from_raw_parts;
 use super::from_raw_parts_mut;
 
 impl<T> Slice<T> {
     fn get_slice(&self, start: Option<usize>, end: Option<usize>) -> &Slice<T> {
-        unsafe {
-            let repr = mem::transmute::<&Slice<T>, Repr<T>>(self);
-            let start = start.unwrap_or(0);
-            let end = end.unwrap_or(repr.len);
-            assert!(start <= end);
-            assert!(end <= repr.len);
-            from_raw_parts(repr.ptr.offset(start as isize), end - start)
-        }
+        let repr = self.repr();
+        let start = start.unwrap_or(0);
+        let end = end.unwrap_or(repr.len);
+        assert!(start <= end);
+        assert!(end <= repr.len);
+        unsafe { from_raw_parts(repr.ptr.offset(start as isize), end - start) }
     }
 
     fn get_slice_mut(&mut self, start: Option<usize>, end: Option<usize>) -> &mut Slice<T> {
-        unsafe {
-            let repr = mem::transmute::<&Slice<T>, Repr<T>>(self);
-            let start = start.unwrap_or(0);
-            let end = end.unwrap_or(repr.len);
-            assert!(start <= end);
-            assert!(end <= repr.len);
-            from_raw_parts_mut(repr.ptr.offset(start as isize), end - start)
-        }
+        let repr = self.repr();
+        let start = start.unwrap_or(0);
+        let end = end.unwrap_or(repr.len);
+        assert!(start <= end);
+        assert!(end <= repr.len);
+        unsafe { from_raw_parts_mut(repr.ptr.offset(start as isize), end - start) }
     }
 }
 
