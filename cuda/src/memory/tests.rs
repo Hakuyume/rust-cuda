@@ -21,6 +21,20 @@ fn malloc_huge() {
 }
 
 #[test]
+#[should_panic(expected = "malloc: 64")]
+fn malloc_hook() {
+    super::set_malloc_hook(|_, size| panic!("malloc: {}", size));
+    super::Memory::<f32>::new(16).unwrap();
+}
+
+#[test]
+#[should_panic(expected = "free: 64")]
+fn free_hook() {
+    super::set_free_hook(|_, size| panic!("free: {}", size));
+    super::Memory::<f32>::new(16).unwrap();
+}
+
+#[test]
 fn memcpy() {
     let host_src: Vec<f32> = {
         let mut rng = rand::thread_rng();
