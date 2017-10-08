@@ -6,6 +6,10 @@ use std::error::Error;
 
 #[cfg(unix)]
 pub fn compile_library(output: &str, files: &[&str]) {
+    assert!(output.starts_with("lib"));
+    assert!(output.ends_with(".a"));
+    let lib_name = &output[3..output.len() - 2];
+
     let out_dir = match env::var("OUT_DIR") {
         Ok(out_dir) => path::PathBuf::from(out_dir),
         Err(_) => {
@@ -68,5 +72,6 @@ pub fn compile_library(output: &str, files: &[&str]) {
         }
     }
 
+    println!("cargo:rustc-link-lib=static={}", lib_name);
     println!("cargo:rustc-link-search=native={}", out_dir.display());
 }
