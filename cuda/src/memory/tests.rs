@@ -25,13 +25,17 @@ fn malloc_huge() {
 fn malloc_hook() {
     super::set_malloc_hook(|_, size| panic!("malloc: {}", size));
     super::Memory::<f32>::new(16).unwrap();
+    unreachable!();
 }
 
 #[test]
 #[should_panic(expected = "free: 64")]
 fn free_hook() {
-    super::set_free_hook(|_, size| panic!("free: {}", size));
-    super::Memory::<f32>::new(16).unwrap();
+    {
+        super::Memory::<f32>::new(16).unwrap();
+        super::set_free_hook(|_, size| panic!("free: {}", size));
+    }
+    unreachable!();
 }
 
 #[test]
