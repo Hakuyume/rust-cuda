@@ -15,7 +15,7 @@ pub fn compile_library(output: &str, files: &[&str]) {
     };
 
     let mut objs = Vec::new();
-    for file in files.iter() {
+    for file in files {
         let name = match path::Path::new(file).file_stem() {
             Some(name) => name,
             None => {
@@ -50,7 +50,7 @@ pub fn compile_library(output: &str, files: &[&str]) {
 
     let status = process::Command::new("ar")
         .args(&["crus", output])
-        .args(objs.iter())
+        .args(&objs)
         .current_dir(&out_dir)
         .status();
     match status {
