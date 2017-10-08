@@ -39,7 +39,6 @@ impl<T, D> MemcpyFrom<slice::Slice<T>> for D
 {
     fn memcpy_from(&mut self, src: &slice::Slice<T>) -> Result<()> {
         let dst = self.deref_mut();
-
         assert_eq!(src.len(), dst.len());
         unsafe {
             try_call!(cuda_sys::cudaMemcpy(dst.as_mut_ptr() as *mut c_void,

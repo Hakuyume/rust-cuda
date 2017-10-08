@@ -1,7 +1,8 @@
 use std::env;
-use std::error::Error;
 use std::path;
 use std::process;
+
+use std::error::Error;
 
 #[cfg(unix)]
 pub fn compile_library(output: &str, files: &[&str]) {
