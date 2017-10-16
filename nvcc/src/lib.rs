@@ -4,6 +4,13 @@ use std::process;
 
 use std::error::Error;
 
+macro_rules! fail {
+    ($($e:expr),*) => {{
+        eprintln!($($e,)*);
+        panic!()
+    }};
+}
+
 #[cfg(unix)]
 pub fn compile_library(output: &str, files: &[&str]) {
     assert!(output.starts_with("lib"));
@@ -12,20 +19,14 @@ pub fn compile_library(output: &str, files: &[&str]) {
 
     let out_dir = match env::var("OUT_DIR") {
         Ok(out_dir) => path::PathBuf::from(out_dir),
-        Err(_) => {
-            eprintln!("nvcc: Cannot detect output directory.");
-            process::exit(1)
-        }
+        Err(_) => fail!("nvcc: Cannot detect output directory."),
     };
 
     let mut objs = Vec::new();
     for file in files {
         let name = match path::Path::new(file).file_stem() {
             Some(name) => name,
-            None => {
-                eprintln!("nvcc: Cannot detect stem for \"{}\".", file);
-                process::exit(1)
-            }
+            None => fail!("nvcc: Cannot detect stem for \"{}\".", file),
         };
         let mut obj = name.to_owned();
         obj.push(".o");
@@ -39,14 +40,10 @@ pub fn compile_library(output: &str, files: &[&str]) {
                 if status.success() {
                     ()
                 } else {
-                    eprintln!("nvcc: \"nvcc\" exited with {}.", status);
-                    process::exit(1)
+                    fail!("nvcc: \"nvcc\" exited with {}.", status);
                 }
             }
-            Err(err) => {
-                eprintln!("nvcc: Cannot execute \"nvcc\". {}", err.description());
-                process::exit(1)
-            }
+            Err(err) => fail!("nvcc: Cannot execute \"nvcc\". {}", err.description()),
         }
 
         objs.push(obj);
@@ -62,14 +59,10 @@ pub fn compile_library(output: &str, files: &[&str]) {
             if status.success() {
                 ()
             } else {
-                eprintln!("nvcc: \"ar\" exited with {}.", status);
-                process::exit(1)
+                fail!("nvcc: \"ar\" exited with {}.", status)
             }
         }
-        Err(err) => {
-            eprintln!("nvcc: Cannot execute \"ar\". {}", err.description());
-            process::exit(1)
-        }
+        Err(err) => fail!("nvcc: Cannot execute \"ar\". {}", err.description()),
     }
 
     println!("cargo:rustc-link-lib=static={}", lib_name);
