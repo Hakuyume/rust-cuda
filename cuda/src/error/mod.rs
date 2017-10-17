@@ -15,7 +15,7 @@ mod into;
 impl std::error::Error for Error {
     fn description(&self) -> &str {
         unsafe {
-            let ptr = cuda_sys::cudaGetErrorString(Error::into(*self));
+            let ptr = cuda_sys::cudaGetErrorString(self.clone().into());
             let c_str = ffi::CStr::from_ptr(ptr);
             c_str.to_str().unwrap_or("[Non UTF8 description]")
         }

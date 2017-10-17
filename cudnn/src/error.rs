@@ -67,7 +67,7 @@ impl Into<cudnn_sys::cudnnStatus> for Error {
 impl error::Error for Error {
     fn description(&self) -> &str {
         unsafe {
-            let ptr = cudnn_sys::cudnnGetErrorString(Error::into(*self));
+            let ptr = cudnn_sys::cudnnGetErrorString(self.clone().into());
             let c_str = ffi::CStr::from_ptr(ptr);
             c_str.to_str().unwrap_or("[Non UTF8 description]")
         }
