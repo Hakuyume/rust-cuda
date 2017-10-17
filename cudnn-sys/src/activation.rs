@@ -10,14 +10,6 @@ use cudnnTensorDescriptor;
 pub enum cudnnActivationStruct {}
 pub type cudnnActivationDescriptor = *mut cudnnActivationStruct;
 
-#[link(name = "cudnn")]
-extern "system" {
-    pub fn cudnnCreateActivationDescriptor(activationDesc: *mut cudnnActivationDescriptor)
-                                           -> cudnnStatus;
-    pub fn cudnnDestroyActivationDescriptor(activationDesc: cudnnActivationDescriptor)
-                                            -> cudnnStatus;
-}
-
 #[repr(C)]
 pub enum cudnnActivationMode {
     CUDNN_ACTIVATION_SIGMOID = 0,
@@ -25,15 +17,6 @@ pub enum cudnnActivationMode {
     CUDNN_ACTIVATION_TANH = 2,
     CUDNN_ACTIVATION_CLIPPED_RELU = 3,
     CUDNN_ACTIVATION_ELU = 4,
-}
-
-#[link(name = "cudnn")]
-extern "system" {
-    pub fn cudnnSetActivationDescriptor(activationDesc: cudnnActivationDescriptor,
-                                        mode: cudnnActivationMode,
-                                        reluNanOpt: cudnnNanPropagation,
-                                        coef: c_double)
-                                        -> cudnnStatus;
 }
 
 #[link(name = "cudnn")]
@@ -47,4 +30,13 @@ extern "system" {
                                   destDesc: cudnnTensorDescriptor,
                                   destData: *mut c_void)
                                   -> cudnnStatus;
+    pub fn cudnnCreateActivationDescriptor(activationDesc: *mut cudnnActivationDescriptor)
+                                           -> cudnnStatus;
+    pub fn cudnnSetActivationDescriptor(activationDesc: cudnnActivationDescriptor,
+                                        mode: cudnnActivationMode,
+                                        reluNanOpt: cudnnNanPropagation,
+                                        coef: c_double)
+                                        -> cudnnStatus;
+    pub fn cudnnDestroyActivationDescriptor(activationDesc: cudnnActivationDescriptor)
+                                            -> cudnnStatus;
 }
