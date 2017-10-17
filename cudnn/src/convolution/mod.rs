@@ -88,7 +88,8 @@ pub fn get_forward_algorithm<T: scalar::Scalar>(context: &mut context::Context,
                                                                  y_desc.as_ptr(),
                                                                  preference,
                                                                  memory_limit_in_bytes
-                                                                     .unwrap_or(0),
+                                                                     .unwrap_or(0) as
+                                                                 size_t,
                                                                  &mut algo));
     }
     Ok(algo.into())
