@@ -31,4 +31,16 @@ extern "system" {
                                yDesc: cudnnTensorDescriptor,
                                y: *mut c_void)
                                -> cudnnStatus;
+    pub fn cudnnSoftmaxBackward(handle: cudnnHandle,
+                                algorithm: cudnnSoftmaxAlgorithm,
+                                mode: cudnnSoftmaxMode,
+                                alpha: *const c_void,
+                                yDesc: cudnnTensorDescriptor,
+                                yData: *const c_void,
+                                dyDesc: cudnnTensorDescriptor,
+                                dy: *const c_void,
+                                beta: *const c_void,
+                                dxDesc: cudnnTensorDescriptor,
+                                dx: *mut c_void)
+                                -> cudnnStatus;
 }
