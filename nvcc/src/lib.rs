@@ -11,6 +11,19 @@ macro_rules! fail {
     }};
 }
 
+fn exec(name: &str, cmd: &mut process::Command) {
+    match cmd.status() {
+        Ok(status) => {
+            if status.success() {
+                ()
+            } else {
+                fail!("nvcc: \"{}\" exited with {}.", name, status);
+            }
+        }
+        Err(err) => fail!("nvcc: Cannot execute \"{}\". {}", name, err.description()),
+    }
+}
+
 #[cfg(unix)]
 pub fn compile_library(output: &str, files: &[&str]) {
     assert!(output.starts_with("lib"));
@@ -31,39 +44,19 @@ pub fn compile_library(output: &str, files: &[&str]) {
         let mut obj = name.to_owned();
         obj.push(".o");
 
-        let status = process::Command::new("nvcc")
-            .args(&["-c", file, "-Xcompiler", "-fPIC", "-o"])
-            .arg(&out_dir.join(&obj))
-            .status();
-        match status {
-            Ok(status) => {
-                if status.success() {
-                    ()
-                } else {
-                    fail!("nvcc: \"nvcc\" exited with {}.", status);
-                }
-            }
-            Err(err) => fail!("nvcc: Cannot execute \"nvcc\". {}", err.description()),
-        }
+        let mut cmd = process::Command::new("nvcc");
+        cmd.args(&["-c", file, "-Xcompiler", "-fPIC", "-o"])
+            .arg(&out_dir.join(&obj));
+        exec("nvcc", &mut cmd);
 
         objs.push(obj);
     }
 
-    let status = process::Command::new("ar")
-        .args(&["crus", output])
+    let mut cmd = process::Command::new("ar");
+    cmd.args(&["crus", output])
         .args(&objs)
-        .current_dir(&out_dir)
-        .status();
-    match status {
-        Ok(status) => {
-            if status.success() {
-                ()
-            } else {
-                fail!("nvcc: \"ar\" exited with {}.", status)
-            }
-        }
-        Err(err) => fail!("nvcc: Cannot execute \"ar\". {}", err.description()),
-    }
+        .current_dir(&out_dir);
+    exec("ar", &mut cmd);
 
     println!("cargo:rustc-link-lib=static={}", lib_name);
     println!("cargo:rustc-link-search=native={}", out_dir.display());
