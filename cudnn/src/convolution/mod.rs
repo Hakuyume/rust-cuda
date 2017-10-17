@@ -105,25 +105,25 @@ pub fn forward<'a, T: scalar::Float>(context: &mut context::Context,
                                      algo: FwdAlgo,
                                      workspace: &mut slice::Slice<u8>,
                                      beta: T,
-                                     y: tensor::TensorMut<'a, T>)
+                                     mut y: tensor::TensorMut<'a, T>)
                                      -> Result<()> {
     let scales: &[T::Scale] = &[alpha.into(), beta.into()];
     unsafe {
         try_call!(cudnn_sys::cudnnConvolutionForward(context.as_mut_ptr(),
                                                      &scales[0] as *const T::Scale as
                                                      *const c_void,
-                                                     x.desc.as_ptr(),
-                                                     x.mem.as_ptr() as *const c_void,
-                                                     w.desc.as_ptr(),
-                                                     w.mem.as_ptr() as *const c_void,
+                                                     x.desc().as_ptr(),
+                                                     x.mem().as_ptr() as *const c_void,
+                                                     w.desc().as_ptr(),
+                                                     w.mem().as_ptr() as *const c_void,
                                                      conv_desc.as_ptr(),
                                                      algo.into(),
                                                      workspace.as_mut_ptr() as *mut c_void,
                                                      workspace.len(),
                                                      &scales[1] as *const T::Scale as
                                                      *const c_void,
-                                                     y.desc.as_ptr(),
-                                                     y.mem.as_mut_ptr() as *mut c_void))
+                                                     y.desc().as_ptr(),
+                                                     y.mem_mut().as_mut_ptr() as *mut c_void))
     }
     Ok(())
 }

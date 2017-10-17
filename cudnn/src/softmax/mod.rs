@@ -18,7 +18,7 @@ pub fn forward<'a, T: scalar::Float>(context: &mut context::Context,
                                      alpha: T,
                                      x: tensor::Tensor<'a, T>,
                                      beta: T,
-                                     y: tensor::TensorMut<'a, T>)
+                                     mut y: tensor::TensorMut<'a, T>)
                                      -> Result<()> {
     let scales: &[T::Scale] = &[alpha.into(), beta.into()];
     unsafe {
@@ -26,11 +26,11 @@ pub fn forward<'a, T: scalar::Float>(context: &mut context::Context,
                                                  algo.into(),
                                                  mode.into(),
                                                  &scales[0] as *const T::Scale as *const c_void,
-                                                 x.desc.as_ptr(),
-                                                 x.mem.as_ptr() as *const c_void,
+                                                 x.desc().as_ptr(),
+                                                 x.mem().as_ptr() as *const c_void,
                                                  &scales[1] as *const T::Scale as *const c_void,
-                                                 y.desc.as_ptr(),
-                                                 y.mem.as_mut_ptr() as *mut c_void))
+                                                 y.desc().as_ptr(),
+                                                 y.mem_mut().as_mut_ptr() as *mut c_void))
     }
     Ok(())
 }
