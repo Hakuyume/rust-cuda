@@ -41,6 +41,13 @@ pub struct cudnnConvolutionFwdAlgoPerf {
     reserved: [c_int; 4],
 }
 
+#[repr(C)]
+pub enum cudnnConvolutionFwdPreference {
+    CUDNN_CONVOLUTION_FWD_NO_WORKSPACE = 0,
+    CUDNN_CONVOLUTION_FWD_PREFER_FASTEST = 1,
+    CUDNN_CONVOLUTION_FWD_SPECIFY_WORKSPACE_LIMIT = 2,
+}
+
 #[link(name = "cudnn")]
 extern "system" {
     pub fn cudnnCreateConvolutionDescriptor(convDesc: *mut cudnnConvolutionDescriptor)
@@ -73,6 +80,15 @@ extern "system" {
                                                 returnedAlgoCount: *mut c_int,
                                                 perfResults: *mut cudnnConvolutionFwdAlgoPerf)
                                                 -> cudnnStatus;
+    pub fn cudnnGetConvolutionForwardAlgorithm(handle: cudnnHandle,
+                                               xDesc: cudnnTensorDescriptor,
+                                               wDesc: cudnnFilterDescriptor,
+                                               convDesc: cudnnConvolutionDescriptor,
+                                               yDesc: cudnnTensorDescriptor,
+                                               preference: cudnnConvolutionFwdPreference,
+                                               memoryLimitInbytes: size_t,
+                                               algo: *mut cudnnConvolutionFwdAlgo)
+                                               -> cudnnStatus;
     pub fn cudnnGetConvolutionForwardWorkspaceSize(handle: cudnnHandle,
                                                    xDesc: cudnnTensorDescriptor,
                                                    wDesc: cudnnFilterDescriptor,

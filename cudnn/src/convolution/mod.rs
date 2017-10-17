@@ -21,6 +21,9 @@ pub use self::fwd_algo::FwdAlgo;
 mod fwd_algo_perf;
 pub use self::fwd_algo_perf::FwdAlgoPerf;
 
+mod fwd_preference;
+pub use self::fwd_preference::FwdPreference;
+
 pub fn get_2d_forward_output_dim<T: scalar::Scalar>(conv_desc: &Descriptor<T>,
                                                     input_tensor_desc: &tensor::Descriptor<T>,
                                                     filter_desc: &filter::Descriptor<T>)
@@ -64,8 +67,31 @@ pub fn find_forward_algorithm<T: scalar::Scalar>(context: &mut context::Context,
     }
     Ok(perf_results
            .into_iter()
-           .map(|fwd_algo_perf| FwdAlgoPerf::from(fwd_algo_perf))
+           .map(|fwd_algo_perf| fwd_algo_perf.into())
            .collect())
+}
+
+pub fn get_forward_algorithm<T: scalar::Scalar>(context: &mut context::Context,
+                                                x_desc: &tensor::Descriptor<T>,
+                                                w_desc: &filter::Descriptor<T>,
+                                                conv_desc: &Descriptor<T>,
+                                                y_desc: &tensor::Descriptor<T>,
+                                                preference: FwdPreference)
+                                                -> Result<FwdAlgo> {
+    let (preference, memory_limit_in_bytes) = preference.into();
+    let mut algo = cudnn_sys::cudnnConvolutionFwdAlgo::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
+    unsafe {
+        try_call!(cudnn_sys::cudnnGetConvolutionForwardAlgorithm(context.as_mut_ptr(),
+                                                                 x_desc.as_ptr(),
+                                                                 w_desc.as_ptr(),
+                                                                 conv_desc.as_ptr(),
+                                                                 y_desc.as_ptr(),
+                                                                 preference,
+                                                                 memory_limit_in_bytes
+                                                                     .unwrap_or(0),
+                                                                 &mut algo));
+    }
+    Ok(algo.into())
 }
 
 pub fn get_forward_workspace_size<T: scalar::Scalar>(context: &mut context::Context,

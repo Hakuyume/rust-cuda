@@ -4,7 +4,7 @@ use std::fmt;
 use std::result;
 
 use cudnn_sys;
-use cudnn_sys::cudnnStatus;
+use cudnn_sys::cudnnStatus::*;
 
 #[derive(Clone, Copy, Debug)]
 pub enum Error {
@@ -26,44 +26,40 @@ pub trait TryFrom<T>: Sized {
     fn try_from(T) -> result::Result<Self, Self::Error>;
 }
 
-impl TryFrom<cudnnStatus> for Error {
+impl TryFrom<cudnn_sys::cudnnStatus> for Error {
     type Error = ();
-    fn try_from(value: cudnnStatus) -> result::Result<Error, ()> {
+    fn try_from(value: cudnn_sys::cudnnStatus) -> result::Result<Error, ()> {
         match value {
-            cudnnStatus::CUDNN_STATUS_SUCCESS => Err(()),
-            cudnnStatus::CUDNN_STATUS_NOT_INITIALIZED => Ok(Error::NotInitialized),
-            cudnnStatus::CUDNN_STATUS_ALLOC_FAILED => Ok(Error::AllocFailed),
-            cudnnStatus::CUDNN_STATUS_BAD_PARAM => Ok(Error::BadParam),
-            cudnnStatus::CUDNN_STATUS_INTERNAL_ERROR => Ok(Error::InternalError),
-            cudnnStatus::CUDNN_STATUS_INVALID_VALUE => Ok(Error::InvalidValue),
-            cudnnStatus::CUDNN_STATUS_ARCH_MISMATCH => Ok(Error::ArchMismatch),
-            cudnnStatus::CUDNN_STATUS_MAPPING_ERROR => Ok(Error::MappingError),
-            cudnnStatus::CUDNN_STATUS_EXECUTION_FAILED => Ok(Error::ExecutionFailed),
-            cudnnStatus::CUDNN_STATUS_NOT_SUPPORTED => Ok(Error::NotSupported),
-            cudnnStatus::CUDNN_STATUS_LICENSE_ERROR => Ok(Error::LicenseError),
-            cudnnStatus::CUDNN_STATUS_RUNTIME_PREREQUISITE_MISSING => {
-                Ok(Error::RuntimePrerequisiteMissing)
-            }
+            CUDNN_STATUS_SUCCESS => Err(()),
+            CUDNN_STATUS_NOT_INITIALIZED => Ok(Error::NotInitialized),
+            CUDNN_STATUS_ALLOC_FAILED => Ok(Error::AllocFailed),
+            CUDNN_STATUS_BAD_PARAM => Ok(Error::BadParam),
+            CUDNN_STATUS_INTERNAL_ERROR => Ok(Error::InternalError),
+            CUDNN_STATUS_INVALID_VALUE => Ok(Error::InvalidValue),
+            CUDNN_STATUS_ARCH_MISMATCH => Ok(Error::ArchMismatch),
+            CUDNN_STATUS_MAPPING_ERROR => Ok(Error::MappingError),
+            CUDNN_STATUS_EXECUTION_FAILED => Ok(Error::ExecutionFailed),
+            CUDNN_STATUS_NOT_SUPPORTED => Ok(Error::NotSupported),
+            CUDNN_STATUS_LICENSE_ERROR => Ok(Error::LicenseError),
+            CUDNN_STATUS_RUNTIME_PREREQUISITE_MISSING => Ok(Error::RuntimePrerequisiteMissing),
         }
     }
 }
 
-impl Into<cudnnStatus> for Error {
-    fn into(self) -> cudnnStatus {
+impl Into<cudnn_sys::cudnnStatus> for Error {
+    fn into(self) -> cudnn_sys::cudnnStatus {
         match self {
-            Error::NotInitialized => cudnnStatus::CUDNN_STATUS_NOT_INITIALIZED,
-            Error::AllocFailed => cudnnStatus::CUDNN_STATUS_ALLOC_FAILED,
-            Error::BadParam => cudnnStatus::CUDNN_STATUS_BAD_PARAM,
-            Error::InternalError => cudnnStatus::CUDNN_STATUS_INTERNAL_ERROR,
-            Error::InvalidValue => cudnnStatus::CUDNN_STATUS_INVALID_VALUE,
-            Error::ArchMismatch => cudnnStatus::CUDNN_STATUS_ARCH_MISMATCH,
-            Error::MappingError => cudnnStatus::CUDNN_STATUS_MAPPING_ERROR,
-            Error::ExecutionFailed => cudnnStatus::CUDNN_STATUS_EXECUTION_FAILED,
-            Error::NotSupported => cudnnStatus::CUDNN_STATUS_NOT_SUPPORTED,
-            Error::LicenseError => cudnnStatus::CUDNN_STATUS_LICENSE_ERROR,
-            Error::RuntimePrerequisiteMissing => {
-                cudnnStatus::CUDNN_STATUS_RUNTIME_PREREQUISITE_MISSING
-            }
+            Error::NotInitialized => CUDNN_STATUS_NOT_INITIALIZED,
+            Error::AllocFailed => CUDNN_STATUS_ALLOC_FAILED,
+            Error::BadParam => CUDNN_STATUS_BAD_PARAM,
+            Error::InternalError => CUDNN_STATUS_INTERNAL_ERROR,
+            Error::InvalidValue => CUDNN_STATUS_INVALID_VALUE,
+            Error::ArchMismatch => CUDNN_STATUS_ARCH_MISMATCH,
+            Error::MappingError => CUDNN_STATUS_MAPPING_ERROR,
+            Error::ExecutionFailed => CUDNN_STATUS_EXECUTION_FAILED,
+            Error::NotSupported => CUDNN_STATUS_NOT_SUPPORTED,
+            Error::LicenseError => CUDNN_STATUS_LICENSE_ERROR,
+            Error::RuntimePrerequisiteMissing => CUDNN_STATUS_RUNTIME_PREREQUISITE_MISSING,
         }
     }
 }

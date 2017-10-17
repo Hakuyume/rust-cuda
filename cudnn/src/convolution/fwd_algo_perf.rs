@@ -17,7 +17,7 @@ pub struct FwdAlgoPerf {
 impl From<cudnn_sys::cudnnConvolutionFwdAlgoPerf> for FwdAlgoPerf {
     fn from(value: cudnn_sys::cudnnConvolutionFwdAlgoPerf) -> FwdAlgoPerf {
         FwdAlgoPerf {
-            algo: FwdAlgo::from(value.algo),
+            algo: value.algo.into(),
             status: match Error::try_from(value.status) {
                 Ok(err) => Err(err),
                 Err(_) => Ok(()),

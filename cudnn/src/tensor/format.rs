@@ -1,4 +1,5 @@
 use cudnn_sys;
+use cudnn_sys::cudnnTensorFormat::*;
 
 #[derive(Clone, Copy, Debug)]
 pub enum Format {
@@ -9,8 +10,8 @@ pub enum Format {
 impl Into<cudnn_sys::cudnnTensorFormat> for Format {
     fn into(self) -> cudnn_sys::cudnnTensorFormat {
         match self {
-            Format::NCHW => cudnn_sys::cudnnTensorFormat::CUDNN_TENSOR_NCHW,
-            Format::NHWC => cudnn_sys::cudnnTensorFormat::CUDNN_TENSOR_NHWC,
+            Format::NCHW => CUDNN_TENSOR_NCHW,
+            Format::NHWC => CUDNN_TENSOR_NHWC,
         }
     }
 }
