@@ -24,7 +24,7 @@ pub use self::fwd_algo_perf::FwdAlgoPerf;
 pub fn get_2d_forward_output_dim<T: scalar::Scalar>(conv_desc: &Descriptor<T>,
                                                     input_tensor_desc: &tensor::Descriptor<T>,
                                                     filter_desc: &filter::Descriptor<T>)
-                                                    -> Result<tensor::Param4D> {
+                                                    -> Result<(usize, usize, usize, usize)> {
     let mut n: c_int = 0;
     let mut c: c_int = 0;
     let mut h: c_int = 0;
@@ -38,16 +38,7 @@ pub fn get_2d_forward_output_dim<T: scalar::Scalar>(conv_desc: &Descriptor<T>,
                                                                    &mut h,
                                                                    &mut w))
     }
-    Ok(tensor::Param4D {
-           n: n as usize,
-           c: c as usize,
-           h: h as usize,
-           w: w as usize,
-           n_stride: 0,
-           c_stride: 0,
-           h_stride: 0,
-           w_stride: 0,
-       })
+    Ok((n as usize, c as usize, h as usize, w as usize))
 }
 
 pub fn find_forward_algorithm<T: scalar::Scalar>(context: &mut context::Context,

@@ -9,7 +9,6 @@ use scalar;
 use Result;
 
 use super::Format;
-use super::Param4D;
 
 pub struct Descriptor<T: scalar::Scalar> {
     desc: cudnn_sys::cudnnTensorDescriptor,
@@ -63,7 +62,7 @@ impl<T: scalar::Scalar> Descriptor<T> {
         Ok(())
     }
 
-    pub fn get_4d(&self) -> Result<Param4D> {
+    pub fn get_4d(&self) -> Result<(usize, usize, usize, usize, usize, usize, usize, usize)> {
         let mut data_type = T::DATA_TYPE;
         let mut n = 0;
         let mut c = 0;
@@ -86,16 +85,14 @@ impl<T: scalar::Scalar> Descriptor<T> {
                                                             &mut w_stride))
         }
         assert_eq!(data_type, T::DATA_TYPE);
-        Ok(Param4D {
-               n: n as usize,
-               c: c as usize,
-               h: h as usize,
-               w: w as usize,
-               n_stride: n_stride as usize,
-               c_stride: c_stride as usize,
-               h_stride: h_stride as usize,
-               w_stride: w_stride as usize,
-           })
+        Ok((n as usize,
+            c as usize,
+            h as usize,
+            w as usize,
+            n_stride as usize,
+            c_stride as usize,
+            h_stride as usize,
+            w_stride as usize))
     }
 
     pub fn set_4d_ex(&mut self,
