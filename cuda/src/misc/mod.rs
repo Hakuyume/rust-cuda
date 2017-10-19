@@ -13,7 +13,7 @@ pub trait Arg {
     fn as_void(&self) -> *const c_void;
 }
 
-impl<T: Sized> Arg for T {
+impl<T> Arg for T {
     fn as_void(&self) -> *const c_void {
         self as *const T as *const c_void
     }
