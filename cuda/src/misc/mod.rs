@@ -9,15 +9,8 @@ use stream;
 mod dim3;
 pub use self::dim3::Dim3;
 
-pub trait Arg {
-    fn as_void(&self) -> *const c_void;
-}
-
-impl<T> Arg for T {
-    fn as_void(&self) -> *const c_void {
-        self as *const T as *const c_void
-    }
-}
+pub trait Arg {}
+impl<T> Arg for T {}
 
 pub unsafe fn launch_kernel(func: *const c_void,
                             grid_dim: Dim3,
@@ -26,7 +19,9 @@ pub unsafe fn launch_kernel(func: *const c_void,
                             shared_mem: usize,
                             stream: Option<&mut stream::Stream>)
                             -> Result<()> {
-    let args: Vec<_> = args.iter().map(|arg| (*arg).as_void()).collect();
+    let args: Vec<_> = args.iter()
+        .map(|arg| (*arg) as *const Arg as *const c_void)
+        .collect();
     try_call!(cuda_sys::cudaLaunchKernel(func,
                                          grid_dim.into(),
                                          block_dim.into(),
