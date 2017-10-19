@@ -20,7 +20,7 @@ pub unsafe fn launch_kernel(func: *const c_void,
                             stream: Option<&mut stream::Stream>)
                             -> Result<()> {
     let args: Vec<_> = args.iter()
-        .map(|arg| (*arg) as *const Arg as *const c_void)
+        .map(|arg| *arg as *const Arg as *const c_void)
         .collect();
     try_call!(cuda_sys::cudaLaunchKernel(func,
                                          grid_dim.into(),
