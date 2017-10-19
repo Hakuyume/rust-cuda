@@ -19,7 +19,7 @@ extern "system" {
     pub fn cudaLaunchKernel(func: *const c_void,
                             gridDim: dim3,
                             blockDim: dim3,
-                            args: *mut *mut c_void,
+                            args: *const *const c_void,
                             sharedMem: size_t,
                             stream: cudaStream)
                             -> cudaError;
