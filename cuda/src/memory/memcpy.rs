@@ -7,7 +7,9 @@ use cuda_sys::c_void;
 use Result;
 use super::{View, ViewMut};
 
-pub trait MemcpyFrom<S: ?Sized> {
+pub trait MemcpyFrom<S>
+    where S: ?Sized
+{
     fn memcpy_from(&mut self, src: &S) -> Result<()>;
 }
 
