@@ -1,3 +1,6 @@
+mod view;
+pub use self::view::{View, ViewMut};
+
 mod memory;
 pub use self::memory::Memory;
 pub use self::memory::set_malloc_hook;

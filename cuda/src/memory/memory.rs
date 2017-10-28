@@ -1,13 +1,12 @@
 use std::cell;
 use std::mem;
-use std::ops;
 use std::ptr;
 
 use cuda_sys;
 use cuda_sys::{c_void, size_t};
 
 use Result;
-use slice;
+use super::{View, ViewMut};
 
 thread_local! {
     static MALLOC_HOOK: cell::RefCell<Option<Box<Fn(*const (), usize)>>> = cell::RefCell::new(None);
@@ -42,16 +41,18 @@ impl<T> Drop for Memory<T> {
     }
 }
 
-impl<T> ops::Deref for Memory<T> {
-    type Target = slice::Slice<T>;
-    fn deref(&self) -> &slice::Slice<T> {
-        unsafe { slice::from_raw_parts(self.ptr, self.len) }
+impl<T> View<T> for Memory<T> {
+    fn as_ptr(&self) -> *const T {
+        self.ptr
+    }
+    fn len(&self) -> usize {
+        self.len
     }
 }
 
-impl<T> ops::DerefMut for Memory<T> {
-    fn deref_mut(&mut self) -> &mut slice::Slice<T> {
-        unsafe { slice::from_raw_parts_mut(self.ptr, self.len) }
+impl<T> ViewMut<T> for Memory<T> {
+    fn as_mut_ptr(&mut self) -> *mut T {
+        self.ptr
     }
 }
 

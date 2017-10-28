@@ -2,6 +2,7 @@ extern crate rand;
 use self::rand::Rng;
 
 use Error;
+use super::View;
 
 #[test]
 fn malloc() {
