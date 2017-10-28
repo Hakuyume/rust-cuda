@@ -14,8 +14,8 @@ pub trait MemcpyFrom<S>
 }
 
 pub fn memcpy<D, S>(dst: &mut D, src: &S) -> Result<()>
-    where S: ?Sized,
-          D: ?Sized + MemcpyFrom<S>
+    where D: ?Sized + MemcpyFrom<S>,
+          S: ?Sized
 {
     dst.memcpy_from(src)
 }
