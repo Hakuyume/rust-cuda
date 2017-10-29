@@ -10,13 +10,17 @@ use Result;
 
 use super::Format;
 
-pub struct Descriptor<T: scalar::Scalar> {
+pub struct Descriptor<T>
+    where T: scalar::Scalar
+{
     desc: cudnn_sys::cudnnTensorDescriptor,
     len: usize,
     _dummy: marker::PhantomData<T>,
 }
 
-impl<T: scalar::Scalar> Descriptor<T> {
+impl<T> Descriptor<T>
+    where T: scalar::Scalar
+{
     pub fn new() -> Result<Descriptor<T>> {
         let mut desc = ptr::null_mut();
         unsafe { try_call!(cudnn_sys::cudnnCreateTensorDescriptor(&mut desc)) }
@@ -126,7 +130,9 @@ impl<T: scalar::Scalar> Descriptor<T> {
     }
 }
 
-impl<T: scalar::Scalar> Drop for Descriptor<T> {
+impl<T> Drop for Descriptor<T>
+    where T: scalar::Scalar
+{
     fn drop(&mut self) {
         unsafe { cudnn_sys::cudnnDestroyTensorDescriptor(self.desc) };
     }

@@ -101,13 +101,15 @@ pub fn get_forward_algorithm<T>(context: &mut context::Context,
     Ok(algo.into())
 }
 
-pub fn get_forward_workspace_size<T: scalar::Scalar>(context: &mut context::Context,
-                                                     x_desc: &tensor::Descriptor<T>,
-                                                     w_desc: &filter::Descriptor<T>,
-                                                     conv_desc: &Descriptor<T>,
-                                                     y_desc: &tensor::Descriptor<T>,
-                                                     algo: FwdAlgo)
-                                                     -> Result<usize> {
+pub fn get_forward_workspace_size<T>(context: &mut context::Context,
+                                     x_desc: &tensor::Descriptor<T>,
+                                     w_desc: &filter::Descriptor<T>,
+                                     conv_desc: &Descriptor<T>,
+                                     y_desc: &tensor::Descriptor<T>,
+                                     algo: FwdAlgo)
+                                     -> Result<usize>
+    where T: scalar::Scalar
+{
     let mut size: size_t = 0;
     unsafe {
         try_call!(cudnn_sys::cudnnGetConvolutionForwardWorkspaceSize(context.as_mut_ptr(),
