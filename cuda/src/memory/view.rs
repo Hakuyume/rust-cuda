@@ -10,6 +10,13 @@ pub trait View<T> {
         assert!(end <= self.len());
         unsafe { from_raw_parts(self.as_ptr().offset(start as isize), end - start) }
     }
+    fn split_at<'a>(&'a self, mid: usize) -> (Slice<'a, T>, Slice<'a, T>) {
+        assert!(mid <= self.len());
+        unsafe {
+            (from_raw_parts(self.as_ptr(), mid),
+             from_raw_parts(self.as_ptr().offset(mid as isize), self.len() - mid))
+        }
+    }
 }
 
 pub trait ViewMut<T>: View<T> {
@@ -19,5 +26,12 @@ pub trait ViewMut<T>: View<T> {
         assert!(start <= end);
         assert!(end <= self.len());
         unsafe { from_raw_parts_mut(self.as_mut_ptr().offset(start as isize), end - start) }
+    }
+    fn split_at_mut<'a>(&'a mut self, mid: usize) -> (SliceMut<'a, T>, SliceMut<'a, T>) {
+        assert!(mid <= self.len());
+        unsafe {
+            (from_raw_parts_mut(self.as_mut_ptr(), mid),
+             from_raw_parts_mut(self.as_mut_ptr().offset(mid as isize), self.len() - mid))
+        }
     }
 }
