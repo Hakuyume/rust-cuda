@@ -1,7 +1,7 @@
 extern crate rand;
 use self::rand::Rng;
 
-use super::super::Memory;
+use memory::Memory;
 use super::View;
 
 #[test]
