@@ -6,7 +6,7 @@ use cuda_sys;
 use cuda_sys::{c_void, size_t};
 
 use Result;
-use super::{View, ViewMut};
+use super::{Repr, ReprMut};
 
 thread_local! {
     static MALLOC_HOOK: cell::RefCell<Option<Box<Fn(*const (), usize)>>> = cell::RefCell::new(None);
@@ -41,7 +41,7 @@ impl<T> Drop for Memory<T> {
     }
 }
 
-impl<T> View<T> for Memory<T> {
+impl<T> Repr<T> for Memory<T> {
     fn as_ptr(&self) -> *const T {
         self.ptr
     }
@@ -50,7 +50,7 @@ impl<T> View<T> for Memory<T> {
     }
 }
 
-impl<T> ViewMut<T> for Memory<T> {
+impl<T> ReprMut<T> for Memory<T> {
     fn as_mut_ptr(&mut self) -> *mut T {
         self.ptr
     }

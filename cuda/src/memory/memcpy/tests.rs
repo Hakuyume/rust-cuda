@@ -2,7 +2,7 @@ extern crate rand;
 use self::rand::Rng;
 
 use memory::Memory;
-use super::View;
+use super::Repr;
 
 #[test]
 fn memcpy() {

@@ -1,5 +1,5 @@
 use Error;
-use super::View;
+use super::Repr;
 
 #[test]
 fn malloc() {

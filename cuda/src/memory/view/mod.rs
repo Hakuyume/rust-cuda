@@ -1,30 +1,66 @@
-use super::{BorrowedView, BorrowedViewMut};
-use super::{from_raw_parts, from_raw_parts_mut};
+use std::marker;
 
-pub trait View<T> {
-    fn as_ptr(&self) -> *const T;
-    fn len(&self) -> usize;
+use super::{Repr, ReprMut};
 
-    fn split_at<'a>(&'a self, mid: usize) -> (BorrowedView<'a, T>, BorrowedView<'a, T>) {
-        assert!(mid <= self.len());
-        unsafe {
-            (from_raw_parts(self.as_ptr(), mid),
-             from_raw_parts(self.as_ptr().offset(mid as isize), self.len() - mid))
-        }
+pub struct View<'a, T>
+    where T: 'a
+{
+    ptr: *const T,
+    len: usize,
+    _lifetime: marker::PhantomData<&'a ()>,
+}
+
+pub unsafe fn from_raw_parts<'a, T>(ptr: *const T, len: usize) -> View<'a, T> {
+    View {
+        ptr,
+        len,
+        _lifetime: marker::PhantomData::default(),
     }
 }
 
-pub trait ViewMut<T>: View<T> {
-    fn as_mut_ptr(&mut self) -> *mut T;
+impl<'a, T> Repr<T> for View<'a, T>
+    where T: 'a
+{
+    fn as_ptr(&self) -> *const T {
+        self.ptr
+    }
+    fn len(&self) -> usize {
+        self.len
+    }
+}
 
-    fn split_at_mut<'a>(&'a mut self,
-                        mid: usize)
-                        -> (BorrowedViewMut<'a, T>, BorrowedViewMut<'a, T>) {
-        assert!(mid <= self.len());
-        unsafe {
-            (from_raw_parts_mut(self.as_mut_ptr(), mid),
-             from_raw_parts_mut(self.as_mut_ptr().offset(mid as isize), self.len() - mid))
-        }
+pub struct ViewMut<'a, T>
+    where T: 'a
+{
+    ptr: *mut T,
+    len: usize,
+    _lifetime: marker::PhantomData<&'a mut ()>,
+}
+
+pub unsafe fn from_raw_parts_mut<'a, T>(ptr: *mut T, len: usize) -> ViewMut<'a, T> {
+    ViewMut {
+        ptr,
+        len,
+        _lifetime: marker::PhantomData::default(),
+    }
+}
+
+impl<'a, T> Repr<T> for ViewMut<'a, T>
+    where T: 'a
+{
+    fn as_ptr(&self) -> *const T {
+        self.ptr
+    }
+    fn len(&self) -> usize {
+        self.len
+    }
+}
+
+impl<'a, T> ReprMut<T> for ViewMut<'a, T>
+    where T: 'a
+{
+    fn as_mut_ptr(&mut self) -> *mut T {
+        self.ptr
     }
 }
 

@@ -5,7 +5,7 @@ use cuda_sys;
 use cuda_sys::c_void;
 
 use Result;
-use super::{View, ViewMut};
+use super::{Repr, ReprMut};
 
 pub trait MemcpyFrom<S>
     where S: ?Sized
@@ -21,7 +21,7 @@ pub fn memcpy<D, S>(dst: &mut D, src: &S) -> Result<()>
 }
 
 impl<T, D> MemcpyFrom<[T]> for D
-    where D: ViewMut<T>
+    where D: ReprMut<T>
 {
     fn memcpy_from(&mut self, src: &[T]) -> Result<()> {
         assert_eq!(src.len(), self.len());
@@ -37,7 +37,7 @@ impl<T, D> MemcpyFrom<[T]> for D
 
 impl<T, D, S> MemcpyFrom<S> for D
     where D: ?Sized + ops::DerefMut<Target = [T]>,
-          S: View<T>
+          S: Repr<T>
 {
     fn memcpy_from(&mut self, src: &S) -> Result<()> {
         let dst = self.deref_mut();
