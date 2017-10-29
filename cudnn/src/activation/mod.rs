@@ -1,3 +1,5 @@
+use cuda::memory::{Repr, ReprMut};
+
 use cudnn_sys;
 use cudnn_sys::c_void;
 
@@ -12,13 +14,15 @@ pub use self::mode::Mode;
 mod descriptor;
 pub use self::descriptor::Descriptor;
 
-pub fn forward<'a, T: scalar::Float>(context: &mut context::Context,
-                                     activation_desc: &Descriptor<T>,
-                                     alpha: T,
-                                     src: Option<tensor::Tensor<'a, T>>,
-                                     beta: T,
-                                     mut dest: tensor::TensorMut<'a, T>)
-                                     -> Result<()> {
+pub fn forward<'a, T>(context: &mut context::Context,
+                      activation_desc: &Descriptor<T>,
+                      alpha: T,
+                      src: Option<tensor::Tensor<'a, T>>,
+                      beta: T,
+                      mut dest: tensor::TensorMut<'a, T>)
+                      -> Result<()>
+    where T: scalar::Float
+{
     let scales: &[T::Scale] = &[alpha.into(), beta.into()];
     let (src_desc, src) = match src {
         Some(ref src) => (src.desc().as_ptr(), src.mem().as_ptr()),

@@ -1,4 +1,4 @@
-use cuda::slice;
+use cuda::memory::{Repr, ReprMut};
 
 use cudnn_sys;
 use cudnn_sys::{c_int, c_void, size_t};
@@ -24,10 +24,12 @@ pub use self::fwd_algo_perf::FwdAlgoPerf;
 mod fwd_preference;
 pub use self::fwd_preference::FwdPreference;
 
-pub fn get_2d_forward_output_dim<T: scalar::Scalar>(conv_desc: &Descriptor<T>,
-                                                    input_tensor_desc: &tensor::Descriptor<T>,
-                                                    filter_desc: &filter::Descriptor<T>)
-                                                    -> Result<(usize, usize, usize, usize)> {
+pub fn get_2d_forward_output_dim<T>(conv_desc: &Descriptor<T>,
+                                    input_tensor_desc: &tensor::Descriptor<T>,
+                                    filter_desc: &filter::Descriptor<T>)
+                                    -> Result<(usize, usize, usize, usize)>
+    where T: scalar::Scalar
+{
     let mut n: c_int = 0;
     let mut c: c_int = 0;
     let mut h: c_int = 0;
@@ -44,13 +46,15 @@ pub fn get_2d_forward_output_dim<T: scalar::Scalar>(conv_desc: &Descriptor<T>,
     Ok((n as usize, c as usize, h as usize, w as usize))
 }
 
-pub fn find_forward_algorithm<T: scalar::Scalar>(context: &mut context::Context,
-                                                 x_desc: &tensor::Descriptor<T>,
-                                                 w_desc: &filter::Descriptor<T>,
-                                                 conv_desc: &Descriptor<T>,
-                                                 y_desc: &tensor::Descriptor<T>,
-                                                 requested_algo_count: usize)
-                                                 -> Result<Vec<FwdAlgoPerf>> {
+pub fn find_forward_algorithm<T>(context: &mut context::Context,
+                                 x_desc: &tensor::Descriptor<T>,
+                                 w_desc: &filter::Descriptor<T>,
+                                 conv_desc: &Descriptor<T>,
+                                 y_desc: &tensor::Descriptor<T>,
+                                 requested_algo_count: usize)
+                                 -> Result<Vec<FwdAlgoPerf>>
+    where T: scalar::Scalar
+{
     let mut returned_algo_count = 0;
     let mut perf_results: Vec<cudnn_sys::cudnnConvolutionFwdAlgoPerf> =
         Vec::with_capacity(requested_algo_count);
@@ -71,13 +75,15 @@ pub fn find_forward_algorithm<T: scalar::Scalar>(context: &mut context::Context,
            .collect())
 }
 
-pub fn get_forward_algorithm<T: scalar::Scalar>(context: &mut context::Context,
-                                                x_desc: &tensor::Descriptor<T>,
-                                                w_desc: &filter::Descriptor<T>,
-                                                conv_desc: &Descriptor<T>,
-                                                y_desc: &tensor::Descriptor<T>,
-                                                preference: FwdPreference)
-                                                -> Result<FwdAlgo> {
+pub fn get_forward_algorithm<T>(context: &mut context::Context,
+                                x_desc: &tensor::Descriptor<T>,
+                                w_desc: &filter::Descriptor<T>,
+                                conv_desc: &Descriptor<T>,
+                                y_desc: &tensor::Descriptor<T>,
+                                preference: FwdPreference)
+                                -> Result<FwdAlgo>
+    where T: scalar::Scalar
+{
     let (preference, memory_limit_in_bytes) = preference.into();
     let mut algo = cudnn_sys::cudnnConvolutionFwdAlgo::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
     unsafe {
@@ -115,16 +121,19 @@ pub fn get_forward_workspace_size<T: scalar::Scalar>(context: &mut context::Cont
     Ok(size as usize)
 }
 
-pub fn forward<'a, T: scalar::Float>(context: &mut context::Context,
-                                     alpha: T,
-                                     x: tensor::Tensor<'a, T>,
-                                     w: filter::Filter<'a, T>,
-                                     conv_desc: &Descriptor<T>,
-                                     algo: FwdAlgo,
-                                     workspace: &mut slice::Slice<u8>,
-                                     beta: T,
-                                     mut y: tensor::TensorMut<'a, T>)
-                                     -> Result<()> {
+pub fn forward<'a, T, R>(context: &mut context::Context,
+                         alpha: T,
+                         x: tensor::Tensor<'a, T>,
+                         w: filter::Filter<'a, T>,
+                         conv_desc: &Descriptor<T>,
+                         algo: FwdAlgo,
+                         workspace: &mut R,
+                         beta: T,
+                         mut y: tensor::TensorMut<'a, T>)
+                         -> Result<()>
+    where T: scalar::Float,
+          R: ReprMut<u8>
+{
     let scales: &[T::Scale] = &[alpha.into(), beta.into()];
     unsafe {
         try_call!(cudnn_sys::cudnnConvolutionForward(context.as_mut_ptr(),

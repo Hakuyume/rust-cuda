@@ -1,3 +1,5 @@
+use cuda::memory::{Repr, ReprMut};
+
 use cudnn_sys;
 use cudnn_sys::c_void;
 
@@ -12,14 +14,16 @@ pub use self::algorithm::Algorithm;
 mod mode;
 pub use self::mode::Mode;
 
-pub fn forward<'a, T: scalar::Float>(context: &mut context::Context,
-                                     algo: Algorithm,
-                                     mode: Mode,
-                                     alpha: T,
-                                     x: tensor::Tensor<'a, T>,
-                                     beta: T,
-                                     mut y: tensor::TensorMut<'a, T>)
-                                     -> Result<()> {
+pub fn forward<'a, T>(context: &mut context::Context,
+                      algo: Algorithm,
+                      mode: Mode,
+                      alpha: T,
+                      x: tensor::Tensor<'a, T>,
+                      beta: T,
+                      mut y: tensor::TensorMut<'a, T>)
+                      -> Result<()>
+    where T: scalar::Float
+{
     let scales: &[T::Scale] = &[alpha.into(), beta.into()];
     unsafe {
         try_call!(cudnn_sys::cudnnSoftmaxForward(context.as_mut_ptr(),
@@ -35,15 +39,17 @@ pub fn forward<'a, T: scalar::Float>(context: &mut context::Context,
     Ok(())
 }
 
-pub fn backward<'a, T: scalar::Float>(context: &mut context::Context,
-                                      algo: Algorithm,
-                                      mode: Mode,
-                                      alpha: T,
-                                      y: tensor::Tensor<'a, T>,
-                                      dy: Option<tensor::Tensor<'a, T>>,
-                                      beta: T,
-                                      mut dx: tensor::TensorMut<'a, T>)
-                                      -> Result<()> {
+pub fn backward<'a, T>(context: &mut context::Context,
+                       algo: Algorithm,
+                       mode: Mode,
+                       alpha: T,
+                       y: tensor::Tensor<'a, T>,
+                       dy: Option<tensor::Tensor<'a, T>>,
+                       beta: T,
+                       mut dx: tensor::TensorMut<'a, T>)
+                       -> Result<()>
+    where T: scalar::Float
+{
     let scales: &[T::Scale] = &[alpha.into(), beta.into()];
     let (dy_desc, dy) = match dy {
         Some(ref dy) => (dy.desc().as_ptr(), dy.mem().as_ptr()),
