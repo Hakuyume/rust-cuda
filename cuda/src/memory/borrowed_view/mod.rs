@@ -2,7 +2,7 @@ use std::marker;
 
 use super::{View, ViewMut};
 
-pub struct Slice<'a, T>
+pub struct BorrowedView<'a, T>
     where T: 'a
 {
     ptr: *const T,
@@ -10,15 +10,15 @@ pub struct Slice<'a, T>
     _lifetime: marker::PhantomData<&'a ()>,
 }
 
-pub unsafe fn from_raw_parts<'a, T>(ptr: *const T, len: usize) -> Slice<'a, T> {
-    Slice {
+pub unsafe fn from_raw_parts<'a, T>(ptr: *const T, len: usize) -> BorrowedView<'a, T> {
+    BorrowedView {
         ptr,
         len,
         _lifetime: marker::PhantomData::default(),
     }
 }
 
-impl<'a, T> View<T> for Slice<'a, T>
+impl<'a, T> View<T> for BorrowedView<'a, T>
     where T: 'a
 {
     fn as_ptr(&self) -> *const T {
@@ -29,7 +29,7 @@ impl<'a, T> View<T> for Slice<'a, T>
     }
 }
 
-pub struct SliceMut<'a, T>
+pub struct BorrowedViewMut<'a, T>
     where T: 'a
 {
     ptr: *mut T,
@@ -37,15 +37,15 @@ pub struct SliceMut<'a, T>
     _lifetime: marker::PhantomData<&'a mut ()>,
 }
 
-pub unsafe fn from_raw_parts_mut<'a, T>(ptr: *mut T, len: usize) -> SliceMut<'a, T> {
-    SliceMut {
+pub unsafe fn from_raw_parts_mut<'a, T>(ptr: *mut T, len: usize) -> BorrowedViewMut<'a, T> {
+    BorrowedViewMut {
         ptr,
         len,
         _lifetime: marker::PhantomData::default(),
     }
 }
 
-impl<'a, T> View<T> for SliceMut<'a, T>
+impl<'a, T> View<T> for BorrowedViewMut<'a, T>
     where T: 'a
 {
     fn as_ptr(&self) -> *const T {
@@ -56,7 +56,7 @@ impl<'a, T> View<T> for SliceMut<'a, T>
     }
 }
 
-impl<'a, T> ViewMut<T> for SliceMut<'a, T>
+impl<'a, T> ViewMut<T> for BorrowedViewMut<'a, T>
     where T: 'a
 {
     fn as_mut_ptr(&mut self) -> *mut T {

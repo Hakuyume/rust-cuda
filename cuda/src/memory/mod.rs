@@ -1,9 +1,9 @@
 mod view;
 pub use self::view::{View, ViewMut};
 
-mod slice;
-pub use self::slice::{Slice, SliceMut};
-pub use self::slice::{from_raw_parts, from_raw_parts_mut};
+mod borrowed_view;
+pub use self::borrowed_view::{BorrowedView, BorrowedViewMut};
+pub use self::borrowed_view::{from_raw_parts, from_raw_parts_mut};
 
 mod memory;
 pub use self::memory::Memory;
