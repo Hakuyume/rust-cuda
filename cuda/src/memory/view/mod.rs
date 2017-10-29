@@ -35,3 +35,6 @@ pub trait ViewMut<T>: View<T> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests;

@@ -63,3 +63,6 @@ pub fn set_malloc_hook<F: 'static + Fn(*const (), usize)>(f: F) {
 pub fn set_free_hook<F: 'static + Fn(*const (), usize)>(f: F) {
     FREE_HOOK.with(|hook| *hook.borrow_mut() = Some(Box::new(f)));
 }
+
+#[cfg(test)]
+mod tests;

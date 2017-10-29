@@ -63,3 +63,6 @@ impl<'a, T> ViewMut<T> for SliceMut<'a, T>
         self.ptr
     }
 }
+
+#[cfg(test)]
+mod tests;

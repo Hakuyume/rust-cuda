@@ -11,6 +11,3 @@ pub use self::memory::{set_malloc_hook, set_free_hook};
 
 mod memcpy;
 pub use self::memcpy::memcpy;
-
-#[cfg(test)]
-mod tests;

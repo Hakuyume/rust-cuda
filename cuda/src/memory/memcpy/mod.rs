@@ -51,3 +51,6 @@ impl<T, D, S> MemcpyFrom<S> for D
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests;
