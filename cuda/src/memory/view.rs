@@ -1,4 +1,5 @@
-use std::marker;
+use super::{Slice, SliceMut};
+use super::{from_raw_parts, from_raw_parts_mut};
 
 pub trait View<T> {
     fn as_ptr(&self) -> *const T;
@@ -7,11 +8,7 @@ pub trait View<T> {
     fn slice<'a>(&'a self, start: usize, end: usize) -> Slice<'a, T> {
         assert!(start <= end);
         assert!(end <= self.len());
-        Slice {
-            ptr: unsafe { self.as_ptr().offset(start as isize) },
-            len: end - start,
-            _dummy: marker::PhantomData::default(),
-        }
+        unsafe { from_raw_parts(self.as_ptr().offset(start as isize), end - start) }
     }
 }
 
@@ -21,46 +18,6 @@ pub trait ViewMut<T>: View<T> {
     fn slice_mut<'a>(&'a mut self, start: usize, end: usize) -> SliceMut<'a, T> {
         assert!(start <= end);
         assert!(end <= self.len());
-        SliceMut {
-            ptr: unsafe { self.as_mut_ptr().offset(start as isize) },
-            len: end - start,
-            _dummy: marker::PhantomData::default(),
-        }
-    }
-}
-
-pub struct Slice<'a, T: 'a> {
-    ptr: *const T,
-    len: usize,
-    _dummy: marker::PhantomData<&'a ()>,
-}
-
-pub struct SliceMut<'a, T: 'a> {
-    ptr: *mut T,
-    len: usize,
-    _dummy: marker::PhantomData<&'a ()>,
-}
-
-impl<'a, T: 'a> View<T> for Slice<'a, T> {
-    fn as_ptr(&self) -> *const T {
-        self.ptr
-    }
-    fn len(&self) -> usize {
-        self.len
-    }
-}
-
-impl<'a, T: 'a> View<T> for SliceMut<'a, T> {
-    fn as_ptr(&self) -> *const T {
-        self.ptr
-    }
-    fn len(&self) -> usize {
-        self.len
-    }
-}
-
-impl<'a, T: 'a> ViewMut<T> for SliceMut<'a, T> {
-    fn as_mut_ptr(&mut self) -> *mut T {
-        self.ptr
+        unsafe { from_raw_parts_mut(self.as_mut_ptr().offset(start as isize), end - start) }
     }
 }
