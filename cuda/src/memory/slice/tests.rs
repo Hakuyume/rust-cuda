@@ -85,7 +85,7 @@ fn slice_mut_range_full() {
 fn slice_mut_range() {
     unsafe {
         let mut s = super::from_raw_parts_mut(32 as *mut f32, 16);
-        let mut s = s.slice_mut(..12);
+        let mut s = s.slice_mut(4..12);
         assert_eq!(s.as_ptr(), (32 + mem::size_of::<f32>() * 4) as *const f32);
         assert_eq!(s.as_mut_ptr(), (32 + mem::size_of::<f32>() * 4) as *mut f32);
         assert_eq!(s.len(), 12 - 4);
