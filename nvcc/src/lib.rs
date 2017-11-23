@@ -14,9 +14,7 @@ macro_rules! fail {
 fn exec(name: &str, cmd: &mut process::Command) {
     match cmd.status() {
         Ok(status) => {
-            if status.success() {
-                ()
-            } else {
+            if !status.success() {
                 fail!("nvcc: \"{}\" exited with {}.", name, status);
             }
         }
