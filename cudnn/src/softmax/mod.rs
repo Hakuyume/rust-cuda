@@ -24,15 +24,16 @@ pub fn forward<'a, T>(context: &mut context::Context,
                       -> Result<()>
     where T: scalar::Float
 {
-    let scales: &[T::Scale] = &[alpha.into(), beta.into()];
+    let alpha: T::Scale = alpha.into();
+    let beta: T::Scale = beta.into();
     unsafe {
         try_call!(cudnn_sys::cudnnSoftmaxForward(context.as_mut_ptr(),
                                                  algo.into(),
                                                  mode.into(),
-                                                 &scales[0] as *const T::Scale as *const c_void,
+                                                 &alpha as *const T::Scale as *const c_void,
                                                  x.desc().as_ptr(),
                                                  x.mem().as_ptr() as *const c_void,
-                                                 &scales[1] as *const T::Scale as *const c_void,
+                                                 &beta as *const T::Scale as *const c_void,
                                                  y.desc().as_ptr(),
                                                  y.mem_mut().as_mut_ptr() as *mut c_void))
     }
@@ -50,7 +51,8 @@ pub fn backward<'a, T>(context: &mut context::Context,
                        -> Result<()>
     where T: scalar::Float
 {
-    let scales: &[T::Scale] = &[alpha.into(), beta.into()];
+    let alpha: T::Scale = alpha.into();
+    let beta: T::Scale = beta.into();
     let (dy_desc, dy) = match dy {
         Some(ref dy) => (dy.desc().as_ptr(), dy.mem().as_ptr()),
         None => (dx.desc().as_ptr(), dx.mem().as_ptr()),
@@ -59,12 +61,12 @@ pub fn backward<'a, T>(context: &mut context::Context,
         try_call!(cudnn_sys::cudnnSoftmaxBackward(context.as_mut_ptr(),
                                                   algo.into(),
                                                   mode.into(),
-                                                  &scales[0] as *const T::Scale as *const c_void,
+                                                  &alpha as *const T::Scale as *const c_void,
                                                   y.desc().as_ptr(),
                                                   y.mem().as_ptr() as *const c_void,
                                                   dy_desc,
                                                   dy as *const c_void,
-                                                  &scales[1] as *const T::Scale as *const c_void,
+                                                  &beta as *const T::Scale as *const c_void,
                                                   dx.desc().as_ptr(),
                                                   dx.mem_mut().as_mut_ptr() as *mut c_void))
     }

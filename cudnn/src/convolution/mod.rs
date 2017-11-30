@@ -136,11 +136,11 @@ pub fn forward<'a, T, R>(context: &mut context::Context,
     where T: scalar::Float,
           R: ReprMut<u8>
 {
-    let scales: &[T::Scale] = &[alpha.into(), beta.into()];
+    let alpha: T::Scale = alpha.into();
+    let beta: T::Scale = beta.into();
     unsafe {
         try_call!(cudnn_sys::cudnnConvolutionForward(context.as_mut_ptr(),
-                                                     &scales[0] as *const T::Scale as
-                                                     *const c_void,
+                                                     &alpha as *const T::Scale as *const c_void,
                                                      x.desc().as_ptr(),
                                                      x.mem().as_ptr() as *const c_void,
                                                      w.desc().as_ptr(),
@@ -149,8 +149,7 @@ pub fn forward<'a, T, R>(context: &mut context::Context,
                                                      algo.into(),
                                                      workspace.as_mut_ptr() as *mut c_void,
                                                      workspace.len(),
-                                                     &scales[1] as *const T::Scale as
-                                                     *const c_void,
+                                                     &beta as *const T::Scale as *const c_void,
                                                      y.desc().as_ptr(),
                                                      y.mem_mut().as_mut_ptr() as *mut c_void))
     }

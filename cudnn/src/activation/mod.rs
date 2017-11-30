@@ -23,19 +23,19 @@ pub fn forward<'a, T>(context: &mut context::Context,
                       -> Result<()>
     where T: scalar::Float
 {
-    let scales: &[T::Scale] = &[alpha.into(), beta.into()];
+    let alpha: T::Scale = alpha.into();
+    let beta: T::Scale = beta.into();
     let (src_desc, src) = match src {
         Some(ref src) => (src.desc().as_ptr(), src.mem().as_ptr()),
         None => (dest.desc().as_ptr(), dest.mem().as_ptr()),
     };
-
     unsafe {
         try_call!(cudnn_sys::cudnnActivationForward(context.as_mut_ptr(),
                                                     activation_desc.as_ptr(),
-                                                    &scales[0] as *const T::Scale as *const c_void,
+                                                    &alpha as *const T::Scale as *const c_void,
                                                     src_desc,
                                                     src as *const c_void,
-                                                    &scales[1] as *const T::Scale as *const c_void,
+                                                    &beta as *const T::Scale as *const c_void,
                                                     dest.desc().as_ptr(),
                                                     dest.mem_mut().as_mut_ptr() as *mut c_void))
     }
