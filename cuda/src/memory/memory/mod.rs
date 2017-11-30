@@ -56,11 +56,15 @@ impl<T> ReprMut<T> for Memory<T> {
     }
 }
 
-pub fn set_malloc_hook<F: 'static + Fn(*const (), usize)>(f: F) {
+pub fn set_malloc_hook<F>(f: F)
+    where F: 'static + Fn(*const (), usize)
+{
     MALLOC_HOOK.with(|hook| *hook.borrow_mut() = Some(Box::new(f)));
 }
 
-pub fn set_free_hook<F: 'static + Fn(*const (), usize)>(f: F) {
+pub fn set_free_hook<F>(f: F)
+    where F: 'static + Fn(*const (), usize)
+{
     FREE_HOOK.with(|hook| *hook.borrow_mut() = Some(Box::new(f)));
 }
 
