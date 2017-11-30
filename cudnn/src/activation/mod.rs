@@ -26,7 +26,7 @@ pub fn forward<'a, T>(context: &mut context::Context,
     let alpha: T::Scale = alpha.into();
     let beta: T::Scale = beta.into();
     let (src_desc, src) = match src {
-        Some(ref src) => (src.desc().as_ptr(), src.mem().as_ptr()),
+        Some(src) => (src.desc().as_ptr(), src.mem().as_ptr()),
         None => (dest.desc().as_ptr(), dest.mem().as_ptr()),
     };
     unsafe {

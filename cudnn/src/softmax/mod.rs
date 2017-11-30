@@ -54,7 +54,7 @@ pub fn backward<'a, T>(context: &mut context::Context,
     let alpha: T::Scale = alpha.into();
     let beta: T::Scale = beta.into();
     let (dy_desc, dy) = match dy {
-        Some(ref dy) => (dy.desc().as_ptr(), dy.mem().as_ptr()),
+        Some(dy) => (dy.desc().as_ptr(), dy.mem().as_ptr()),
         None => (dx.desc().as_ptr(), dx.mem().as_ptr()),
     };
     unsafe {
