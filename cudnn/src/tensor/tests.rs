@@ -46,7 +46,7 @@ fn tensor() {
     let mem = memory::Memory::new(desc.len()).unwrap();
     let tensor = Tensor::new(&desc, &mem);
     assert_eq!(tensor.desc().as_ptr(), desc.as_ptr());
-    assert_eq!(tensor.mem.as_ptr(), mem.as_ptr());
+    assert_eq!(tensor.mem().as_ptr(), mem.as_ptr());
 }
 
 #[test]
@@ -67,8 +67,8 @@ fn tensor_mut() {
     let mem_mut_ptr = mem.as_mut_ptr();
     let mut tensor = TensorMut::new(&desc, &mut mem);
     assert_eq!(tensor.desc().as_ptr(), desc.as_ptr());
-    assert_eq!(tensor.mem.as_ptr(), mem_ptr);
-    assert_eq!(tensor.mem_mut.as_mut_ptr(), mem_mut_ptr);
+    assert_eq!(tensor.mem().as_ptr(), mem_ptr);
+    assert_eq!(tensor.mem_mut().as_mut_ptr(), mem_mut_ptr);
 }
 
 #[test]
