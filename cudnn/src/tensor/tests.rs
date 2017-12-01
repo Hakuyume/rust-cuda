@@ -44,7 +44,7 @@ fn tensor() {
     let mut desc: Descriptor<f32> = Descriptor::new().unwrap();
     desc.set_4d(Format::NCHW, 2, 3, 5, 7).unwrap();
     let mem = memory::Memory::new(desc.len()).unwrap();
-    let tensor = Tensor::new(&desc, &mem);
+    Tensor::new(&desc, &mem);
 }
 
 #[test]
@@ -61,7 +61,7 @@ fn tensor_mut() {
     let mut desc: Descriptor<f32> = Descriptor::new().unwrap();
     desc.set_4d(Format::NCHW, 2, 3, 5, 7).unwrap();
     let mut mem = memory::Memory::new(desc.len()).unwrap();
-    let tensor = TensorMut::new(&desc, &mut mem);
+    TensorMut::new(&desc, &mut mem);
 }
 
 #[test]
