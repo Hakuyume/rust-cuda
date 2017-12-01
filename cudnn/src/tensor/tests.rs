@@ -44,7 +44,9 @@ fn tensor() {
     let mut desc: Descriptor<f32> = Descriptor::new().unwrap();
     desc.set_4d(Format::NCHW, 2, 3, 5, 7).unwrap();
     let mem = memory::Memory::new(desc.len()).unwrap();
-    Tensor::new(&desc, &mem);
+    let tensor = Tensor::new(&desc, &mem);
+    assert_eq!(tensor.desc().as_ptr(), desc.as_ptr());
+    assert_eq!(tensor.mem.as_ptr(), mem.as_ptr());
 }
 
 #[test]
@@ -61,7 +63,12 @@ fn tensor_mut() {
     let mut desc: Descriptor<f32> = Descriptor::new().unwrap();
     desc.set_4d(Format::NCHW, 2, 3, 5, 7).unwrap();
     let mut mem = memory::Memory::new(desc.len()).unwrap();
-    TensorMut::new(&desc, &mut mem);
+    let mem_ptr = mem.as_ptr();
+    let mem_mut_ptr = mem.as_mut_ptr();
+    let mut tensor = TensorMut::new(&desc, &mut mem);
+    assert_eq!(tensor.desc().as_ptr(), desc.as_ptr());
+    assert_eq!(tensor.mem.as_ptr(), mem_ptr);
+    assert_eq!(tensor.mem_mut.as_mut_ptr(), mem_mut_ptr);
 }
 
 #[test]
