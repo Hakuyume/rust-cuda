@@ -1,7 +1,11 @@
 use std::mem;
 
+use cuda::memory;
+
 use super::Descriptor;
 use super::Format;
+use super::Tensor;
+use super::TensorMut;
 
 #[test]
 fn set_4d_nchw() {
@@ -33,4 +37,38 @@ fn set_4d_ex() {
                mem::size_of::<f32>() * 2 * 3 * 5 * 7 * 16);
     assert_eq!(desc.get_4d().unwrap(),
                (2, 3, 5, 7, 3 * 5 * 7 * 16, 5 * 7 * 8, 7 * 4, 2));
+}
+
+#[test]
+fn tensor() {
+    let mut desc: Descriptor<f32> = Descriptor::new().unwrap();
+    desc.set_4d(Format::NCHW, 2, 3, 5, 7).unwrap();
+    let mem = memory::Memory::new(desc.len()).unwrap();
+    let tensor = Tensor::new(&desc, &mem);
+}
+
+#[test]
+#[should_panic]
+fn tensor_invalid() {
+    let mut desc: Descriptor<f32> = Descriptor::new().unwrap();
+    desc.set_4d(Format::NCHW, 2, 3, 5, 7).unwrap();
+    let mem = memory::Memory::new(desc.len() - 1).unwrap();
+    Tensor::new(&desc, &mem);
+}
+
+#[test]
+fn tensor_mut() {
+    let mut desc: Descriptor<f32> = Descriptor::new().unwrap();
+    desc.set_4d(Format::NCHW, 2, 3, 5, 7).unwrap();
+    let mut mem = memory::Memory::new(desc.len()).unwrap();
+    let tensor = TensorMut::new(&desc, &mut mem);
+}
+
+#[test]
+#[should_panic]
+fn tensor_mut_invalid() {
+    let mut desc: Descriptor<f32> = Descriptor::new().unwrap();
+    desc.set_4d(Format::NCHW, 2, 3, 5, 7).unwrap();
+    let mem = memory::Memory::new(desc.len() - 1).unwrap();
+    TensorMut::new(&desc, &mut mem);
 }
