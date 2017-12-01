@@ -1,6 +1,7 @@
 use std::mem;
 
 use cuda::memory;
+use cuda::memory::{Repr, ReprMut};
 
 use super::Descriptor;
 use super::Format;
