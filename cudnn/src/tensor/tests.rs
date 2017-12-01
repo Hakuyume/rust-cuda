@@ -69,6 +69,6 @@ fn tensor_mut() {
 fn tensor_mut_invalid() {
     let mut desc: Descriptor<f32> = Descriptor::new().unwrap();
     desc.set_4d(Format::NCHW, 2, 3, 5, 7).unwrap();
-    let mem = memory::Memory::new(desc.len() - 1).unwrap();
+    let mut mem = memory::Memory::new(desc.len() - 1).unwrap();
     TensorMut::new(&desc, &mut mem);
 }
