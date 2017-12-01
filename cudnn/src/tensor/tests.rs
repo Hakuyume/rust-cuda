@@ -20,7 +20,7 @@ fn set_4d_nhwc() {
     assert_eq!(desc.len(), 2 * 3 * 5 * 7);
     assert_eq!(desc.get_size().unwrap(),
                mem::size_of::<f32>() * 2 * 3 * 5 * 7);
-    assert_eq!(desc.get_4d().unwrap(), (2, 7, 3, 5, 3 * 5 * 7, 1, 5 * 7, 7));
+    assert_eq!(desc.get_4d().unwrap(), (2, 3, 5, 7, 5 * 7 * 3, 1, 7 * 3, 3));
 }
 
 #[test]
