@@ -5,8 +5,7 @@ use cuda::memory::{Repr, ReprMut};
 
 use super::Descriptor;
 use super::Format;
-use super::Tensor;
-use super::TensorMut;
+use super::{Tensor, TensorMut};
 
 #[test]
 fn set_4d_nchw() {
