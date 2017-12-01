@@ -45,11 +45,10 @@ impl<T> Descriptor<T>
         Ok(size as usize)
     }
 
-    fn update_len(&mut self) -> Result<()> {
+    fn get_len(&self) -> Result<usize> {
         let size = self.get_size()?;
         assert_eq!(size % mem::size_of::<T>(), 0);
-        self.len = size / mem::size_of::<T>();
-        Ok(())
+        Ok(size / mem::size_of::<T>())
     }
 
     pub fn set_4d(&mut self, format: Format, n: usize, c: usize, h: usize, w: usize) -> Result<()> {
@@ -62,7 +61,7 @@ impl<T> Descriptor<T>
                                                             h as c_int,
                                                             w as c_int))
         }
-        self.update_len()?;
+        self.len = self.get_len()?;
         Ok(())
     }
 
@@ -121,7 +120,7 @@ impl<T> Descriptor<T>
                                                               h_stride as c_int,
                                                               w_stride as c_int))
         }
-        self.update_len()?;
+        self.len = self.get_len()?;
         Ok(())
     }
 
