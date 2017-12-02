@@ -79,7 +79,7 @@ fn forward_cpu<T>(algo: Algorithm,
 }
 
 fn assert_almost_eq<T>(a: &[T], b: &[T])
-    where T: fmt::Display + num_traits:::Float + From<f32>
+    where T: fmt::Display + num_traits::Float + From<f32>
 {
     assert_eq!(a.len(), b.len());
     for i in 0..a.len() {
