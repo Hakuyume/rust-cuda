@@ -4,8 +4,6 @@ use std::iter;
 extern crate num_traits;
 extern crate rand;
 
-use self::rand::Rng;
-
 use cuda;
 use cuda::memory;
 
@@ -19,11 +17,14 @@ use super::Mode;
 use super::forward;
 use super::backward;
 
+use self::rand::distributions::IndependentSample;
+
 fn rand_data<T>(len: usize) -> cuda::Result<(Vec<T>, memory::Memory<T>)>
-    where T: rand::Rand
+    where T: rand::distributions::range::SampleRange + num_traits::float::Float
 {
     let mut rng = rand::thread_rng();
-    let x: Vec<_> = (0..len).map(|_| rng.gen()).collect();
+    let dist = rand::distributions::Range::new(-T::one(), T::one());
+    let x: Vec<_> = (0..len).map(|_| dist.ind_sample(&mut rng)).collect();
     let mut dev_x = memory::Memory::new(len)?;
     memory::memcpy(&mut dev_x, &x)?;
     Ok((x, dev_x))
@@ -81,7 +82,6 @@ fn assert_almost_eq<T>(a: &[T], b: &[T])
 }
 
 fn test_forward(algo: Algorithm, mode: Mode) {
-    let mut rng = rand::thread_rng();
     let mut context = context::Context::new().unwrap();
 
     let mut desc = tensor::Descriptor::new().unwrap();
@@ -89,7 +89,11 @@ fn test_forward(algo: Algorithm, mode: Mode) {
 
     let (x, dev_x) = rand_data::<f32>(desc.len()).unwrap();
 
-    let (alpha, beta) = (rng.gen(), rng.gen());
+    let (alpha, beta) = {
+        let mut rng = rand::thread_rng();
+        let dist = rand::distributions::Range::new(0., 1.);
+        (dist.ind_sample(&mut rng), dist.ind_sample(&mut rng))
+    };
     let (mut y, mut dev_y) = rand_data(desc.len()).unwrap();
 
     let expected: Vec<_> = forward_cpu(algo, mode, &desc, &x)
