@@ -15,7 +15,7 @@ const N: usize = 2;
 const C: usize = 3;
 const H: usize = 5;
 const W: usize = 7;
-
+const EPS: f32 = 1e-6;
 
 #[test]
 fn forward_channel() {
@@ -62,7 +62,7 @@ fn forward_channel() {
         memory::memcpy(&mut y, &dev_y).unwrap();
 
         for k in 0..desc.len() {
-            assert_eq!(y[k], expected_y[k]);
+            assert!((y[k] - expected_y[k]).abs() <= EPS);
         }
     }
 }
