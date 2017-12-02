@@ -1,6 +1,8 @@
-extern crate num_traits;
+use std::fmt;
 
+extern crate num_traits;
 extern crate rand;
+
 use self::rand::Rng;
 
 use cuda;
@@ -49,11 +51,13 @@ fn forward_cpu<T>(desc: &tensor::Descriptor<T>, x: &[T]) -> Result<Vec<T>>
 }
 
 fn assert_almost_eq<T>(a: &[T], b: &[T])
-    where T: num_traits::float::Float + From<f32>
+    where T: fmt::Display + num_traits::float::Float + From<f32>
 {
     assert_eq!(a.len(), b.len());
     for i in 0..a.len() {
-        assert!((a[i] - b[i]).abs() <= (1e-6).into());
+        if (a[i] - b[i]).abs() > (1e-6).into() {
+            panic!("{} th elements differ: {} != {}", i, a[i], b[i]);
+        }
     }
 }
 
