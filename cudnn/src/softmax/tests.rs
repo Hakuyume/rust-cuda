@@ -19,7 +19,7 @@ fn rand_data<T>(len: usize) -> Result<(Vec<T>, memory::Memory<T>)>
     where T: rand::Rand
 {
     let mut rng = rand::thread_rng();
-    let x = (0..desc.len()).map(|_| rng.gen()).collect();
+    let x: Vec<_> = (0..desc.len()).map(|_| rng.gen()).collect();
     let mut dev_x = memory::Memory::new(desc.len())?;
     memory::memcpy(&mut dev_x, &x)?;
     Ok((x, dev_x))
