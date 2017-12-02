@@ -19,7 +19,7 @@ pub struct Descriptor<T>
 impl<T> Descriptor<T>
     where T: scalar::Scalar
 {
-    pub fn new() -> Result<Descriptor<T>> {
+    fn new() -> Result<Descriptor<T>> {
         let mut desc = ptr::null_mut();
         unsafe { try_call!(cudnn_sys::cudnnCreateFilterDescriptor(&mut desc)) }
         Ok(Descriptor {
@@ -33,19 +33,15 @@ impl<T> Descriptor<T>
         self.desc
     }
 
-    pub fn as_mut_ptr(&mut self) -> cudnn_sys::cudnnFilterDescriptor {
-        self.desc
-    }
-
-    pub fn set_4d(&mut self,
-                  format: tensor::Format,
+    pub fn new_4d(format: tensor::Format,
                   k: usize,
                   c: usize,
                   h: usize,
                   w: usize)
-                  -> Result<()> {
+                  -> Result<Descriptor<T>> {
+        let mut desc = Descriptor::new()?;
         unsafe {
-            try_call!(cudnn_sys::cudnnSetFilter4dDescriptor(self.as_mut_ptr(),
+            try_call!(cudnn_sys::cudnnSetFilter4dDescriptor(desc.desc,
                                                             T::DATA_TYPE,
                                                             format.into(),
                                                             k as c_int,
@@ -53,8 +49,8 @@ impl<T> Descriptor<T>
                                                             h as c_int,
                                                             w as c_int))
         }
-        self.len = k * c * h * w;
-        Ok(())
+        desc.len = k * c * h * w;
+        Ok(desc)
     }
 
     pub fn len(&self) -> usize {

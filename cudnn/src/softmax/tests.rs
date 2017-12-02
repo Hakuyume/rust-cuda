@@ -92,8 +92,7 @@ fn assert_almost_eq<T>(a: &[T], b: &[T])
 fn test_forward(algo: Algorithm, mode: Mode) {
     let mut context = context::Context::new().unwrap();
 
-    let mut desc = tensor::Descriptor::new().unwrap();
-    desc.set_4d(tensor::Format::NCHW, 2, 3, 5, 7).unwrap();
+    let desc = tensor::Descriptor::new_4d(tensor::Format::NCHW, 2, 3, 5, 7).unwrap();
 
     let (x, dev_x) = random_data::<f32>(desc.len()).unwrap();
     let (mut y, mut dev_y) = random_data(desc.len()).unwrap();
