@@ -123,21 +123,19 @@ pub fn get_forward_workspace_size<T>(context: &mut context::Context,
     Ok(size as usize)
 }
 
-pub fn forward<'a, T, R>(context: &mut context::Context,
-                         alpha: T,
-                         x: tensor::Tensor<'a, T>,
-                         w: filter::Filter<'a, T>,
-                         conv_desc: &Descriptor<T>,
-                         algo: FwdAlgo,
-                         workspace: &mut R,
-                         beta: T,
-                         mut y: tensor::TensorMut<'a, T>)
-                         -> Result<()>
-    where T: scalar::Float,
+pub fn forward<'a, T, S, R>(context: &mut context::Context,
+                            alpha: S,
+                            x: tensor::Tensor<'a, T>,
+                            w: filter::Filter<'a, T>,
+                            conv_desc: &Descriptor<T>,
+                            algo: FwdAlgo,
+                            workspace: &mut R,
+                            beta: S,
+                            mut y: tensor::TensorMut<'a, T>)
+                            -> Result<()>
+    where T: scalar::Scalar + scalar::Scale<Scale = S>,
           R: ReprMut<u8>
 {
-    let alpha: T::Scale = alpha.into();
-    let beta: T::Scale = beta.into();
     unsafe {
         try_call!(cudnn_sys::cudnnConvolutionForward(context.as_mut_ptr(),
                                                      &alpha as *const T::Scale as *const c_void,

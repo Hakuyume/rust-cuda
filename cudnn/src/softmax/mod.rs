@@ -14,18 +14,16 @@ pub use self::algorithm::Algorithm;
 mod mode;
 pub use self::mode::Mode;
 
-pub fn forward<'a, T>(context: &mut context::Context,
-                      algo: Algorithm,
-                      mode: Mode,
-                      alpha: T,
-                      x: tensor::Tensor<'a, T>,
-                      beta: T,
-                      mut y: tensor::TensorMut<'a, T>)
-                      -> Result<()>
-    where T: scalar::Float
+pub fn forward<'a, T, S>(context: &mut context::Context,
+                         algo: Algorithm,
+                         mode: Mode,
+                         alpha: S,
+                         x: tensor::Tensor<'a, T>,
+                         beta: S,
+                         mut y: tensor::TensorMut<'a, T>)
+                         -> Result<()>
+    where T: scalar::Scalar + scalar::Scale<Scale = S>
 {
-    let alpha: T::Scale = alpha.into();
-    let beta: T::Scale = beta.into();
     unsafe {
         try_call!(cudnn_sys::cudnnSoftmaxForward(context.as_mut_ptr(),
                                                  algo.into(),
@@ -40,19 +38,17 @@ pub fn forward<'a, T>(context: &mut context::Context,
     Ok(())
 }
 
-pub fn backward<'a, T>(context: &mut context::Context,
-                       algo: Algorithm,
-                       mode: Mode,
-                       alpha: T,
-                       y: tensor::Tensor<'a, T>,
-                       dy: Option<tensor::Tensor<'a, T>>,
-                       beta: T,
-                       mut dx: tensor::TensorMut<'a, T>)
-                       -> Result<()>
-    where T: scalar::Float
+pub fn backward<'a, T, S>(context: &mut context::Context,
+                          algo: Algorithm,
+                          mode: Mode,
+                          alpha: S,
+                          y: tensor::Tensor<'a, T>,
+                          dy: Option<tensor::Tensor<'a, T>>,
+                          beta: S,
+                          mut dx: tensor::TensorMut<'a, T>)
+                          -> Result<()>
+    where T: scalar::Scalar + scalar::Scale<Scale = S>
 {
-    let alpha: T::Scale = alpha.into();
-    let beta: T::Scale = beta.into();
     let (dy_desc, dy) = match dy {
         Some(dy) => (dy.desc().as_ptr(), dy.mem().as_ptr()),
         None => (dx.desc().as_ptr(), dx.mem().as_ptr()),

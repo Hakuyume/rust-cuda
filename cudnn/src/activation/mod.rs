@@ -14,17 +14,15 @@ pub use self::mode::Mode;
 mod descriptor;
 pub use self::descriptor::Descriptor;
 
-pub fn forward<'a, T>(context: &mut context::Context,
-                      activation_desc: &Descriptor<T>,
-                      alpha: T,
-                      src: Option<tensor::Tensor<'a, T>>,
-                      beta: T,
-                      mut dest: tensor::TensorMut<'a, T>)
-                      -> Result<()>
-    where T: scalar::Float
+pub fn forward<'a, T, S>(context: &mut context::Context,
+                         activation_desc: &Descriptor<T>,
+                         alpha: S,
+                         src: Option<tensor::Tensor<'a, T>>,
+                         beta: S,
+                         mut dest: tensor::TensorMut<'a, T>)
+                         -> Result<()>
+    where T: scalar::Scalar + scalar::Scale<Scale = S>
 {
-    let alpha: T::Scale = alpha.into();
-    let beta: T::Scale = beta.into();
     let (src_desc, src) = match src {
         Some(src) => (src.desc().as_ptr(), src.mem().as_ptr()),
         None => (dest.desc().as_ptr(), dest.mem().as_ptr()),
