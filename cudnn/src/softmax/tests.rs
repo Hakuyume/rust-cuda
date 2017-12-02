@@ -1,3 +1,5 @@
+extern crate num_traits;
+
 extern crate rand;
 use self::rand::Rng;
 
@@ -5,6 +7,7 @@ use cuda;
 use cuda::memory;
 
 use Result;
+use scalar;
 use context;
 use tensor;
 
@@ -12,8 +15,6 @@ use super::Algorithm;
 use super::Mode;
 use super::forward;
 use super::backward;
-
-const EPS: f32 = 1e-6;
 
 fn rand_data<T>(len: usize) -> cuda::Result<(Vec<T>, memory::Memory<T>)>
     where T: rand::Rand
@@ -25,14 +26,16 @@ fn rand_data<T>(len: usize) -> cuda::Result<(Vec<T>, memory::Memory<T>)>
     Ok((x, dev_x))
 }
 
-fn forward_cpu(desc: &tensor::Descriptor<f32>, x: &[f32]) -> Result<Vec<f32>> {
+fn forward_cpu<T>(desc: &tensor::Descriptor<T>, x: &[T]) -> Result<Vec<T>>
+    where T: scalar::Scalar + num_traits::float::Float + num_traits::NumAssignOps
+{
     assert_eq!(x.len(), desc.len());
     let (n_, c_, h_, w_, n_stride, c_stride, h_stride, w_stride) = desc.get_4d()?;
     let mut y: Vec<_> = x.iter().map(|x| x.exp()).collect();
     for n in 0..n_ {
         for h in 0..h_ {
             for w in 0..w_ {
-                let mut sum = 0.;
+                let mut sum = T::zero();
                 for c in 0..c_ {
                     sum += y[n * n_stride + c * c_stride + h * h_stride + w * w_stride];
                 }
@@ -45,10 +48,12 @@ fn forward_cpu(desc: &tensor::Descriptor<f32>, x: &[f32]) -> Result<Vec<f32>> {
     Ok(y)
 }
 
-fn assert_almost_eq(a: &[f32], b: &[f32]) {
+fn assert_almost_eq<T>(a: &[T], b: &[T])
+    where T: num_traits::float::Float + From<f32>
+{
     assert_eq!(a.len(), b.len());
     for i in 0..a.len() {
-        assert!((a[i] - b[i]).abs() <= EPS);
+        assert!((a[i] - b[i]).abs() <= (1e-6).into());
     }
 }
 
