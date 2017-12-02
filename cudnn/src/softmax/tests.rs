@@ -20,7 +20,7 @@ use super::backward;
 use self::rand::distributions::IndependentSample;
 
 fn random_data<T>(len: usize) -> cuda::Result<(Vec<T>, memory::Memory<T>)>
-    where T: rand::distributions::range::SampleRange + num_traits::float::Float
+    where T: rand::distributions::range::SampleRange + num_traits::Float
 {
     let mut rng = rand::thread_rng();
     let dist = rand::distributions::Range::new(-T::one(), T::one());
@@ -31,7 +31,7 @@ fn random_data<T>(len: usize) -> cuda::Result<(Vec<T>, memory::Memory<T>)>
 }
 
 fn random_coeff<T>() -> T
-    where T: rand::distributions::range::SampleRange + num_traits::float::Float
+    where T: rand::distributions::range::SampleRange + num_traits::Float
 {
     let mut rng = rand::thread_rng();
     let dist = rand::distributions::Range::new(T::zero(), T::one());
@@ -43,7 +43,7 @@ fn forward_cpu<T>(algo: Algorithm,
                   desc: &tensor::Descriptor<T>,
                   x: &[T])
                   -> Result<Vec<T>>
-    where T: scalar::Scalar + num_traits::float::Float + num_traits::NumAssignOps + iter::Sum
+    where T: scalar::Scalar + num_traits::Float + num_traits::NumAssignOps + iter::Sum
 {
     assert_eq!(x.len(), desc.len());
     let (n_, c_, h_, w_, n_stride, c_stride, h_stride, w_stride) = desc.get_4d()?;
@@ -79,7 +79,7 @@ fn forward_cpu<T>(algo: Algorithm,
 }
 
 fn assert_almost_eq<T>(a: &[T], b: &[T])
-    where T: fmt::Display + num_traits::float::Float + From<f32>
+    where T: fmt::Display + num_traits:::Float + From<f32>
 {
     assert_eq!(a.len(), b.len());
     for i in 0..a.len() {
