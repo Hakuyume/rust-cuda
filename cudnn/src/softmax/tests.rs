@@ -63,31 +63,40 @@ fn assert_almost_eq<T>(a: &[T], b: &[T])
 
 #[test]
 fn forward_channel() {
+    let mut rng = rand::thread_rng();
     let mut context = context::Context::new().unwrap();
 
     let mut desc = tensor::Descriptor::new().unwrap();
     desc.set_4d(tensor::Format::NCHW, 2, 3, 5, 7).unwrap();
 
-    let (x, dev_x) = rand_data(desc.len()).unwrap();
-    let expected_y = forward_cpu(&desc, &x).unwrap();
+    let (x, dev_x) = rand_data::<f32>(desc.len()).unwrap();
+    let s = forward_cpu(&desc, &x).unwrap();
 
     for algo in &[Algorithm::Accurate, Algorithm::Fast, Algorithm::Log] {
-        let mut dev_y = memory::Memory::new(desc.len()).unwrap();
+        let (alpha, beta) = (rng.gen(), rng.gen());
+        let (mut y, mut dev_y) = rand_data(desc.len()).unwrap();
+
+        let expected: Vec<_> = s.iter()
+            .zip(&y)
+            .map(|(s, y)| {
+                     let s = match *algo {
+                         Algorithm::Log => s.ln(),
+                         _ => *s,
+                     };
+                     s * alpha + y * beta
+                 })
+            .collect();
+
         forward(&mut context,
                 *algo,
                 Mode::Channel,
-                1.,
+                alpha,
                 tensor::Tensor::new(&desc, &dev_x),
-                0.,
+                beta,
                 tensor::TensorMut::new(&desc, &mut dev_y))
                 .unwrap();
-        let mut y = vec![0.; desc.len()];
         memory::memcpy(&mut y, &dev_y).unwrap();
 
-        let expected_y: Vec<_> = match *algo {
-            Algorithm::Log => expected_y.iter().map(|y| y.ln()).collect(),
-            _ => expected_y.clone(),
-        };
-        assert_almost_eq(&y, &expected_y);
+        assert_almost_eq(&y, &expected);
     }
 }
