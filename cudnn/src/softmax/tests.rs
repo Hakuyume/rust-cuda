@@ -25,9 +25,9 @@ fn random_data<T>(len: usize) -> cuda::Result<(Vec<T>, memory::Memory<T>)>
     let mut rng = rand::thread_rng();
     let dist = rand::distributions::Range::new(-T::one(), T::one());
     let x: Vec<_> = (0..len).map(|_| dist.ind_sample(&mut rng)).collect();
-    let mut dev_x = memory::Memory::new(len)?;
-    memory::memcpy(&mut dev_x, &x)?;
-    Ok((x, dev_x))
+    let mut x_dev = memory::Memory::new(len)?;
+    memory::memcpy(&mut x_dev, &x)?;
+    Ok((x, x_dev))
 }
 
 fn random_coeff<T>() -> T
@@ -94,8 +94,8 @@ fn test_forward(algo: Algorithm, mode: Mode) {
 
     let desc = tensor::Descriptor::new_4d(tensor::Format::NCHW, 2, 3, 5, 7).unwrap();
 
-    let (x, dev_x) = random_data::<f32>(desc.len()).unwrap();
-    let (mut y, mut dev_y) = random_data(desc.len()).unwrap();
+    let (x, x_dev) = random_data::<f32>(desc.len()).unwrap();
+    let (mut y, mut y_dev) = random_data(desc.len()).unwrap();
     let (alpha, beta) = (random_coeff(), random_coeff());
 
     let expected: Vec<_> = forward_cpu(algo, mode, &desc, &x)
@@ -109,11 +109,11 @@ fn test_forward(algo: Algorithm, mode: Mode) {
             algo,
             mode,
             alpha,
-            tensor::Tensor::new(&desc, &dev_x),
+            tensor::Tensor::new(&desc, &x_dev),
             beta,
-            tensor::TensorMut::new(&desc, &mut dev_y))
+            tensor::TensorMut::new(&desc, &mut y_dev))
             .unwrap();
-    memory::memcpy(&mut y, &dev_y).unwrap();
+    memory::memcpy(&mut y, &y_dev).unwrap();
 
     assert_almost_eq(&y, &expected);
 }
