@@ -2,7 +2,6 @@ extern crate rand;
 use self::rand::Rng;
 
 use cuda::memory;
-use cuda::memory::{Repr, ReprMut};
 
 use context;
 use tensor;
