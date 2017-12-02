@@ -72,3 +72,6 @@ pub fn backward<'a, T>(context: &mut context::Context,
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod tests;
