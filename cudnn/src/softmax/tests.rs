@@ -96,9 +96,8 @@ fn test_forward(algo: Algorithm, mode: Mode) {
     desc.set_4d(tensor::Format::NCHW, 2, 3, 5, 7).unwrap();
 
     let (x, dev_x) = random_data::<f32>(desc.len()).unwrap();
-
-    let (alpha, beta) = (random_coeff(), random_coeff());
     let (mut y, mut dev_y) = random_data(desc.len()).unwrap();
+    let (alpha, beta) = (random_coeff(), random_coeff());
 
     let expected: Vec<_> = forward_cpu(algo, mode, &desc, &x)
         .unwrap()
