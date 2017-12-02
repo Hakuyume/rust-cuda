@@ -70,20 +70,20 @@ fn forward_channel() {
     desc.set_4d(tensor::Format::NCHW, 2, 3, 5, 7).unwrap();
 
     let (x, dev_x) = rand_data::<f32>(desc.len()).unwrap();
-    let s = forward_cpu(&desc, &x).unwrap();
+    let x = forward_cpu(&desc, &x).unwrap();
 
     for algo in &[Algorithm::Accurate, Algorithm::Fast, Algorithm::Log] {
         let (alpha, beta) = (rng.gen(), rng.gen());
         let (mut y, mut dev_y) = rand_data(desc.len()).unwrap();
 
-        let expected: Vec<_> = s.iter()
+        let expected: Vec<_> = x.iter()
             .zip(&y)
-            .map(|(s, y)| {
-                     let s = match *algo {
-                         Algorithm::Log => s.ln(),
-                         _ => *s,
+            .map(|(x, y)| {
+                     let x = match *algo {
+                         Algorithm::Log => x.ln(),
+                         _ => *x,
                      };
-                     s * alpha + y * beta
+                     x * alpha + y * beta
                  })
             .collect();
 
