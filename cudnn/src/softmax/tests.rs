@@ -21,16 +21,16 @@ const W: usize = 7;
 fn forward_channel() {
     let mut context = context::Context::new().unwrap();
 
-    let mut desc: tensor::Descriptor<f32> = tensor::Descriptor::new().unwrap();
+    let mut desc = tensor::Descriptor::new().unwrap();
     desc.set_4d(tensor::Format::NCHW, N, C, H, W).unwrap();
 
-    let x: Vec<_> = {
+    let x: Vec<f32> = {
         let mut rng = rand::thread_rng();
         (0..desc.len()).map(|_| rng.gen()).collect()
     };
 
     let expected_y = {
-        let mut y: Vec<f32> = x.iter().map(|x| x.exp()).collect();
+        let mut y: Vec<_> = x.iter().map(|x| x.exp()).collect();
         for n in 0..N {
             for k in 0..(H * W) {
                 let mut sum = 0.;
