@@ -30,12 +30,11 @@ fn forward_channel() {
     };
 
     let expected_y = {
-        let mut y = vec![0.; desc.len()];
+        let mut y: Vec<f32> = x.iter().map(|x| x.exp()).collect();
         for n in 0..N {
             for k in 0..(H * W) {
                 let mut sum = 0.;
                 for c in 0..C {
-                    y[(n * C + c) * (H * W) + k] = x[(n * C + c) * (H * W) + k].exp();
                     sum += y[(n * C + c) * (H * W) + k];
                 }
                 for c in 0..C {
