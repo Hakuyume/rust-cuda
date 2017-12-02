@@ -19,7 +19,7 @@ use super::backward;
 
 use self::rand::distributions::IndependentSample;
 
-fn rand_data<T>(len: usize) -> cuda::Result<(Vec<T>, memory::Memory<T>)>
+fn random_data<T>(len: usize) -> cuda::Result<(Vec<T>, memory::Memory<T>)>
     where T: rand::distributions::range::SampleRange + num_traits::float::Float
 {
     let mut rng = rand::thread_rng();
@@ -28,6 +28,14 @@ fn rand_data<T>(len: usize) -> cuda::Result<(Vec<T>, memory::Memory<T>)>
     let mut dev_x = memory::Memory::new(len)?;
     memory::memcpy(&mut dev_x, &x)?;
     Ok((x, dev_x))
+}
+
+fn random_coeff<T>() -> T
+    where T: rand::distributions::range::SampleRange + num_traits::float::Float
+{
+    let mut rng = rand::thread_rng();
+    let dist = rand::distributions::Range::new(T::zero(), T::one());
+    dist.ind_sample(&mut rng)
 }
 
 fn forward_cpu<T>(algo: Algorithm,
@@ -87,14 +95,10 @@ fn test_forward(algo: Algorithm, mode: Mode) {
     let mut desc = tensor::Descriptor::new().unwrap();
     desc.set_4d(tensor::Format::NCHW, 2, 3, 5, 7).unwrap();
 
-    let (x, dev_x) = rand_data::<f32>(desc.len()).unwrap();
+    let (x, dev_x) = random_data::<f32>(desc.len()).unwrap();
 
-    let (alpha, beta) = {
-        let mut rng = rand::thread_rng();
-        let dist = rand::distributions::Range::new(0., 1.);
-        (dist.ind_sample(&mut rng), dist.ind_sample(&mut rng))
-    };
-    let (mut y, mut dev_y) = rand_data(desc.len()).unwrap();
+    let (alpha, beta) = (random_coeff(), random_coeff());
+    let (mut y, mut dev_y) = random_data(desc.len()).unwrap();
 
     let expected: Vec<_> = forward_cpu(algo, mode, &desc, &x)
         .unwrap()
