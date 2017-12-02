@@ -15,14 +15,20 @@ pub use self::mode::Mode;
 mod descriptor;
 pub use self::descriptor::Descriptor;
 
+mod fwd_preference;
+pub use self::fwd_preference::FwdPreference;
+
 mod fwd_algo;
 pub use self::fwd_algo::FwdAlgo;
 
 mod fwd_algo_perf;
 pub use self::fwd_algo_perf::FwdAlgoPerf;
 
-mod fwd_preference;
-pub use self::fwd_preference::FwdPreference;
+mod bwd_filter_preference;
+pub use self::bwd_filter_preference::BwdFilterPreference;
+
+mod bwd_filter_algo;
+pub use self::bwd_filter_algo::BwdFilterAlgo;
 
 pub fn get_2d_forward_output_dim<T>(conv_desc: &Descriptor<T>,
                                     input_tensor_desc: &tensor::Descriptor<T>,
@@ -110,7 +116,7 @@ pub fn get_forward_workspace_size<T>(context: &mut context::Context,
                                      -> Result<usize>
     where T: scalar::Scalar
 {
-    let mut size: size_t = 0;
+    let mut size_in_bytes: size_t = 0;
     unsafe {
         try_call!(cudnn_sys::cudnnGetConvolutionForwardWorkspaceSize(context.as_mut_ptr(),
                                                                      x_desc.as_ptr(),
@@ -118,9 +124,9 @@ pub fn get_forward_workspace_size<T>(context: &mut context::Context,
                                                                      conv_desc.as_ptr(),
                                                                      y_desc.as_ptr(),
                                                                      algo.into(),
-                                                                     &mut size))
+                                                                     &mut size_in_bytes))
     }
-    Ok(size as usize)
+    Ok(size_in_bytes as usize)
 }
 
 pub fn forward<'a, T, S, R>(context: &mut context::Context,
@@ -150,6 +156,86 @@ pub fn forward<'a, T, S, R>(context: &mut context::Context,
                                                      &beta as *const T::Scale as *const c_void,
                                                      y.desc().as_ptr(),
                                                      y.mem_mut().as_mut_ptr() as *mut c_void))
+    }
+    Ok(())
+}
+
+pub fn get_backward_filter_algorithm<T>(context: &mut context::Context,
+                                        x_desc: &tensor::Descriptor<T>,
+                                        dy_desc: &tensor::Descriptor<T>,
+                                        conv_desc: &Descriptor<T>,
+                                        dw_desc: &filter::Descriptor<T>,
+                                        preference: BwdFilterPreference)
+                                        -> Result<BwdFilterAlgo>
+    where T: scalar::Scalar
+{
+    let (preference, memory_limit_in_bytes) = preference.into();
+    let mut algo = cudnn_sys::cudnnConvolutionBwdFilterAlgo::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_0;
+    unsafe {
+        try_call!(cudnn_sys::cudnnGetConvolutionBackwardFilterAlgorithm(context.as_mut_ptr(),
+                                                                        x_desc.as_ptr(),
+                                                                        dy_desc.as_ptr(),
+                                                                        conv_desc.as_ptr(),
+                                                                        dw_desc.as_ptr(),
+                                                                        preference,
+                                                                        memory_limit_in_bytes
+                                                                            .unwrap_or(0) as
+                                                                        size_t,
+                                                                        &mut algo))
+    }
+    Ok(algo.into())
+}
+
+pub fn get_backward_filter_workspace_size<T>(context: &mut context::Context,
+                                             x_desc: &tensor::Descriptor<T>,
+                                             dy_desc: &tensor::Descriptor<T>,
+                                             conv_desc: &Descriptor<T>,
+                                             dw_desc: &filter::Descriptor<T>,
+                                             algo: BwdFilterAlgo)
+                                             -> Result<usize>
+    where T: scalar::Scalar
+{
+    let mut size_in_bytes: size_t = 0;
+    unsafe {
+        try_call!(cudnn_sys::cudnnGetConvolutionBackwardFilterWorkspaceSize(context.as_mut_ptr(),
+                                                                            x_desc.as_ptr(),
+                                                                            dy_desc.as_ptr(),
+                                                                            conv_desc.as_ptr(),
+                                                                            dw_desc.as_ptr(),
+                                                                            algo.into(),
+                                                                            &mut size_in_bytes))
+    }
+    Ok(size_in_bytes as usize)
+}
+
+pub fn backward_filter<'a, T, S, R>(context: &mut context::Context,
+                                    alpha: S,
+                                    x: tensor::Tensor<'a, T>,
+                                    dy: tensor::Tensor<'a, T>,
+                                    conv_desc: &Descriptor<T>,
+                                    algo: BwdFilterAlgo,
+                                    workspace: &mut R,
+                                    beta: S,
+                                    mut dw: filter::FilterMut<'a, T>)
+                                    -> Result<()>
+    where T: scalar::Scalar + scalar::Scale<Scale = S>,
+          R: ReprMut<u8>
+{
+    unsafe {
+        try_call!(cudnn_sys::cudnnConvolutionBackwardFilter(context.as_mut_ptr(),
+                                                            &alpha as *const S as *const c_void,
+                                                            x.desc().as_ptr(),
+                                                            x.mem().as_ptr() as *const c_void,
+                                                            dy.desc().as_ptr(),
+                                                            dy.mem().as_ptr() as *const c_void,
+                                                            conv_desc.as_ptr(),
+                                                            algo.into(),
+                                                            workspace.as_mut_ptr() as *mut c_void,
+                                                            workspace.len() as size_t,
+                                                            &beta as *const S as *const c_void,
+                                                            dw.desc().as_ptr(),
+                                                            dw.mem_mut().as_mut_ptr() as
+                                                            *mut c_void))
     }
     Ok(())
 }

@@ -19,6 +19,13 @@ pub enum cudnnConvolutionMode {
 }
 
 #[repr(C)]
+pub enum cudnnConvolutionFwdPreference {
+    CUDNN_CONVOLUTION_FWD_NO_WORKSPACE = 0,
+    CUDNN_CONVOLUTION_FWD_PREFER_FASTEST = 1,
+    CUDNN_CONVOLUTION_FWD_SPECIFY_WORKSPACE_LIMIT = 2,
+}
+
+#[repr(C)]
 pub enum cudnnConvolutionFwdAlgo {
     CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM = 0,
     CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM = 1,
@@ -42,10 +49,22 @@ pub struct cudnnConvolutionFwdAlgoPerf {
 }
 
 #[repr(C)]
-pub enum cudnnConvolutionFwdPreference {
-    CUDNN_CONVOLUTION_FWD_NO_WORKSPACE = 0,
-    CUDNN_CONVOLUTION_FWD_PREFER_FASTEST = 1,
-    CUDNN_CONVOLUTION_FWD_SPECIFY_WORKSPACE_LIMIT = 2,
+pub enum cudnnConvolutionBwdFilterPreference {
+    CUDNN_CONVOLUTION_BWD_FILTER_NO_WORKSPACE = 0,
+    CUDNN_CONVOLUTION_BWD_FILTER_PREFER_FASTEST = 1,
+    CUDNN_CONVOLUTION_BWD_FILTER_SPECIFY_WORKSPACE_LIMIT = 2,
+}
+
+#[repr(C)]
+pub enum cudnnConvolutionBwdFilterAlgo {
+    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_0 = 0,
+    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1 = 1,
+    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT = 2,
+    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_3 = 3,
+    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD = 4,
+    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD_NONFUSED = 5,
+    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT_TILING = 6,
+    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_COUNT = 7,
 }
 
 #[link(name = "cudnn")]
@@ -111,4 +130,35 @@ extern "system" {
                                    yDesc: cudnnTensorDescriptor,
                                    y: *mut c_void)
                                    -> cudnnStatus;
+    pub fn cudnnGetConvolutionBackwardFilterAlgorithm(handle: cudnnHandle,
+                                                      xDesc: cudnnTensorDescriptor,
+                                                      dyDesc: cudnnTensorDescriptor,
+                                                      convDesc: cudnnConvolutionDescriptor,
+                                                      dwDesc: cudnnFilterDescriptor,
+                                                      preference: cudnnConvolutionBwdFilterPreference,
+                                                      memoryLimitInBytes: size_t,
+                                                      algo: *mut cudnnConvolutionBwdFilterAlgo)
+-> cudnnStatus;
+    pub fn cudnnGetConvolutionBackwardFilterWorkspaceSize(handle: cudnnHandle,
+                                                          xDesc: cudnnTensorDescriptor,
+                                                          dyDesc: cudnnTensorDescriptor,
+                                                          convDesc: cudnnConvolutionDescriptor,
+                                                          dwDesc: cudnnFilterDescriptor,
+                                                          algo: cudnnConvolutionBwdFilterAlgo,
+                                                          sizeInBytes: *mut size_t)
+                                                          -> cudnnStatus;
+    pub fn cudnnConvolutionBackwardFilter(handle: cudnnHandle,
+                                          alpha: *const c_void,
+                                          xDesc: cudnnTensorDescriptor,
+                                          x: *const c_void,
+                                          dyDesc: cudnnTensorDescriptor,
+                                          dy: *const c_void,
+                                          convDesc: cudnnConvolutionDescriptor,
+                                          algo: cudnnConvolutionBwdFilterAlgo,
+                                          workSpace: *mut c_void,
+                                          workSpaceSizeInBytes: size_t,
+                                          beta: *const c_void,
+                                          dwDesc: cudnnFilterDescriptor,
+                                          dw: *mut c_void)
+                                          -> cudnnStatus;
 }
