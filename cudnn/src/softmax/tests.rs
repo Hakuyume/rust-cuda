@@ -52,9 +52,13 @@ fn forward_channel() {
     {
         let mut dev_y = memory::Memory::new(desc.len()).unwrap();
         forward(&mut context,
-                Algorithm::Accurate, Mode::Channel,
-                1., tensor::Tensor::new(&desc, &dev_x),
-                0. tensor::TensorMut::new(&desc, &mut dev_y)).unwrap();
+                Algorithm::Accurate,
+                Mode::Channel,
+                1.,
+                tensor::Tensor::new(&desc, &dev_x),
+                0.,
+                tensor::TensorMut::new(&desc, &mut dev_y))
+                .unwrap();
         let mut y = vec![0.; desc.len()];
         memory::memcpy(&mut y, &dev_y);
 
