@@ -34,7 +34,7 @@ fn forward_channel() {
         let mut y: Vec<_> = x.iter().map(|x| x.exp()).collect();
         for n in 0..N {
             for k in 0..(H * W) {
-                let mut sum = 0;
+                let mut sum = 0.;
                 for c in 0..C {
                     sum += y[(n * C + c) * (H * W) + k];
                 }
