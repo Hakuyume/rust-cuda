@@ -71,17 +71,23 @@ fn forward_channel() {
     let (x, dev_x) = rand_data(desc.len()).unwrap();
     let expected_y = forward_cpu(&desc, &x).unwrap();
 
-    let mut dev_y = memory::Memory::new(desc.len()).unwrap();
-    forward(&mut context,
-            Algorithm::Accurate,
-            Mode::Channel,
-            1.,
-            tensor::Tensor::new(&desc, &dev_x),
-            0.,
-            tensor::TensorMut::new(&desc, &mut dev_y))
-            .unwrap();
-    let mut y = vec![0.; desc.len()];
-    memory::memcpy(&mut y, &dev_y).unwrap();
+    for algo in &[Algorithm::Accurate, Algorithm::Fast, Algorithm::Log] {
+        let mut dev_y = memory::Memory::new(desc.len()).unwrap();
+        forward(&mut context,
+                *algo,
+                Mode::Channel,
+                1.,
+                tensor::Tensor::new(&desc, &dev_x),
+                0.,
+                tensor::TensorMut::new(&desc, &mut dev_y))
+                .unwrap();
+        let mut y = vec![0.; desc.len()];
+        memory::memcpy(&mut y, &dev_y).unwrap();
 
-    assert_almost_eq(&y, &expected_y);
+        let expected_y: Vec<_> = match *algo {
+            Algorithm::Log => expected_y.iter().map(|y| y.ln()).collect(),
+            _ => expected_y.clone(),
+        };
+        assert_almost_eq(&y, &expected_y);
+    }
 }
