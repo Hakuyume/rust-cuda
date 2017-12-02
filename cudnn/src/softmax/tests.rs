@@ -59,7 +59,7 @@ fn forward_channel() {
                 tensor::TensorMut::new(&desc, &mut dev_y))
                 .unwrap();
         let mut y = vec![0.; desc.len()];
-        memory::memcpy(&mut y, &dev_y);
+        memory::memcpy(&mut y, &dev_y).unwrap();
 
         for k in 0..desc.len() {
             assert_eq!(y[k], expected_y[k]);
