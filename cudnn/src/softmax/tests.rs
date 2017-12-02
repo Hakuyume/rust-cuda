@@ -1,7 +1,7 @@
 extern crate rand;
-use self::rand;
-use rand::Rng;
+use self::rand::Rng;
 
+use cuda;
 use cuda::memory;
 
 use Result;
@@ -15,12 +15,12 @@ use super::backward;
 
 const EPS: f32 = 1e-6;
 
-fn rand_data<T>(len: usize) -> Result<(Vec<T>, memory::Memory<T>)>
+fn rand_data<T>(len: usize) -> cuda::Result<(Vec<T>, memory::Memory<T>)>
     where T: rand::Rand
 {
     let mut rng = rand::thread_rng();
-    let x: Vec<_> = (0..desc.len()).map(|_| rng.gen()).collect();
-    let mut dev_x = memory::Memory::new(desc.len())?;
+    let x: Vec<_> = (0..len).map(|_| rng.gen()).collect();
+    let mut dev_x = memory::Memory::new(len)?;
     memory::memcpy(&mut dev_x, &x)?;
     Ok((x, dev_x))
 }
@@ -28,7 +28,7 @@ fn rand_data<T>(len: usize) -> Result<(Vec<T>, memory::Memory<T>)>
 fn forward_cpu(desc: &tensor::Descriptor<f32>, x: &[f32]) -> Result<Vec<f32>> {
     assert_eq!(x.len(), desc.len());
     let (n_, c_, h_, w_, n_stride, c_stride, h_stride, w_stride) = desc.get_4d()?;
-    let mut y = x.iter().map(|x| x.exp()).collect();
+    let mut y: Vec<_> = x.iter().map(|x| x.exp()).collect();
     for n in 0..n_ {
         for h in 0..h_ {
             for w in 0..w_ {
@@ -36,7 +36,7 @@ fn forward_cpu(desc: &tensor::Descriptor<f32>, x: &[f32]) -> Result<Vec<f32>> {
                 for c in 0..c_ {
                     sum += y[n * n_stride + c * c_stride + h * h_stride + w * w_stride];
                 }
-                for c in 0..C {
+                for c in 0..c_ {
                     y[n * n_stride + c * c_stride + h * h_stride + w * w_stride] /= sum;
                 }
             }
