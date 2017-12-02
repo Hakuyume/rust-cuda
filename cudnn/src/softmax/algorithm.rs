@@ -1,7 +1,7 @@
 use cudnn_sys;
 use cudnn_sys::cudnnSoftmaxAlgorithm::*;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Algorithm {
     Fast,
     Accurate,

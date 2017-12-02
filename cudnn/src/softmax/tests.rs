@@ -1,4 +1,5 @@
 use std::fmt;
+use std::iter;
 
 extern crate num_traits;
 extern crate rand;
@@ -28,23 +29,41 @@ fn rand_data<T>(len: usize) -> cuda::Result<(Vec<T>, memory::Memory<T>)>
     Ok((x, dev_x))
 }
 
-fn forward_cpu<T>(desc: &tensor::Descriptor<T>, x: &[T]) -> Result<Vec<T>>
-    where T: scalar::Scalar + num_traits::float::Float + num_traits::NumAssignOps
+fn forward_cpu<T>(algo: Algorithm,
+                  mode: Mode,
+                  desc: &tensor::Descriptor<T>,
+                  x: &[T])
+                  -> Result<Vec<T>>
+    where T: scalar::Scalar + num_traits::float::Float + num_traits::NumAssignOps + iter::Sum
 {
     assert_eq!(x.len(), desc.len());
     let (n_, c_, h_, w_, n_stride, c_stride, h_stride, w_stride) = desc.get_4d()?;
     let mut y: Vec<_> = x.iter().map(|x| x.exp()).collect();
     for n in 0..n_ {
-        for h in 0..h_ {
-            for w in 0..w_ {
-                let mut sum = T::zero();
-                for c in 0..c_ {
-                    sum += y[n * n_stride + c * c_stride + h * h_stride + w * w_stride];
-                }
-                for c in 0..c_ {
-                    y[n * n_stride + c * c_stride + h * h_stride + w * w_stride] /= sum;
+        match mode {
+            Mode::Channel => {
+                for h in 0..h_ {
+                    for w in 0..w_ {
+                        let sum = (0..c_)
+                            .map(|c| y[n * n_stride + c * c_stride + h * h_stride + w * w_stride])
+                            .sum();
+                        for c in 0..c_ {
+                            y[n * n_stride + c * c_stride + h * h_stride + w * w_stride] /= sum;
+                        }
+                    }
                 }
             }
+            Mode::Instance => {
+                let sum = (0..n_stride).map(|i| y[n * n_stride + i]).sum();
+                for i in 0..n_stride {
+                    y[n * n_stride + i] /= sum;
+                }
+            }
+        }
+    }
+    if algo == Algorithm::Log {
+        for y in y.iter_mut() {
+            *y = y.ln();
         }
     }
     Ok(y)
@@ -61,8 +80,7 @@ fn assert_almost_eq<T>(a: &[T], b: &[T])
     }
 }
 
-#[test]
-fn forward_channel() {
+fn test_forward(algo: Algorithm, mode: Mode) {
     let mut rng = rand::thread_rng();
     let mut context = context::Context::new().unwrap();
 
@@ -70,33 +88,56 @@ fn forward_channel() {
     desc.set_4d(tensor::Format::NCHW, 2, 3, 5, 7).unwrap();
 
     let (x, dev_x) = rand_data::<f32>(desc.len()).unwrap();
-    let x = forward_cpu(&desc, &x).unwrap();
 
-    for algo in &[Algorithm::Accurate, Algorithm::Fast, Algorithm::Log] {
-        let (alpha, beta) = (rng.gen(), rng.gen());
-        let (mut y, mut dev_y) = rand_data(desc.len()).unwrap();
+    let (alpha, beta) = (rng.gen(), rng.gen());
+    let (mut y, mut dev_y) = rand_data(desc.len()).unwrap();
 
-        let expected: Vec<_> = x.iter()
-            .zip(&y)
-            .map(|(x, y)| {
-                     let x = match *algo {
-                         Algorithm::Log => x.ln(),
-                         _ => *x,
-                     };
-                     x * alpha + y * beta
-                 })
-            .collect();
+    let expected: Vec<_> = forward_cpu(algo, mode, &desc, &x)
+        .unwrap()
+        .into_iter()
+        .zip(&y)
+        .map(|(x, y)| x * alpha + y * beta)
+        .collect();
 
-        forward(&mut context,
-                *algo,
-                Mode::Channel,
-                alpha,
-                tensor::Tensor::new(&desc, &dev_x),
-                beta,
-                tensor::TensorMut::new(&desc, &mut dev_y))
-                .unwrap();
-        memory::memcpy(&mut y, &dev_y).unwrap();
+    forward(&mut context,
+            algo,
+            mode,
+            alpha,
+            tensor::Tensor::new(&desc, &dev_x),
+            beta,
+            tensor::TensorMut::new(&desc, &mut dev_y))
+            .unwrap();
+    memory::memcpy(&mut y, &dev_y).unwrap();
 
-        assert_almost_eq(&y, &expected);
-    }
+    assert_almost_eq(&y, &expected);
+}
+
+#[test]
+fn forward_accurate_channel() {
+    test_forward(Algorithm::Accurate, Mode::Channel);
+}
+
+#[test]
+fn forward_fast_channel() {
+    test_forward(Algorithm::Fast, Mode::Channel);
+}
+
+#[test]
+fn forward_log_channel() {
+    test_forward(Algorithm::Log, Mode::Channel);
+}
+
+#[test]
+fn forward_accurate_instance() {
+    test_forward(Algorithm::Accurate, Mode::Instance);
+}
+
+#[test]
+fn forward_fast_instance() {
+    test_forward(Algorithm::Fast, Mode::Instance);
+}
+
+#[test]
+fn forward_log_instance() {
+    test_forward(Algorithm::Log, Mode::Instance);
 }
