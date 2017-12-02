@@ -144,7 +144,7 @@ pub fn forward<'a, T, S, R>(context: &mut context::Context,
 {
     unsafe {
         try_call!(cudnn_sys::cudnnConvolutionForward(context.as_mut_ptr(),
-                                                     &alpha as *const T::Scale as *const c_void,
+                                                     &alpha as *const S as *const c_void,
                                                      x.desc().as_ptr(),
                                                      x.mem().as_ptr() as *const c_void,
                                                      w.desc().as_ptr(),
@@ -153,7 +153,7 @@ pub fn forward<'a, T, S, R>(context: &mut context::Context,
                                                      algo.into(),
                                                      workspace.as_mut_ptr() as *mut c_void,
                                                      workspace.len(),
-                                                     &beta as *const T::Scale as *const c_void,
+                                                     &beta as *const S as *const c_void,
                                                      y.desc().as_ptr(),
                                                      y.mem_mut().as_mut_ptr() as *mut c_void))
     }

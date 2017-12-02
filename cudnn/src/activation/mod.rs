@@ -30,10 +30,10 @@ pub fn forward<'a, T, S>(context: &mut context::Context,
     unsafe {
         try_call!(cudnn_sys::cudnnActivationForward(context.as_mut_ptr(),
                                                     activation_desc.as_ptr(),
-                                                    &alpha as *const T::Scale as *const c_void,
+                                                    &alpha as *const S as *const c_void,
                                                     src_desc,
                                                     src as *const c_void,
-                                                    &beta as *const T::Scale as *const c_void,
+                                                    &beta as *const S as *const c_void,
                                                     dest.desc().as_ptr(),
                                                     dest.mem_mut().as_mut_ptr() as *mut c_void))
     }
