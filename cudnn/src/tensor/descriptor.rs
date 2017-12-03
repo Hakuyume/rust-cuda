@@ -1,5 +1,4 @@
 use std::marker;
-use std::mem;
 use std::ptr;
 
 use cudnn_sys;
@@ -14,20 +13,18 @@ pub struct Descriptor<T>
     where T: scalar::Scalar
 {
     desc: cudnn_sys::cudnnTensorDescriptor,
-    len: usize,
-    _dummy: marker::PhantomData<T>,
+    _type: marker::PhantomData<T>,
 }
 
 impl<T> Descriptor<T>
     where T: scalar::Scalar
 {
-    fn new() -> Result<Descriptor<T>> {
+    pub fn new() -> Result<Descriptor<T>> {
         let mut desc = ptr::null_mut();
         unsafe { try_call!(cudnn_sys::cudnnCreateTensorDescriptor(&mut desc)) }
         Ok(Descriptor {
                desc,
-               len: 0,
-               _dummy: marker::PhantomData::default(),
+               _type: marker::PhantomData::default(),
            })
     }
 
@@ -35,10 +32,9 @@ impl<T> Descriptor<T>
         self.desc
     }
 
-    pub fn new_4d(format: Format, n: usize, c: usize, h: usize, w: usize) -> Result<Descriptor<T>> {
-        let mut desc = Descriptor::new()?;
+    pub fn set_4d(&mut self, format: Format, n: usize, c: usize, h: usize, w: usize) -> Result<()> {
         unsafe {
-            try_call!(cudnn_sys::cudnnSetTensor4dDescriptor(desc.desc,
+            try_call!(cudnn_sys::cudnnSetTensor4dDescriptor(self.desc,
                                                             format.into(),
                                                             T::DATA_TYPE,
                                                             n as c_int,
@@ -46,13 +42,11 @@ impl<T> Descriptor<T>
                                                             h as c_int,
                                                             w as c_int))
         }
-        let size = desc.get_size()?;
-        assert_eq!(size % mem::size_of::<T>(), 0);
-        desc.len = size / mem::size_of::<T>();
-        Ok(desc)
+        Ok(())
     }
 
-    pub fn new_4d_ex(n: usize,
+    pub fn set_4d_ex(&mut self,
+                     n: usize,
                      c: usize,
                      h: usize,
                      w: usize,
@@ -60,10 +54,9 @@ impl<T> Descriptor<T>
                      c_stride: usize,
                      h_stride: usize,
                      w_stride: usize)
-                     -> Result<Descriptor<T>> {
-        let mut desc = Descriptor::new()?;
+                     -> Result<()> {
         unsafe {
-            try_call!(cudnn_sys::cudnnSetTensor4dDescriptorEx(desc.desc,
+            try_call!(cudnn_sys::cudnnSetTensor4dDescriptorEx(self.desc,
                                                               T::DATA_TYPE,
                                                               n as c_int,
                                                               c as c_int,
@@ -74,10 +67,7 @@ impl<T> Descriptor<T>
                                                               h_stride as c_int,
                                                               w_stride as c_int))
         }
-        let size = desc.get_size()?;
-        assert_eq!(size % mem::size_of::<T>(), 0);
-        desc.len = size / mem::size_of::<T>();
-        Ok(desc)
+        Ok(())
     }
 
     pub fn get_4d(&self) -> Result<(usize, usize, usize, usize, usize, usize, usize, usize)> {
@@ -91,7 +81,7 @@ impl<T> Descriptor<T>
         let mut h_stride = 0;
         let mut w_stride = 0;
         unsafe {
-            try_call!(cudnn_sys::cudnnGetTensor4dDescriptor(self.as_ptr(),
+            try_call!(cudnn_sys::cudnnGetTensor4dDescriptor(self.desc,
                                                             &mut data_type,
                                                             &mut n,
                                                             &mut c,
@@ -102,7 +92,6 @@ impl<T> Descriptor<T>
                                                             &mut h_stride,
                                                             &mut w_stride))
         }
-        assert_eq!(data_type, T::DATA_TYPE);
         Ok((n as usize,
             c as usize,
             h as usize,
@@ -113,14 +102,12 @@ impl<T> Descriptor<T>
             w_stride as usize))
     }
 
-    pub fn get_size(&self) -> Result<usize> {
-        let mut size = 0;
-        unsafe { try_call!(cudnn_sys::cudnnGetTensorSizeInBytes(self.as_ptr(), &mut size)) }
-        Ok(size as usize)
-    }
-
-    pub fn len(&self) -> usize {
-        self.len
+    pub fn get_size_in_bytes(&self) -> Result<usize> {
+        let mut size_in_bytes = 0;
+        unsafe {
+            try_call!(cudnn_sys::cudnnGetTensorSizeInBytes(self.as_ptr(), &mut size_in_bytes))
+        }
+        Ok(size_in_bytes as usize)
     }
 }
 

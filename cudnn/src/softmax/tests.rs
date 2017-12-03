@@ -1,5 +1,6 @@
 use std::fmt;
 use std::iter;
+use std::mem;
 
 extern crate num_traits;
 extern crate rand;
@@ -45,7 +46,6 @@ fn forward_cpu<T>(algo: Algorithm,
                   -> Result<Vec<T>>
     where T: scalar::Scalar + num_traits::Float + num_traits::NumAssignOps + iter::Sum
 {
-    assert_eq!(x.len(), desc.len());
     let (n_, c_, h_, w_, n_stride, c_stride, h_stride, w_stride) = desc.get_4d()?;
     let mut y: Vec<_> = x.iter().map(|x| x.exp()).collect();
     for n in 0..n_ {
@@ -92,10 +92,12 @@ fn assert_almost_eq<T>(a: &[T], b: &[T])
 fn test_forward(algo: Algorithm, mode: Mode) {
     let mut context = context::Context::new().unwrap();
 
-    let desc = tensor::Descriptor::new_4d(tensor::Format::NCHW, 2, 3, 5, 7).unwrap();
+    let mut desc = tensor::Descriptor::<f32>::new().unwrap();
+    desc.set_4d(tensor::Format::NCHW, 2, 3, 5, 7).unwrap();
+    let len = desc.get_size_in_bytes().unwrap() / mem::size_of::<f32>();
 
-    let (x, x_dev) = random_data::<f32>(desc.len()).unwrap();
-    let (mut y, mut y_dev) = random_data(desc.len()).unwrap();
+    let (x, x_dev) = random_data(len).unwrap();
+    let (mut y, mut y_dev) = random_data(len).unwrap();
     let (alpha, beta) = (random_coeff(), random_coeff());
 
     let expected: Vec<_> = forward_cpu(algo, mode, &desc, &x)
@@ -105,14 +107,16 @@ fn test_forward(algo: Algorithm, mode: Mode) {
         .map(|(x, y)| x * alpha + y * beta)
         .collect();
 
-    forward(&mut context,
-            algo,
-            mode,
-            alpha,
-            tensor::Tensor::new(&desc, &x_dev),
-            beta,
-            tensor::TensorMut::new(&desc, &mut y_dev))
-            .unwrap();
+    unsafe {
+        forward(&mut context,
+                algo,
+                mode,
+                alpha,
+                (&desc, &x_dev),
+                beta,
+                (&desc, &mut y_dev))
+                .unwrap()
+    }
     memory::memcpy(&mut y, &y_dev).unwrap();
 
     assert_almost_eq(&y, &expected);
