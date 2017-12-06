@@ -154,7 +154,7 @@ pub unsafe fn forward<T, S, X, W, R, Y>(context: &mut context::Context,
                                                  conv_desc.as_ptr(),
                                                  algo.into(),
                                                  workspace.as_mut_ptr() as *mut c_void,
-                                                 workspace.len(),
+                                                 workspace.len() as size_t,
                                                  &beta as *const S as *const c_void,
                                                  y.0.as_ptr(),
                                                  y.1.as_mut_ptr() as *mut c_void));
