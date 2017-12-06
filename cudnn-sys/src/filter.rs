@@ -20,5 +20,13 @@ extern "system" {
                                       h: c_int,
                                       w: c_int)
                                       -> cudnnStatus;
+    pub fn cudnnGetFilter4dDescriptor(filterDesc: cudnnFilterDescriptor,
+                                      dataType: *mut cudnnDataType,
+                                      format: *mut cudnnTensorFormat,
+                                      k: *mut c_int,
+                                      c: *mut c_int,
+                                      h: *mut c_int,
+                                      w: *mut c_int)
+                                      -> cudnnStatus;
     pub fn cudnnDestroyFilterDescriptor(filterDesc: cudnnFilterDescriptor) -> cudnnStatus;
 }

@@ -92,6 +92,7 @@ impl<T> Descriptor<T>
                                                             &mut h_stride,
                                                             &mut w_stride))
         }
+        assert_eq!(data_type, T::DATA_TYPE);
         Ok((n as usize,
             c as usize,
             h as usize,

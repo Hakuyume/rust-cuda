@@ -5,6 +5,17 @@ use cudnn_sys::cudnnTensorFormat::*;
 pub enum Format {
     NCHW,
     NHWC,
+    NCHWVectC,
+}
+
+impl From<cudnn_sys::cudnnTensorFormat> for Format {
+    fn from(value: cudnn_sys::cudnnTensorFormat) -> Format {
+        match value {
+            CUDNN_TENSOR_NCHW => Format::NCHW,
+            CUDNN_TENSOR_NHWC => Format::NHWC,
+            CUDNN_TENSOR_NCHW_VECT_C => Format::NCHWVectC,
+        }
+    }
 }
 
 impl Into<cudnn_sys::cudnnTensorFormat> for Format {
@@ -12,6 +23,7 @@ impl Into<cudnn_sys::cudnnTensorFormat> for Format {
         match self {
             Format::NCHW => CUDNN_TENSOR_NCHW,
             Format::NHWC => CUDNN_TENSOR_NHWC,
+            Format::NCHWVectC => CUDNN_TENSOR_NCHW_VECT_C,
         }
     }
 }

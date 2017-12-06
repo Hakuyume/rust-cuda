@@ -49,6 +49,26 @@ impl<T> Descriptor<T>
         }
         Ok(())
     }
+
+    pub fn get_4d(&self) -> Result<(tensor::Format, usize, usize, usize, usize)> {
+        let mut data_type = T::DATA_TYPE;
+        let mut format = cudnn_sys::cudnnTensorFormat::CUDNN_TENSOR_NCHW;
+        let mut k = 0;
+        let mut c = 0;
+        let mut h = 0;
+        let mut w = 0;
+        unsafe {
+            try_call!(cudnn_sys::cudnnGetFilter4dDescriptor(self.desc,
+                                                            &mut data_type,
+                                                            &mut format,
+                                                            &mut k,
+                                                            &mut c,
+                                                            &mut h,
+                                                            &mut w))
+        }
+        assert_eq!(data_type, T::DATA_TYPE);
+        Ok((format.into(), k as usize, c as usize, h as usize, w as usize))
+    }
 }
 
 impl<T> Drop for Descriptor<T>
