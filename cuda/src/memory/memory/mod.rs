@@ -20,7 +20,7 @@ pub struct Memory<T> {
 
 impl<T> Memory<T> {
     pub fn new(len: usize) -> Result<Memory<T>> {
-        let mut ptr = ptr::null_mut::<c_void>();
+        let mut ptr = ptr::null_mut();
         unsafe { try_call!(cuda_sys::cudaMalloc(&mut ptr, (mem::size_of::<T>() * len) as size_t)) }
         MALLOC_HOOK.with(|hook| if let Some(ref hook) = *hook.borrow() {
                              hook(ptr as *const (), mem::size_of::<T>() * len);
