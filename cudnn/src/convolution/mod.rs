@@ -64,8 +64,7 @@ pub fn find_forward_algorithm<T>(context: &mut context::Context,
     where T: scalar::Scalar
 {
     let mut returned_algo_count = 0;
-    let mut perf_results: Vec<cudnn_sys::cudnnConvolutionFwdAlgoPerf> =
-        Vec::with_capacity(requested_algo_count);
+    let mut perf_results = Vec::with_capacity(requested_algo_count);
     unsafe {
         try_call!(cudnn_sys::cudnnFindConvolutionForwardAlgorithm(context.as_mut_ptr(),
                                                                   x_desc.as_ptr(),
