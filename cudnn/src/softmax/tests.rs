@@ -1,4 +1,3 @@
-use std::fmt;
 use std::iter;
 use std::mem;
 
@@ -16,7 +15,6 @@ use tensor;
 use super::Algorithm;
 use super::Mode;
 use super::forward;
-use super::backward;
 
 use self::rand::distributions::IndependentSample;
 
@@ -79,13 +77,11 @@ fn forward_cpu<T>(algo: Algorithm,
 }
 
 fn assert_almost_eq<T>(a: &[T], b: &[T])
-    where T: fmt::Display + num_traits::Float + From<f32>
+    where T: num_traits::Float + From<f32>
 {
     assert_eq!(a.len(), b.len());
     for i in 0..a.len() {
-        if (a[i] - b[i]).abs() > (1e-6).into() {
-            panic!("{} th elements differ: {} != {}", i, a[i], b[i]);
-        }
+        assert!((a[i] - b[i]).abs() < (1e-6).into());
     }
 }
 
@@ -107,16 +103,14 @@ fn test_forward(algo: Algorithm, mode: Mode) {
         .map(|(x, y)| x * alpha + y * beta)
         .collect();
 
-    unsafe {
-        forward(&mut context,
-                algo,
-                mode,
-                alpha,
-                (&desc, &x_dev),
-                beta,
-                (&desc, &mut y_dev))
-                .unwrap()
-    }
+    forward(&mut context,
+            algo,
+            mode,
+            alpha,
+            (&desc, &x_dev),
+            beta,
+            (&desc, &mut y_dev))
+            .unwrap();
     memory::memcpy(&mut y, &y_dev).unwrap();
 
     assert_almost_eq(&y, &expected);
