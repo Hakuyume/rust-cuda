@@ -16,16 +16,16 @@ pub use self::descriptor::Descriptor;
 
 use misc::MemoryDescriptor;
 
-pub fn forward<T, S, SRC, DEST>(context: &mut context::Context,
+pub fn forward<T, S, Src, Dest>(context: &mut context::Context,
                                 activation_desc: &Descriptor,
                                 alpha: S,
-                                src: Option<(&tensor::Descriptor<T>, &SRC)>,
+                                src: Option<(&tensor::Descriptor<T>, &Src)>,
                                 beta: S,
-                                dest: (&tensor::Descriptor<T>, &mut DEST))
+                                dest: (&tensor::Descriptor<T>, &mut Dest))
                                 -> Result<()>
     where T: scalar::Scalar + scalar::Scale<Scale = S>,
-          SRC: Repr<T>,
-          DEST: ReprMut<T>
+          Src: Repr<T>,
+          Dest: ReprMut<T>
 {
     if let Some(ref src) = src {
         src.0.check_memory(src.1)?;

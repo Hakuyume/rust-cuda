@@ -215,21 +215,21 @@ pub fn get_backward_filter_workspace_size<T>(context: &mut context::Context,
     Ok(size_in_bytes as usize)
 }
 
-pub fn backward_filter<T, S, X, DY, R, DW>(context: &mut context::Context,
+pub fn backward_filter<T, S, X, Dy, R, Dw>(context: &mut context::Context,
                                            alpha: S,
                                            x: (&tensor::Descriptor<T>, &X),
-                                           dy: (&tensor::Descriptor<T>, &DY),
+                                           dy: (&tensor::Descriptor<T>, &Dy),
                                            conv_desc: &Descriptor<T>,
                                            algo: BwdFilterAlgo,
                                            workspace: &mut R,
                                            beta: S,
-                                           dw: (&filter::Descriptor<T>, &mut DW))
+                                           dw: (&filter::Descriptor<T>, &mut Dw))
                                            -> Result<()>
     where T: scalar::Scalar + scalar::Scale<Scale = S>,
           X: Repr<T>,
-          DY: Repr<T>,
+          Dy: Repr<T>,
           R: ReprMut<u8>,
-          DW: ReprMut<T>
+          Dw: ReprMut<T>
 {
     x.0.check_memory(x.1)?;
     dy.0.check_memory(dy.1)?;

@@ -44,19 +44,19 @@ pub fn forward<T, S, X, Y>(context: &mut context::Context,
     Ok(())
 }
 
-pub fn backward<T, S, Y, DY, DX>(context: &mut context::Context,
+pub fn backward<T, S, Y, Dy, Dx>(context: &mut context::Context,
                                  algo: Algorithm,
                                  mode: Mode,
                                  alpha: S,
                                  y: (&tensor::Descriptor<T>, &Y),
-                                 dy: Option<(&tensor::Descriptor<T>, &DY)>,
+                                 dy: Option<(&tensor::Descriptor<T>, &Dy)>,
                                  beta: S,
-                                 dx: (&tensor::Descriptor<T>, &mut DX))
+                                 dx: (&tensor::Descriptor<T>, &mut Dx))
                                  -> Result<()>
     where T: scalar::Scalar + scalar::Scale<Scale = S>,
           Y: Repr<T>,
-          DY: Repr<T>,
-          DX: ReprMut<T>
+          Dy: Repr<T>,
+          Dx: ReprMut<T>
 {
     y.0.check_memory(y.1)?;
     if let Some(ref dy) = dy {
