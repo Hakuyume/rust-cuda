@@ -17,7 +17,7 @@ pub use self::descriptor::Descriptor;
 use misc::MemoryDescriptor;
 
 pub fn forward<T, S, SRC, DEST>(context: &mut context::Context,
-                                activation_desc: &Descriptor<T>,
+                                activation_desc: &Descriptor,
                                 alpha: S,
                                 src: Option<(&tensor::Descriptor<T>, &SRC)>,
                                 beta: S,

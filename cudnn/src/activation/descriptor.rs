@@ -1,31 +1,21 @@
-use std::marker;
 use std::ptr;
 
 use cudnn_sys;
 use cudnn_sys::c_double;
 
-use scalar;
 use Result;
 
 use super::Mode;
 
-pub struct Descriptor<T>
-    where T: scalar::Scalar
-{
+pub struct Descriptor {
     desc: cudnn_sys::cudnnActivationDescriptor,
-    _dummy: marker::PhantomData<T>,
 }
 
-impl<T> Descriptor<T>
-    where T: scalar::Scalar
-{
-    pub fn new() -> Result<Descriptor<T>> {
+impl Descriptor {
+    pub fn new() -> Result<Descriptor> {
         let mut desc = ptr::null_mut();
         unsafe { try_call!(cudnn_sys::cudnnCreateActivationDescriptor(&mut desc)) }
-        Ok(Descriptor {
-               desc,
-               _dummy: marker::PhantomData::default(),
-           })
+        Ok(Descriptor { desc })
     }
 
     pub fn as_ptr(&self) -> cudnn_sys::cudnnActivationDescriptor {
@@ -52,9 +42,7 @@ impl<T> Descriptor<T>
     }
 }
 
-impl<T> Drop for Descriptor<T>
-    where T: scalar::Scalar
-{
+impl Drop for Descriptor {
     fn drop(&mut self) {
         unsafe { cudnn_sys::cudnnDestroyActivationDescriptor(self.desc) };
     }
