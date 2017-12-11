@@ -83,6 +83,3 @@ pub fn backward<T, S, Y, Dy, Dx>(context: &mut context::Context,
     }
     Ok(())
 }
-
-#[cfg(test)]
-mod tests;
