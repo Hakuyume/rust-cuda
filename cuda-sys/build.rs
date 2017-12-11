@@ -8,6 +8,7 @@ fn main() {
 
     let bindings = bindgen::Builder::default()
         .header_contents("wrapper.h", "#include<cuda_runtime.h>")
+        .whitelist_function("cuda[A-Z].*")
         .generate()
         .unwrap();
 

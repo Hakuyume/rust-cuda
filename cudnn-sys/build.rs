@@ -8,6 +8,10 @@ fn main() {
 
     let bindings = bindgen::Builder::default()
         .header_contents("wrapper.h", "#include<cudnn.h>")
+        .whitelist_function("cudnn[A-Z].*")
+        .whitelist_recursively(false)
+        .whitelist_type("cudnn[A-Z].*")
+        .whitelist_type("libraryPropertyType(?:_t)?")
         .generate()
         .unwrap();
 
