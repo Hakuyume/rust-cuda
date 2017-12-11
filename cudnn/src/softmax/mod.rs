@@ -1,3 +1,5 @@
+use cuda::memory::{Repr, ReprMut};
+
 use cudnn_sys;
 use cudnn_sys::c_void;
 
@@ -5,8 +7,6 @@ use scalar;
 use Result;
 use context;
 use tensor;
-
-use cuda::memory::{Repr, ReprMut};
 
 mod algorithm;
 pub use self::algorithm::Algorithm;
