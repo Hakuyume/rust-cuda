@@ -7,7 +7,7 @@ fn main() {
     println!("cargo:rustc-link-lib=cudart");
 
     let bindings = bindgen::Builder::default()
-        .header("wrapper.h")
+        .header_contents("wrapper.h", "#include<cuda_runtime.h>")
         .generate()
         .unwrap();
 

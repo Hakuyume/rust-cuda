@@ -7,7 +7,7 @@ fn main() {
     println!("cargo:rustc-link-lib=cudnn");
 
     let bindings = bindgen::Builder::default()
-        .header("wrapper.h")
+        .header_contents("wrapper.h", "#include<cudnn.h>")
         .generate()
         .unwrap();
 
