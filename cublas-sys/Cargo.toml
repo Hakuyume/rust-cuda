@@ -1,0 +1,11 @@
+[package]
+name = "cublas-sys"
+version = "0.1.0"
+authors = ["Toru Ogawa <Hakuyume@users.noreply.github.com>"]
+build = "build.rs"
+
+[dependencies]
+cuda-sys = { path = "../cuda-sys" }
+
+[build-dependencies]
+bindgen = "0.32"
