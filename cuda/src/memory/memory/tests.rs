@@ -3,10 +3,8 @@ use super::Repr;
 
 #[test]
 fn malloc() {
-    match super::Memory::<f32>::new(16) {
-        Ok(m) => assert_eq!(m.len(), 16),
-        Err(e) => panic!("{:?}", e),
-    }
+    let m = super::Memory::<f32>::new(16).unwrap();
+    assert_eq!(m.len(), 16);
 }
 
 #[test]
