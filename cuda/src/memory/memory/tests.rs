@@ -11,9 +11,9 @@ fn malloc() {
 
 #[test]
 fn malloc_huge() {
-    match super::Memory::<f32>::new(1 << 48) {
+    match super::Memory::<f32>::new(usize::MAX - 1) {
         Err(Error::MemoryAllocation) => (),
-        Ok(_) => panic!("allocation of a huge memory returned successfully"),
+        Ok(_) => panic!("Allocation of a huge memory should fail"),
         Err(e) => panic!("{:?}", e),
     }
 }
