@@ -9,6 +9,7 @@ fn main() {
     let bindings = bindgen::Builder::default()
         .header_contents("wrapper.h", "#include<cuda_runtime.h>")
         .whitelist_function("cuda[A-Z].*")
+        .whitelist_type("libraryPropertyType(?:_t)?")
         .generate()
         .unwrap();
 
