@@ -1,8 +1,8 @@
 use std::mem;
 use std::ops;
+use std::os::raw::c_void;
 
 use cuda_sys;
-use cuda_sys::c_void;
 
 use Result;
 use super::{Repr, ReprMut};
@@ -29,7 +29,7 @@ impl<T, D> MemcpyFrom<[T]> for D
             try_call!(cuda_sys::cudaMemcpy(self.as_mut_ptr() as *mut c_void,
                                            src.as_ptr() as *const c_void,
                                            mem::size_of::<T>() * src.len(),
-                                           cuda_sys::cudaMemcpyKind::cudaMemcpyHostToDevice))
+                                           cuda_sys::cudaMemcpyKind_cudaMemcpyHostToDevice))
         }
         Ok(())
     }
@@ -46,7 +46,7 @@ impl<T, D, S> MemcpyFrom<S> for D
             try_call!(cuda_sys::cudaMemcpy(dst.as_mut_ptr() as *mut c_void,
                                            src.as_ptr() as *const c_void,
                                            mem::size_of::<T>() * src.len(),
-                                           cuda_sys::cudaMemcpyKind::cudaMemcpyDeviceToHost))
+                                           cuda_sys::cudaMemcpyKind_cudaMemcpyDeviceToHost))
         }
         Ok(())
     }

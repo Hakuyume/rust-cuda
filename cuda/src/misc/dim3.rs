@@ -1,5 +1,6 @@
+use std::os::raw::c_uint;
+
 use cuda_sys;
-use cuda_sys::c_uint;
 
 pub struct Dim3 {
     pub x: usize,

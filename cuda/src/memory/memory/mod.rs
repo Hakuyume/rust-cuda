@@ -1,8 +1,8 @@
 use std::mem;
+use std::os::raw::c_void;
 use std::ptr;
 
 use cuda_sys;
-use cuda_sys::{c_void, size_t};
 
 use Result;
 use super::{Repr, ReprMut};
@@ -15,7 +15,7 @@ pub struct Memory<T> {
 impl<T> Memory<T> {
     pub fn new(len: usize) -> Result<Memory<T>> {
         let mut ptr = ptr::null_mut();
-        unsafe { try_call!(cuda_sys::cudaMalloc(&mut ptr, (mem::size_of::<T>() * len) as size_t)) }
+        unsafe { try_call!(cuda_sys::cudaMalloc(&mut ptr, mem::size_of::<T>() * len)) }
         Ok(Memory {
                ptr: ptr as *mut T,
                len,

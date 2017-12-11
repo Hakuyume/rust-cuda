@@ -2,6 +2,7 @@
 name = "cuda-sys"
 version = "0.1.0"
 authors = ["Toru Ogawa <Hakuyume@users.noreply.github.com>"]
+build = "build.rs"
 
-[dependencies]
-libc = "0.2"
+[build-dependencies]
+bindgen = "0.32"
