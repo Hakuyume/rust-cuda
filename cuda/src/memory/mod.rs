@@ -10,8 +10,6 @@ pub use self::slice::{Slice, SliceMut};
 
 mod memory;
 pub use self::memory::Memory;
-pub use self::memory::set_malloc_hook;
-pub use self::memory::set_free_hook;
 
 mod memcpy;
 pub use self::memcpy::memcpy;

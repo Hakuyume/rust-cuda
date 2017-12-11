@@ -25,7 +25,7 @@ impl<T> Memory<T> {
 
 impl<T> Drop for Memory<T> {
     fn drop(&mut self) {
-        unsafe { cuda_sys::cudaFree(self.ptr as *mut c_void) }
+        unsafe { cuda_sys::cudaFree(self.ptr as *mut c_void) };
     }
 }
 
