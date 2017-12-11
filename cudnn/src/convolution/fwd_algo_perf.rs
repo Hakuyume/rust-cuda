@@ -14,8 +14,8 @@ pub struct FwdAlgoPerf {
     pub memory: usize,
 }
 
-impl From<cudnn_sys::cudnnConvolutionFwdAlgoPerf> for FwdAlgoPerf {
-    fn from(value: cudnn_sys::cudnnConvolutionFwdAlgoPerf) -> FwdAlgoPerf {
+impl From<cudnn_sys::cudnnConvolutionFwdAlgoPerf_t> for FwdAlgoPerf {
+    fn from(value: cudnn_sys::cudnnConvolutionFwdAlgoPerf_t) -> FwdAlgoPerf {
         FwdAlgoPerf {
             algo: value.algo.into(),
             status: match Error::try_from(value.status) {

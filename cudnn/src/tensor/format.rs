@@ -1,5 +1,4 @@
 use cudnn_sys;
-use cudnn_sys::cudnnTensorFormat::*;
 
 #[derive(Clone, Copy, Debug)]
 pub enum Format {
@@ -8,22 +7,23 @@ pub enum Format {
     NCHWVectC,
 }
 
-impl From<cudnn_sys::cudnnTensorFormat> for Format {
-    fn from(value: cudnn_sys::cudnnTensorFormat) -> Format {
+impl From<cudnn_sys::cudnnTensorFormat_t> for Format {
+    fn from(value: cudnn_sys::cudnnTensorFormat_t) -> Format {
         match value {
-            CUDNN_TENSOR_NCHW => Format::NCHW,
-            CUDNN_TENSOR_NHWC => Format::NHWC,
-            CUDNN_TENSOR_NCHW_VECT_C => Format::NCHWVectC,
+            cudnn_sys::cudnnTensorFormat_t_CUDNN_TENSOR_NCHW => Format::NCHW,
+            cudnn_sys::cudnnTensorFormat_t_CUDNN_TENSOR_NHWC => Format::NHWC,
+            cudnn_sys::cudnnTensorFormat_t_CUDNN_TENSOR_NCHW_VECT_C => Format::NCHWVectC,
+            _ => unreachable!(),
         }
     }
 }
 
-impl Into<cudnn_sys::cudnnTensorFormat> for Format {
-    fn into(self) -> cudnn_sys::cudnnTensorFormat {
+impl Into<cudnn_sys::cudnnTensorFormat_t> for Format {
+    fn into(self) -> cudnn_sys::cudnnTensorFormat_t {
         match self {
-            Format::NCHW => CUDNN_TENSOR_NCHW,
-            Format::NHWC => CUDNN_TENSOR_NHWC,
-            Format::NCHWVectC => CUDNN_TENSOR_NCHW_VECT_C,
+            Format::NCHW => cudnn_sys::cudnnTensorFormat_t_CUDNN_TENSOR_NCHW,
+            Format::NHWC => cudnn_sys::cudnnTensorFormat_t_CUDNN_TENSOR_NHWC,
+            Format::NCHWVectC => cudnn_sys::cudnnTensorFormat_t_CUDNN_TENSOR_NCHW_VECT_C,
         }
     }
 }

@@ -1,5 +1,4 @@
 use cudnn_sys;
-use cudnn_sys::cudnnSoftmaxAlgorithm::*;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Algorithm {
@@ -8,12 +7,12 @@ pub enum Algorithm {
     Log,
 }
 
-impl Into<cudnn_sys::cudnnSoftmaxAlgorithm> for Algorithm {
-    fn into(self) -> cudnn_sys::cudnnSoftmaxAlgorithm {
+impl Into<cudnn_sys::cudnnSoftmaxAlgorithm_t> for Algorithm {
+    fn into(self) -> cudnn_sys::cudnnSoftmaxAlgorithm_t {
         match self {
-            Algorithm::Fast => CUDNN_SOFTMAX_FAST,
-            Algorithm::Accurate => CUDNN_SOFTMAX_ACCURATE,
-            Algorithm::Log => CUDNN_SOFTMAX_LOG,
+            Algorithm::Fast => cudnn_sys::cudnnSoftmaxAlgorithm_t_CUDNN_SOFTMAX_FAST,
+            Algorithm::Accurate => cudnn_sys::cudnnSoftmaxAlgorithm_t_CUDNN_SOFTMAX_ACCURATE,
+            Algorithm::Log => cudnn_sys::cudnnSoftmaxAlgorithm_t_CUDNN_SOFTMAX_LOG,
         }
     }
 }

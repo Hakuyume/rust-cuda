@@ -5,7 +5,7 @@ use cudnn_sys;
 use Result;
 
 pub struct Context {
-    handle: cudnn_sys::cudnnHandle,
+    handle: cudnn_sys::cudnnHandle_t,
 }
 
 impl Context {
@@ -15,11 +15,7 @@ impl Context {
         Ok(Context { handle })
     }
 
-    pub fn as_ptr(&self) -> cudnn_sys::cudnnHandle {
-        self.handle
-    }
-
-    pub fn as_mut_ptr(&mut self) -> cudnn_sys::cudnnHandle {
+    pub fn as_mut_ptr(&mut self) -> cudnn_sys::cudnnHandle_t {
         self.handle
     }
 }

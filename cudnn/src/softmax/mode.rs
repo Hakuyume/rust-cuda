@@ -1,5 +1,4 @@
 use cudnn_sys;
-use cudnn_sys::cudnnSoftmaxMode::*;
 
 #[derive(Clone, Copy, Debug)]
 pub enum Mode {
@@ -7,11 +6,11 @@ pub enum Mode {
     Channel,
 }
 
-impl Into<cudnn_sys::cudnnSoftmaxMode> for Mode {
-    fn into(self) -> cudnn_sys::cudnnSoftmaxMode {
+impl Into<cudnn_sys::cudnnSoftmaxMode_t> for Mode {
+    fn into(self) -> cudnn_sys::cudnnSoftmaxMode_t {
         match self {
-            Mode::Instance => CUDNN_SOFTMAX_MODE_INSTANCE,
-            Mode::Channel => CUDNN_SOFTMAX_MODE_CHANNEL,
+            Mode::Instance => cudnn_sys::cudnnSoftmaxMode_t_CUDNN_SOFTMAX_MODE_INSTANCE,
+            Mode::Channel => cudnn_sys::cudnnSoftmaxMode_t_CUDNN_SOFTMAX_MODE_CHANNEL,
         }
     }
 }

@@ -1,10 +1,10 @@
+use std::os::raw::c_void;
+
 use cuda::memory::{Repr, ReprMut};
-
 use cudnn_sys;
-use cudnn_sys::c_void;
 
-use scalar;
 use Result;
+use scalar;
 use context;
 use tensor;
 

@@ -1,14 +1,14 @@
+use std::os::raw::c_double;
 use std::ptr;
 
 use cudnn_sys;
-use cudnn_sys::c_double;
 
 use Result;
 
 use super::Mode;
 
 pub struct Descriptor {
-    desc: cudnn_sys::cudnnActivationDescriptor,
+    desc: cudnn_sys::cudnnActivationDescriptor_t,
 }
 
 impl Descriptor {
@@ -18,22 +18,18 @@ impl Descriptor {
         Ok(Descriptor { desc })
     }
 
-    pub fn as_ptr(&self) -> cudnn_sys::cudnnActivationDescriptor {
-        self.desc
-    }
-
-    pub fn as_mut_ptr(&mut self) -> cudnn_sys::cudnnActivationDescriptor {
+    pub fn as_ptr(&self) -> cudnn_sys::cudnnActivationDescriptor_t {
         self.desc
     }
 
     pub fn set(&mut self, mode: Mode, relu_nan_opt: bool, coef: f64) -> Result<()> {
         let relu_nan_opt = if relu_nan_opt {
-            cudnn_sys::cudnnNanPropagation::CUDNN_PROPAGATE_NAN
+            cudnn_sys::cudnnNanPropagation_t_CUDNN_PROPAGATE_NAN
         } else {
-            cudnn_sys::cudnnNanPropagation::CUDNN_NOT_PROPAGATE_NAN
+            cudnn_sys::cudnnNanPropagation_t_CUDNN_NOT_PROPAGATE_NAN
         };
         unsafe {
-            try_call!(cudnn_sys::cudnnSetActivationDescriptor(self.as_mut_ptr(),
+            try_call!(cudnn_sys::cudnnSetActivationDescriptor(self.desc,
                                                               mode.into(),
                                                               relu_nan_opt,
                                                               coef as c_double))

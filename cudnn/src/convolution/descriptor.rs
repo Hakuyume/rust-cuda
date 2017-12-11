@@ -1,8 +1,8 @@
 use std::marker;
+use std::os::raw::c_int;
 use std::ptr;
 
 use cudnn_sys;
-use cudnn_sys::c_int;
 
 use scalar;
 use Result;
@@ -12,7 +12,7 @@ use super::Mode;
 pub struct Descriptor<T>
     where T: scalar::Scalar
 {
-    desc: cudnn_sys::cudnnConvolutionDescriptor,
+    desc: cudnn_sys::cudnnConvolutionDescriptor_t,
     _type: marker::PhantomData<T>,
 }
 
@@ -28,7 +28,7 @@ impl<T> Descriptor<T>
            })
     }
 
-    pub fn as_ptr(&self) -> cudnn_sys::cudnnConvolutionDescriptor {
+    pub fn as_ptr(&self) -> cudnn_sys::cudnnConvolutionDescriptor_t {
         self.desc
     }
 

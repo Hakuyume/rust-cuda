@@ -1,12 +1,13 @@
-use cudnn_sys::c_float;
-use cudnn_sys::cudnnDataType;
+use std::os::raw::c_float;
+
+use cudnn_sys;
 
 pub trait Scalar {
-    const DATA_TYPE: cudnnDataType;
+    const DATA_TYPE: cudnn_sys::cudnnDataType_t;
 }
 
 impl Scalar for c_float {
-    const DATA_TYPE: cudnnDataType = cudnnDataType::CUDNN_DATA_FLOAT;
+    const DATA_TYPE: cudnn_sys::cudnnDataType_t = cudnn_sys::cudnnDataType_t_CUDNN_DATA_FLOAT;
 }
 
 pub trait Scale {

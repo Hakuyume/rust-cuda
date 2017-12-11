@@ -1,10 +1,10 @@
+use std::os::raw::{c_int, c_void};
+
 use cuda::memory::{Repr, ReprMut};
-
 use cudnn_sys;
-use cudnn_sys::{c_int, c_void, size_t};
 
-use scalar;
 use Result;
+use scalar;
 use context;
 use tensor;
 use filter;
@@ -92,7 +92,7 @@ pub fn get_forward_algorithm<T>(context: &mut context::Context,
     where T: scalar::Scalar
 {
     let (preference, memory_limit_in_bytes) = preference.into();
-    let mut algo = cudnn_sys::cudnnConvolutionFwdAlgo::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
+    let mut algo = 0;
     unsafe {
         try_call!(cudnn_sys::cudnnGetConvolutionForwardAlgorithm(context.as_mut_ptr(),
                                                                  x_desc.as_ptr(),
@@ -101,8 +101,7 @@ pub fn get_forward_algorithm<T>(context: &mut context::Context,
                                                                  y_desc.as_ptr(),
                                                                  preference,
                                                                  memory_limit_in_bytes
-                                                                     .unwrap_or(0) as
-                                                                 size_t,
+                                                                     .unwrap_or(0),
                                                                  &mut algo));
     }
     Ok(algo.into())
@@ -159,7 +158,7 @@ pub fn forward<T, S, X, W, R, Y>(context: &mut context::Context,
                                                      conv_desc.as_ptr(),
                                                      algo.into(),
                                                      workspace.as_mut_ptr() as *mut c_void,
-                                                     workspace.len() as size_t,
+                                                     workspace.len(),
                                                      &beta as *const S as *const c_void,
                                                      y.0.as_ptr(),
                                                      y.1.as_mut_ptr() as *mut c_void))
@@ -177,7 +176,7 @@ pub fn get_backward_filter_algorithm<T>(context: &mut context::Context,
     where T: scalar::Scalar
 {
     let (preference, memory_limit_in_bytes) = preference.into();
-    let mut algo = cudnn_sys::cudnnConvolutionBwdFilterAlgo::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_0;
+    let mut algo = 0;
     unsafe {
         try_call!(cudnn_sys::cudnnGetConvolutionBackwardFilterAlgorithm(context.as_mut_ptr(),
                                                                         x_desc.as_ptr(),
@@ -186,8 +185,7 @@ pub fn get_backward_filter_algorithm<T>(context: &mut context::Context,
                                                                         dw_desc.as_ptr(),
                                                                         preference,
                                                                         memory_limit_in_bytes
-                                                                            .unwrap_or(0) as
-                                                                        size_t,
+                                                                            .unwrap_or(0),
                                                                         &mut algo))
     }
     Ok(algo.into())
@@ -244,7 +242,7 @@ pub fn backward_filter<T, S, X, Dy, R, Dw>(context: &mut context::Context,
                                                             conv_desc.as_ptr(),
                                                             algo.into(),
                                                             workspace.as_mut_ptr() as *mut c_void,
-                                                            workspace.len() as size_t,
+                                                            workspace.len(),
                                                             &beta as *const S as *const c_void,
                                                             dw.0.as_ptr(),
                                                             dw.1.as_mut_ptr() as *mut c_void))

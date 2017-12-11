@@ -1,26 +1,5 @@
-extern crate libc;
-pub use libc::{c_char, c_double, c_float, c_int, c_void, size_t};
+#![allow(non_camel_case_types)]
+#![allow(non_snake_case)]
+#![allow(non_upper_case_globals)]
 
-mod enums;
-pub use enums::*;
-
-mod status;
-pub use status::*;
-
-mod context;
-pub use context::*;
-
-mod tensor;
-pub use tensor::*;
-
-mod filter;
-pub use filter::*;
-
-mod convolution;
-pub use convolution::*;
-
-mod softmax;
-pub use softmax::*;
-
-mod activation;
-pub use activation::*;
+include!(concat!(env!("OUT_DIR"), "/bindings.rs"));

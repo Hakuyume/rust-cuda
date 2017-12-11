@@ -1,5 +1,4 @@
 use cudnn_sys;
-use cudnn_sys::cudnnConvolutionFwdPreference::*;
 
 #[derive(Clone, Copy)]
 pub enum FwdPreference {
@@ -8,13 +7,19 @@ pub enum FwdPreference {
     SpecifyWorkspaceLimit(usize),
 }
 
-impl Into<(cudnn_sys::cudnnConvolutionFwdPreference, Option<usize>)> for FwdPreference {
-    fn into(self) -> (cudnn_sys::cudnnConvolutionFwdPreference, Option<usize>) {
+impl Into<(cudnn_sys::cudnnConvolutionFwdPreference_t, Option<usize>)> for FwdPreference {
+    fn into(self) -> (cudnn_sys::cudnnConvolutionFwdPreference_t, Option<usize>) {
         match self {
-            FwdPreference::NoWorkspace => (CUDNN_CONVOLUTION_FWD_NO_WORKSPACE, None),
-            FwdPreference::PreferFastest => (CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, None),
+            FwdPreference::NoWorkspace => {
+                (cudnn_sys::cudnnConvolutionFwdPreference_t_CUDNN_CONVOLUTION_FWD_NO_WORKSPACE,
+                 None)
+            }
+            FwdPreference::PreferFastest => {
+                (cudnn_sys::cudnnConvolutionFwdPreference_t_CUDNN_CONVOLUTION_FWD_PREFER_FASTEST,
+                 None)
+            }
             FwdPreference::SpecifyWorkspaceLimit(size) => {
-                (CUDNN_CONVOLUTION_FWD_SPECIFY_WORKSPACE_LIMIT, Some(size))
+                (cudnn_sys::cudnnConvolutionFwdPreference_t_CUDNN_CONVOLUTION_FWD_SPECIFY_WORKSPACE_LIMIT, Some(size))
             }
         }
     }

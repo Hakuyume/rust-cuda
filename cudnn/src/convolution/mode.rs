@@ -6,11 +6,11 @@ pub enum Mode {
     CrossCorrelation,
 }
 
-impl Into<cudnn_sys::cudnnConvolutionMode> for Mode {
-    fn into(self) -> cudnn_sys::cudnnConvolutionMode {
+impl Into<cudnn_sys::cudnnConvolutionMode_t> for Mode {
+    fn into(self) -> cudnn_sys::cudnnConvolutionMode_t {
         match self {
-            Mode::Convolution => cudnn_sys::cudnnConvolutionMode::CUDNN_CONVOLUTION,
-            Mode::CrossCorrelation => cudnn_sys::cudnnConvolutionMode::CUDNN_CROSS_CORRELATION,
+            Mode::Convolution => cudnn_sys::cudnnConvolutionMode_t_CUDNN_CONVOLUTION,
+            Mode::CrossCorrelation => cudnn_sys::cudnnConvolutionMode_t_CUDNN_CROSS_CORRELATION,
         }
     }
 }
