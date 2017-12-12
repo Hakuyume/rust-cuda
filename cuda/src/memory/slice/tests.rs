@@ -1,6 +1,7 @@
 use std::mem;
 
-use super::{Repr, ReprMut};
+use memory::{Repr, ReprMut};
+
 use super::{Slice, SliceMut};
 
 #[test]

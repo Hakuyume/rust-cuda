@@ -1,4 +1,4 @@
-use super::{Repr, ReprMut};
+use memory::{Repr, ReprMut};
 
 #[test]
 fn from_raw_parts() {

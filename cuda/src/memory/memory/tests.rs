@@ -1,5 +1,5 @@
 use Error;
-use super::Repr;
+use memory::Repr;
 
 #[test]
 fn malloc() {
