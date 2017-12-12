@@ -2,8 +2,8 @@ use std::mem;
 
 use cuda::memory::Repr;
 
-use scalar;
 use Result;
+use scalar;
 use tensor;
 use filter;
 
