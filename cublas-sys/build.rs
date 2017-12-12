@@ -8,7 +8,7 @@ fn main() {
 
     let bindings = bindgen::Builder::default()
         .header_contents("wrapper.h", "#include<cublas_v2.h>")
-        .whitelist_function("cublas[A-Z].*")
+        .whitelist_function("cublas[A-GI-Z].*")
         .whitelist_recursively(false)
         .whitelist_type("cublas[A-Z].*")
         .blacklist_type("cublasDataType_t")
