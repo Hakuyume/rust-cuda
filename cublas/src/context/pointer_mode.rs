@@ -1,6 +1,6 @@
 use cublas_sys;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum PointerMode {
     Host,
     Device,
