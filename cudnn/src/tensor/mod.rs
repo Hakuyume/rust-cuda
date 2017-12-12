@@ -39,6 +39,23 @@ pub fn add<T, S, A, C>(context: &mut context::Context,
     Ok(())
 }
 
+pub fn set<T, Y>(context: &mut context::Context,
+                 y: (&Descriptor<T>, &mut Y),
+                 value: T)
+                 -> Result<()>
+    where T: scalar::Scalar,
+          Y: ReprMut<T>
+{
+    y.0.check_memory(y.1)?;
+    unsafe {
+        try_call!(cudnn_sys::cudnnSetTensor(context.as_mut_ptr(),
+                                            y.0.as_ptr(),
+                                            y.1.as_mut_ptr() as *mut c_void,
+                                            &value as *const T as *const c_void))
+    }
+    Ok(())
+}
+
 pub fn scale<T, S, Y>(context: &mut context::Context,
                       y: (&Descriptor<T>, &mut Y),
                       alpha: S)
