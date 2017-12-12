@@ -12,6 +12,8 @@ fn main() {
         .whitelist_type("cudaDataType")
         .whitelist_type("libraryPropertyType(?:_t)?")
         .whitelist_type("float2|double2")
+        .derive_debug(false)
+        .no_convert_floats()
         .generate()
         .unwrap();
 

@@ -11,6 +11,8 @@ fn main() {
         .whitelist_function("cudnn[A-Z].*")
         .whitelist_recursively(false)
         .whitelist_type("cudnn[A-Z].*")
+        .derive_debug(false)
+        .no_convert_floats()
         .generate()
         .unwrap();
 
