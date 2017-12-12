@@ -26,16 +26,16 @@ impl TryFrom<cublas_sys::cublasStatus_t> for Error {
     type Error = ();
     fn try_from(value: cublas_sys::cublasStatus_t) -> result::Result<Error, ()> {
         match value {
-            cublas_sys::cublasStatus_t_CUBLAS_STATUS_SUCCESS => Err(()),
-            cublas_sys::cublasStatus_t_CUBLAS_STATUS_NOT_INITIALIZED => Ok(Error::NotInitialized),
-            cublas_sys::cublasStatus_t_CUBLAS_STATUS_ALLOC_FAILED => Ok(Error::AllocFailed),
-            cublas_sys::cublasStatus_t_CUBLAS_STATUS_INVALID_VALUE => Ok(Error::InvalidValue),
-            cublas_sys::cublasStatus_t_CUBLAS_STATUS_ARCH_MISMATCH => Ok(Error::ArchMismatch),
-            cublas_sys::cublasStatus_t_CUBLAS_STATUS_MAPPING_ERROR => Ok(Error::MappingError),
-            cublas_sys::cublasStatus_t_CUBLAS_STATUS_EXECUTION_FAILED => Ok(Error::ExecutionFailed),
-            cublas_sys::cublasStatus_t_CUBLAS_STATUS_INTERNAL_ERROR => Ok(Error::InternalError),
-            cublas_sys::cublasStatus_t_CUBLAS_STATUS_NOT_SUPPORTED => Ok(Error::NotSupported),
-            cublas_sys::cublasStatus_t_CUBLAS_STATUS_LICENSE_ERROR => Ok(Error::LicenseError),
+            cublas_sys::CUBLAS_STATUS_SUCCESS => Err(()),
+            cublas_sys::CUBLAS_STATUS_NOT_INITIALIZED => Ok(Error::NotInitialized),
+            cublas_sys::CUBLAS_STATUS_ALLOC_FAILED => Ok(Error::AllocFailed),
+            cublas_sys::CUBLAS_STATUS_INVALID_VALUE => Ok(Error::InvalidValue),
+            cublas_sys::CUBLAS_STATUS_ARCH_MISMATCH => Ok(Error::ArchMismatch),
+            cublas_sys::CUBLAS_STATUS_MAPPING_ERROR => Ok(Error::MappingError),
+            cublas_sys::CUBLAS_STATUS_EXECUTION_FAILED => Ok(Error::ExecutionFailed),
+            cublas_sys::CUBLAS_STATUS_INTERNAL_ERROR => Ok(Error::InternalError),
+            cublas_sys::CUBLAS_STATUS_NOT_SUPPORTED => Ok(Error::NotSupported),
+            cublas_sys::CUBLAS_STATUS_LICENSE_ERROR => Ok(Error::LicenseError),
             _ => unreachable!(),
         }
     }

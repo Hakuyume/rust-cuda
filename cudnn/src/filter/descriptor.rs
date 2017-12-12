@@ -51,8 +51,8 @@ impl<T> Descriptor<T>
     }
 
     pub fn get_4d(&self) -> Result<(tensor::Format, usize, usize, usize, usize)> {
-        let mut data_type = T::DATA_TYPE;
-        let mut format = cudnn_sys::cudnnTensorFormat_t_CUDNN_TENSOR_NCHW;
+        let mut data_type = 0;
+        let mut format = 0;
         let mut k = 0;
         let mut c = 0;
         let mut h = 0;

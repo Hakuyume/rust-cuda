@@ -9,8 +9,8 @@ pub enum PointerMode {
 impl From<cublas_sys::cublasPointerMode_t> for PointerMode {
     fn from(value: cublas_sys::cublasPointerMode_t) -> PointerMode {
         match value {
-            cublas_sys::cublasPointerMode_t_CUBLAS_POINTER_MODE_HOST => PointerMode::Host,
-            cublas_sys::cublasPointerMode_t_CUBLAS_POINTER_MODE_DEVICE => PointerMode::Device,
+            cublas_sys::CUBLAS_POINTER_MODE_HOST => PointerMode::Host,
+            cublas_sys::CUBLAS_POINTER_MODE_DEVICE => PointerMode::Device,
             _ => unreachable!(),
         }
     }
@@ -19,8 +19,8 @@ impl From<cublas_sys::cublasPointerMode_t> for PointerMode {
 impl Into<cublas_sys::cublasPointerMode_t> for PointerMode {
     fn into(self) -> cublas_sys::cublasPointerMode_t {
         match self {
-            PointerMode::Host => cublas_sys::cublasPointerMode_t_CUBLAS_POINTER_MODE_HOST,
-            PointerMode::Device => cublas_sys::cublasPointerMode_t_CUBLAS_POINTER_MODE_DEVICE,
+            PointerMode::Host => cublas_sys::CUBLAS_POINTER_MODE_HOST,
+            PointerMode::Device => cublas_sys::CUBLAS_POINTER_MODE_DEVICE,
         }
     }
 }

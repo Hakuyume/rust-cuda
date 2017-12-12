@@ -13,8 +13,9 @@ fn main() {
         .whitelist_type("cublas[A-Z].*")
         .blacklist_type("cublasDataType_t")
         .whitelist_type("cu(?:Float|Double)?Complex")
-        .derive_debug(false)
         .no_convert_floats()
+        .derive_debug(false)
+        .prepend_enum_name(false)
         .generate()
         .unwrap();
 

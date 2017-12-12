@@ -29,7 +29,7 @@ impl<T, D> MemcpyFrom<[T]> for D
             try_call!(cuda_sys::cudaMemcpy(self.as_mut_ptr() as *mut c_void,
                                            src.as_ptr() as *const c_void,
                                            mem::size_of::<T>() * src.len(),
-                                           cuda_sys::cudaMemcpyKind_cudaMemcpyHostToDevice))
+                                           cuda_sys::cudaMemcpyHostToDevice))
         }
         Ok(())
     }
@@ -46,7 +46,7 @@ impl<T, D, S> MemcpyFrom<S> for D
             try_call!(cuda_sys::cudaMemcpy(dst.as_mut_ptr() as *mut c_void,
                                            src.as_ptr() as *const c_void,
                                            mem::size_of::<T>() * src.len(),
-                                           cuda_sys::cudaMemcpyKind_cudaMemcpyDeviceToHost))
+                                           cuda_sys::cudaMemcpyDeviceToHost))
         }
         Ok(())
     }

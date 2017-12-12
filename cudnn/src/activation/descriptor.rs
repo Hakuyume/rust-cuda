@@ -24,9 +24,9 @@ impl Descriptor {
 
     pub fn set(&mut self, mode: Mode, relu_nan_opt: bool, coef: f64) -> Result<()> {
         let relu_nan_opt = if relu_nan_opt {
-            cudnn_sys::cudnnNanPropagation_t_CUDNN_PROPAGATE_NAN
+            cudnn_sys::CUDNN_PROPAGATE_NAN
         } else {
-            cudnn_sys::cudnnNanPropagation_t_CUDNN_NOT_PROPAGATE_NAN
+            cudnn_sys::CUDNN_NOT_PROPAGATE_NAN
         };
         unsafe {
             try_call!(cudnn_sys::cudnnSetActivationDescriptor(self.desc,

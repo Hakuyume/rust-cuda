@@ -9,8 +9,8 @@ pub enum Mode {
 impl Into<cudnn_sys::cudnnConvolutionMode_t> for Mode {
     fn into(self) -> cudnn_sys::cudnnConvolutionMode_t {
         match self {
-            Mode::Convolution => cudnn_sys::cudnnConvolutionMode_t_CUDNN_CONVOLUTION,
-            Mode::CrossCorrelation => cudnn_sys::cudnnConvolutionMode_t_CUDNN_CROSS_CORRELATION,
+            Mode::Convolution => cudnn_sys::CUDNN_CONVOLUTION,
+            Mode::CrossCorrelation => cudnn_sys::CUDNN_CROSS_CORRELATION,
         }
     }
 }

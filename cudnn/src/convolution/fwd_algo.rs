@@ -16,27 +16,17 @@ pub enum FwdAlgo {
 impl From<cudnn_sys::cudnnConvolutionFwdAlgo_t> for FwdAlgo {
     fn from(value: cudnn_sys::cudnnConvolutionFwdAlgo_t) -> FwdAlgo {
         match value {
-            cudnn_sys::cudnnConvolutionFwdAlgo_t_CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM => {
-                FwdAlgo::ImplicitGemm
-            }
-            cudnn_sys::cudnnConvolutionFwdAlgo_t_CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM => {
+            cudnn_sys::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM => FwdAlgo::ImplicitGemm,
+            cudnn_sys::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM => {
                 FwdAlgo::ImplicitPrecompGemm
             }
-            cudnn_sys::cudnnConvolutionFwdAlgo_t_CUDNN_CONVOLUTION_FWD_ALGO_GEMM => FwdAlgo::Gemm,
-            cudnn_sys::cudnnConvolutionFwdAlgo_t_CUDNN_CONVOLUTION_FWD_ALGO_DIRECT => {
-                FwdAlgo::Direct
-            }
-            cudnn_sys::cudnnConvolutionFwdAlgo_t_CUDNN_CONVOLUTION_FWD_ALGO_FFT => FwdAlgo::Fft,
-            cudnn_sys::cudnnConvolutionFwdAlgo_t_CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING => {
-                FwdAlgo::FftTiling
-            }
-            cudnn_sys::cudnnConvolutionFwdAlgo_t_CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD => {
-                FwdAlgo::Winograd
-            }
-            cudnn_sys::cudnnConvolutionFwdAlgo_t_CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED => {
-                FwdAlgo::WinogradNonfused
-            }
-            cudnn_sys::cudnnConvolutionFwdAlgo_t_CUDNN_CONVOLUTION_FWD_ALGO_COUNT => FwdAlgo::Count,
+            cudnn_sys::CUDNN_CONVOLUTION_FWD_ALGO_GEMM => FwdAlgo::Gemm,
+            cudnn_sys::CUDNN_CONVOLUTION_FWD_ALGO_DIRECT => FwdAlgo::Direct,
+            cudnn_sys::CUDNN_CONVOLUTION_FWD_ALGO_FFT => FwdAlgo::Fft,
+            cudnn_sys::CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING => FwdAlgo::FftTiling,
+            cudnn_sys::CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD => FwdAlgo::Winograd,
+            cudnn_sys::CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED => FwdAlgo::WinogradNonfused,
+            cudnn_sys::CUDNN_CONVOLUTION_FWD_ALGO_COUNT => FwdAlgo::Count,
             _ => unreachable!(),
         }
     }
@@ -45,27 +35,17 @@ impl From<cudnn_sys::cudnnConvolutionFwdAlgo_t> for FwdAlgo {
 impl Into<cudnn_sys::cudnnConvolutionFwdAlgo_t> for FwdAlgo {
     fn into(self) -> cudnn_sys::cudnnConvolutionFwdAlgo_t {
         match self {
-            FwdAlgo::ImplicitGemm => {
-                cudnn_sys::cudnnConvolutionFwdAlgo_t_CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM
-            }
+            FwdAlgo::ImplicitGemm => cudnn_sys::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM,
             FwdAlgo::ImplicitPrecompGemm => {
-                cudnn_sys::cudnnConvolutionFwdAlgo_t_CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM
+                cudnn_sys::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM
             }
-            FwdAlgo::Gemm => cudnn_sys::cudnnConvolutionFwdAlgo_t_CUDNN_CONVOLUTION_FWD_ALGO_GEMM,
-            FwdAlgo::Direct => {
-                cudnn_sys::cudnnConvolutionFwdAlgo_t_CUDNN_CONVOLUTION_FWD_ALGO_DIRECT
-            }
-            FwdAlgo::Fft => cudnn_sys::cudnnConvolutionFwdAlgo_t_CUDNN_CONVOLUTION_FWD_ALGO_FFT,
-            FwdAlgo::FftTiling => {
-                cudnn_sys::cudnnConvolutionFwdAlgo_t_CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING
-            }
-            FwdAlgo::Winograd => {
-                cudnn_sys::cudnnConvolutionFwdAlgo_t_CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD
-            }
-            FwdAlgo::WinogradNonfused => {
-                cudnn_sys::cudnnConvolutionFwdAlgo_t_CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED
-            }
-            FwdAlgo::Count => cudnn_sys::cudnnConvolutionFwdAlgo_t_CUDNN_CONVOLUTION_FWD_ALGO_COUNT,
+            FwdAlgo::Gemm => cudnn_sys::CUDNN_CONVOLUTION_FWD_ALGO_GEMM,
+            FwdAlgo::Direct => cudnn_sys::CUDNN_CONVOLUTION_FWD_ALGO_DIRECT,
+            FwdAlgo::Fft => cudnn_sys::CUDNN_CONVOLUTION_FWD_ALGO_FFT,
+            FwdAlgo::FftTiling => cudnn_sys::CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING,
+            FwdAlgo::Winograd => cudnn_sys::CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD,
+            FwdAlgo::WinogradNonfused => cudnn_sys::CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED,
+            FwdAlgo::Count => cudnn_sys::CUDNN_CONVOLUTION_FWD_ALGO_COUNT,
         }
     }
 }

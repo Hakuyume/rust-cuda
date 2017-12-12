@@ -71,7 +71,7 @@ impl<T> Descriptor<T>
     }
 
     pub fn get_4d(&self) -> Result<(usize, usize, usize, usize, usize, usize, usize, usize)> {
-        let mut data_type = T::DATA_TYPE;
+        let mut data_type = 0;
         let mut n = 0;
         let mut c = 0;
         let mut h = 0;
