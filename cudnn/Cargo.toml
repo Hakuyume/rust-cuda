@@ -6,7 +6,3 @@ authors = ["Toru Ogawa <Hakuyume@users.noreply.github.com>"]
 [dependencies]
 cuda = { path = "../cuda" }
 cudnn-sys = { path = "../cudnn-sys" }
-
-[dev-dependencies]
-num-traits = "0.1"
-rand = "0.3"
