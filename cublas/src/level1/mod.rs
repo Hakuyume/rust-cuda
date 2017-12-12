@@ -49,3 +49,27 @@ pub fn axpy<T, X, Y>(context: &mut context::Context,
     }
     Ok(())
 }
+
+pub fn copy<T, X, Y>(context: &mut context::Context,
+                     x: &X,
+                     incx: usize,
+                     y: &mut Y,
+                     incy: usize)
+                     -> Result<()>
+    where T: scalar::Scalar,
+          X: Repr<T>,
+          Y: ReprMut<T>
+{
+    let nx = (x.len() - 1) / incx + 1;
+    let ny = (y.len() - 1) / incy + 1;
+    assert_eq!(nx, ny);
+    unsafe {
+        try_call!(T::COPY(context.as_mut_ptr(),
+                          nx as c_int,
+                          x.as_ptr(),
+                          incx as c_int,
+                          y.as_mut_ptr(),
+                          incy as c_int))
+    }
+    Ok(())
+}
