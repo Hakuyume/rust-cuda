@@ -8,4 +8,6 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 pub mod scalar;
 pub mod context;
-pub mod level1;
+
+mod level1;
+pub use level1::*;
