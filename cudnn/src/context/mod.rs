@@ -25,3 +25,6 @@ impl Drop for Context {
         unsafe { cudnn_sys::cudnnDestroy(self.handle) };
     }
 }
+
+#[cfg(test)]
+mod tests;
