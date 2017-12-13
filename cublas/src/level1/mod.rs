@@ -6,16 +6,17 @@ use Result;
 use scalar;
 use context;
 
-pub fn iamax<T, X>(context: &mut context::Context, x: &X, incx: usize) -> Result<usize>
+pub fn iamax<T, X>(context: &mut context::Context, n: usize, x: &X, incx: usize) -> Result<usize>
     where T: scalar::Scalar,
           X: Repr<T>
 {
     assert_eq!(context.get_pointer_mode()?, context::PointerMode::Host);
-    let nx = (x.len() - 1) / incx + 1;
+    assert!((n - 1) * incx + 1 <= x.len());
+
     let mut result = 0;
     unsafe {
         try_call!(T::IAMAX(context.as_mut_ptr(),
-                           nx as c_int,
+                           n as c_int,
                            x.as_ptr(),
                            incx as c_int,
                            &mut result))
@@ -24,7 +25,8 @@ pub fn iamax<T, X>(context: &mut context::Context, x: &X, incx: usize) -> Result
 }
 
 pub fn axpy<T, X, Y>(context: &mut context::Context,
-                     alpha: T,
+                     n: usize,
+                     alpha: &T,
                      x: &X,
                      incx: usize,
                      y: &mut Y,
@@ -35,13 +37,12 @@ pub fn axpy<T, X, Y>(context: &mut context::Context,
           Y: ReprMut<T>
 {
     assert_eq!(context.get_pointer_mode()?, context::PointerMode::Host);
-    let nx = (x.len() - 1) / incx + 1;
-    let ny = (y.len() - 1) / incy + 1;
-    assert_eq!(nx, ny);
+    assert!((n - 1) * incx + 1 <= x.len());
+    assert!((n - 1) * incy + 1 <= y.len());
     unsafe {
         try_call!(T::AXPY(context.as_mut_ptr(),
-                          nx as c_int,
-                          &alpha,
+                          n as c_int,
+                          alpha,
                           x.as_ptr(),
                           incx as c_int,
                           y.as_mut_ptr(),
@@ -51,6 +52,7 @@ pub fn axpy<T, X, Y>(context: &mut context::Context,
 }
 
 pub fn copy<T, X, Y>(context: &mut context::Context,
+                     n: usize,
                      x: &X,
                      incx: usize,
                      y: &mut Y,
@@ -60,12 +62,11 @@ pub fn copy<T, X, Y>(context: &mut context::Context,
           X: Repr<T>,
           Y: ReprMut<T>
 {
-    let nx = (x.len() - 1) / incx + 1;
-    let ny = (y.len() - 1) / incy + 1;
-    assert_eq!(nx, ny);
+    assert!((n - 1) * incx + 1 <= x.len());
+    assert!((n - 1) * incy + 1 <= y.len());
     unsafe {
         try_call!(T::COPY(context.as_mut_ptr(),
-                          nx as c_int,
+                          n as c_int,
                           x.as_ptr(),
                           incx as c_int,
                           y.as_mut_ptr(),
