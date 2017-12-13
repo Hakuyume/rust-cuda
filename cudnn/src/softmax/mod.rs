@@ -32,8 +32,8 @@ pub fn forward<T, S, X, Y>(context: &mut context::Context,
     y.0.check_memory(y.1)?;
     unsafe {
         try_call!(cudnn_sys::cudnnSoftmaxForward(context.as_mut_ptr(),
-                                                 algo.into(),
-                                                 mode.into(),
+                                                 algo as _,
+                                                 mode as _,
                                                  alpha as *const S as *const c_void,
                                                  x.0.as_ptr(),
                                                  x.1.as_ptr() as *const c_void,
@@ -70,8 +70,8 @@ pub fn backward<T, S, Y, Dy, Dx>(context: &mut context::Context,
     };
     unsafe {
         try_call!(cudnn_sys::cudnnSoftmaxBackward(context.as_mut_ptr(),
-                                                  algo.into(),
-                                                  mode.into(),
+                                                  algo as _,
+                                                  mode as _,
                                                   alpha as *const S as *const c_void,
                                                   y.0.as_ptr(),
                                                   y.1.as_ptr() as *const c_void,

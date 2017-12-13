@@ -29,7 +29,7 @@ impl Context {
     }
 
     pub fn set_pointer_mode(&mut self, mode: PointerMode) -> Result<()> {
-        unsafe { try_call!(cublas_sys::cublasSetPointerMode_v2(self.handle, mode.into())) }
+        unsafe { try_call!(cublas_sys::cublasSetPointerMode_v2(self.handle, mode as _)) }
         Ok(())
     }
 }

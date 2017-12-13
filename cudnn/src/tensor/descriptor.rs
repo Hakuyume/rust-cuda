@@ -35,7 +35,7 @@ impl<T> Descriptor<T>
     pub fn set_4d(&mut self, format: Format, n: usize, c: usize, h: usize, w: usize) -> Result<()> {
         unsafe {
             try_call!(cudnn_sys::cudnnSetTensor4dDescriptor(self.desc,
-                                                            format.into(),
+                                                            format as _,
                                                             T::DATA_TYPE,
                                                             n as c_int,
                                                             c as c_int,

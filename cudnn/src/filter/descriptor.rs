@@ -41,7 +41,7 @@ impl<T> Descriptor<T>
         unsafe {
             try_call!(cudnn_sys::cudnnSetFilter4dDescriptor(self.desc,
                                                             T::DATA_TYPE,
-                                                            format.into(),
+                                                            format as _,
                                                             k as c_int,
                                                             c as c_int,
                                                             h as c_int,

@@ -10,12 +10,10 @@ pub use self::error::Error;
 mod try_from;
 pub use self::try_from::TryFrom;
 
-mod into;
-
 impl std::error::Error for Error {
     fn description(&self) -> &str {
         unsafe {
-            let ptr = cuda_sys::cudaGetErrorString(self.clone().into());
+            let ptr = cuda_sys::cudaGetErrorString(*self as _);
             let c_str = ffi::CStr::from_ptr(ptr);
             c_str.to_str().unwrap_or("[Non UTF8 description]")
         }

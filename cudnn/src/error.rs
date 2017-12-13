@@ -5,19 +5,20 @@ use std::result;
 
 use cudnn_sys;
 
+#[repr(u32)]
 #[derive(Clone, Copy, Debug)]
 pub enum Error {
-    NotInitialized,
-    AllocFailed,
-    BadParam,
-    InternalError,
-    InvalidValue,
-    ArchMismatch,
-    MappingError,
-    ExecutionFailed,
-    NotSupported,
-    LicenseError,
-    RuntimePrerequisiteMissing,
+    NotInitialized = cudnn_sys::CUDNN_STATUS_NOT_INITIALIZED,
+    AllocFailed = cudnn_sys::CUDNN_STATUS_ALLOC_FAILED,
+    BadParam = cudnn_sys::CUDNN_STATUS_BAD_PARAM,
+    InternalError = cudnn_sys::CUDNN_STATUS_INTERNAL_ERROR,
+    InvalidValue = cudnn_sys::CUDNN_STATUS_INVALID_VALUE,
+    ArchMismatch = cudnn_sys::CUDNN_STATUS_ARCH_MISMATCH,
+    MappingError = cudnn_sys::CUDNN_STATUS_MAPPING_ERROR,
+    ExecutionFailed = cudnn_sys::CUDNN_STATUS_EXECUTION_FAILED,
+    NotSupported = cudnn_sys::CUDNN_STATUS_NOT_SUPPORTED,
+    LicenseError = cudnn_sys::CUDNN_STATUS_LICENSE_ERROR,
+    RuntimePrerequisiteMissing = cudnn_sys::CUDNN_STATUS_RUNTIME_PREREQUISITE_MISSING,
 }
 
 pub trait TryFrom<T>: Sized {
@@ -48,30 +49,10 @@ impl TryFrom<cudnn_sys::cudnnStatus_t> for Error {
     }
 }
 
-impl Into<cudnn_sys::cudnnStatus_t> for Error {
-    fn into(self) -> cudnn_sys::cudnnStatus_t {
-        match self {
-            Error::NotInitialized => cudnn_sys::CUDNN_STATUS_NOT_INITIALIZED,
-            Error::AllocFailed => cudnn_sys::CUDNN_STATUS_ALLOC_FAILED,
-            Error::BadParam => cudnn_sys::CUDNN_STATUS_BAD_PARAM,
-            Error::InternalError => cudnn_sys::CUDNN_STATUS_INTERNAL_ERROR,
-            Error::InvalidValue => cudnn_sys::CUDNN_STATUS_INVALID_VALUE,
-            Error::ArchMismatch => cudnn_sys::CUDNN_STATUS_ARCH_MISMATCH,
-            Error::MappingError => cudnn_sys::CUDNN_STATUS_MAPPING_ERROR,
-            Error::ExecutionFailed => cudnn_sys::CUDNN_STATUS_EXECUTION_FAILED,
-            Error::NotSupported => cudnn_sys::CUDNN_STATUS_NOT_SUPPORTED,
-            Error::LicenseError => cudnn_sys::CUDNN_STATUS_LICENSE_ERROR,
-            Error::RuntimePrerequisiteMissing => {
-                cudnn_sys::CUDNN_STATUS_RUNTIME_PREREQUISITE_MISSING
-            }
-        }
-    }
-}
-
 impl error::Error for Error {
     fn description(&self) -> &str {
         unsafe {
-            let ptr = cudnn_sys::cudnnGetErrorString(self.clone().into());
+            let ptr = cudnn_sys::cudnnGetErrorString(*self as _);
             let c_str = ffi::CStr::from_ptr(ptr);
             c_str.to_str().unwrap_or("[Non UTF8 description]")
         }

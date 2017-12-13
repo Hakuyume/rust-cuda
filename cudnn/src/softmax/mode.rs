@@ -1,16 +1,8 @@
 use cudnn_sys;
 
+#[repr(u32)]
 #[derive(Clone, Copy, Debug)]
 pub enum Mode {
-    Instance,
-    Channel,
-}
-
-impl Into<cudnn_sys::cudnnSoftmaxMode_t> for Mode {
-    fn into(self) -> cudnn_sys::cudnnSoftmaxMode_t {
-        match self {
-            Mode::Instance => cudnn_sys::CUDNN_SOFTMAX_MODE_INSTANCE,
-            Mode::Channel => cudnn_sys::CUDNN_SOFTMAX_MODE_CHANNEL,
-        }
-    }
+    Instance = cudnn_sys::CUDNN_SOFTMAX_MODE_INSTANCE,
+    Channel = cudnn_sys::CUDNN_SOFTMAX_MODE_CHANNEL,
 }

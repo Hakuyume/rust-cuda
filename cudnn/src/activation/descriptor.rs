@@ -30,7 +30,7 @@ impl Descriptor {
         };
         unsafe {
             try_call!(cudnn_sys::cudnnSetActivationDescriptor(self.desc,
-                                                              mode.into(),
+                                                              mode as _,
                                                               relu_nan_opt,
                                                               coef as c_double))
         }

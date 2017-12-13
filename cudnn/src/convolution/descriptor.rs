@@ -49,7 +49,7 @@ impl<T> Descriptor<T>
                                                                  v as c_int,
                                                                  dilation_h as c_int,
                                                                  dilation_w as c_int,
-                                                                 mode.into(),
+                                                                 mode as _,
                                                                  T::DATA_TYPE))
         }
         Ok(())
