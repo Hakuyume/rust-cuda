@@ -3,9 +3,7 @@ use std::ptr;
 use cublas_sys;
 
 use Result;
-
-mod pointer_mode;
-pub use self::pointer_mode::PointerMode;
+use PointerMode;
 
 pub struct Context {
     handle: cublas_sys::cublasHandle_t,

@@ -3,6 +3,7 @@ use std::os::raw::c_int;
 use cuda::memory::{Repr, ReprMut};
 
 use Result;
+use PointerMode;
 use scalar;
 use context;
 use helper::check_vec;
@@ -11,7 +12,7 @@ pub fn iamax<T, X>(context: &mut context::Context, n: usize, x: &X, incx: usize)
     where T: scalar::Scalar,
           X: Repr<T>
 {
-    assert_eq!(context.get_pointer_mode()?, context::PointerMode::Host);
+    assert_eq!(context.get_pointer_mode()?, PointerMode::Host);
     check_vec(n, x, incx);
 
     let mut result = 0;
@@ -37,7 +38,7 @@ pub fn axpy<T, X, Y>(context: &mut context::Context,
           X: Repr<T>,
           Y: ReprMut<T>
 {
-    assert_eq!(context.get_pointer_mode()?, context::PointerMode::Host);
+    assert_eq!(context.get_pointer_mode()?, PointerMode::Host);
     check_vec(n, x, incx);
     check_vec(n, y, incy);
     unsafe {

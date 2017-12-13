@@ -2,6 +2,14 @@ use cublas_sys;
 
 #[repr(u32)]
 #[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Operation {
+    N = cublas_sys::CUBLAS_OP_N,
+    T = cublas_sys::CUBLAS_OP_T,
+    C = cublas_sys::CUBLAS_OP_C,
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum PointerMode {
     Host = cublas_sys::CUBLAS_POINTER_MODE_HOST,
     Device = cublas_sys::CUBLAS_POINTER_MODE_DEVICE,
