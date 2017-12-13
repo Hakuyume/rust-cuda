@@ -13,7 +13,7 @@ pub use self::format::Format;
 mod descriptor;
 pub use self::descriptor::Descriptor;
 
-use misc::MemoryDescriptor;
+use helper::MemoryDescriptor;
 
 pub fn add<T, S, A, C>(context: &mut context::Context,
                        alpha: &S,

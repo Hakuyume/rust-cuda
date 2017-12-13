@@ -15,4 +15,4 @@ pub mod convolution;
 pub mod softmax;
 pub mod activation;
 
-mod misc;
+mod helper;

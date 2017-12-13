@@ -30,7 +30,7 @@ pub use self::bwd_filter_preference::BwdFilterPreference;
 mod bwd_filter_algo;
 pub use self::bwd_filter_algo::BwdFilterAlgo;
 
-use misc::MemoryDescriptor;
+use helper::MemoryDescriptor;
 
 pub fn get_2d_forward_output_dim<T>(conv_desc: &Descriptor<T>,
                                     input_tensor_desc: &tensor::Descriptor<T>,

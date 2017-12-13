@@ -14,7 +14,7 @@ pub use self::mode::Mode;
 mod descriptor;
 pub use self::descriptor::Descriptor;
 
-use misc::MemoryDescriptor;
+use helper::MemoryDescriptor;
 
 pub fn forward<T, S, Src, Dest>(context: &mut context::Context,
                                 activation_desc: &Descriptor,

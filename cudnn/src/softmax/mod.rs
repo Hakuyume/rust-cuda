@@ -14,7 +14,7 @@ pub use self::algorithm::Algorithm;
 mod mode;
 pub use self::mode::Mode;
 
-use misc::MemoryDescriptor;
+use helper::MemoryDescriptor;
 
 pub fn forward<T, S, X, Y>(context: &mut context::Context,
                            algo: Algorithm,

@@ -5,13 +5,14 @@ use cuda::memory::{Repr, ReprMut};
 use Result;
 use scalar;
 use context;
+use helper::check_vec;
 
 pub fn iamax<T, X>(context: &mut context::Context, n: usize, x: &X, incx: usize) -> Result<usize>
     where T: scalar::Scalar,
           X: Repr<T>
 {
     assert_eq!(context.get_pointer_mode()?, context::PointerMode::Host);
-    assert!((n - 1) * incx + 1 <= x.len());
+    check_vec(n, x, incx);
 
     let mut result = 0;
     unsafe {
@@ -37,8 +38,8 @@ pub fn axpy<T, X, Y>(context: &mut context::Context,
           Y: ReprMut<T>
 {
     assert_eq!(context.get_pointer_mode()?, context::PointerMode::Host);
-    assert!((n - 1) * incx + 1 <= x.len());
-    assert!((n - 1) * incy + 1 <= y.len());
+    check_vec(n, x, incx);
+    check_vec(n, y, incy);
     unsafe {
         try_call!(T::AXPY(context.as_mut_ptr(),
                           n as c_int,
@@ -62,8 +63,8 @@ pub fn copy<T, X, Y>(context: &mut context::Context,
           X: Repr<T>,
           Y: ReprMut<T>
 {
-    assert!((n - 1) * incx + 1 <= x.len());
-    assert!((n - 1) * incy + 1 <= y.len());
+    check_vec(n, x, incx);
+    check_vec(n, y, incy);
     unsafe {
         try_call!(T::COPY(context.as_mut_ptr(),
                           n as c_int,
