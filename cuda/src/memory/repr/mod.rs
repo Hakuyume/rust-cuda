@@ -5,9 +5,6 @@ pub trait Repr<T> {
     fn as_ptr(&self) -> *const T;
     fn len(&self) -> usize;
 
-    fn view<'a>(&'a self) -> View<'a, T> {
-        unsafe { from_raw_parts(self.as_ptr(), self.len()) }
-    }
     fn split_at<'a>(&'a self, mid: usize) -> (View<'a, T>, View<'a, T>) {
         assert!(mid <= self.len());
         unsafe {
@@ -20,9 +17,6 @@ pub trait Repr<T> {
 pub trait ReprMut<T>: Repr<T> {
     fn as_mut_ptr(&mut self) -> *mut T;
 
-    fn view_mut<'a>(&'a mut self) -> ViewMut<'a, T> {
-        unsafe { from_raw_parts_mut(self.as_mut_ptr(), self.len()) }
-    }
     fn split_at_mut<'a>(&'a mut self, mid: usize) -> (ViewMut<'a, T>, ViewMut<'a, T>) {
         assert!(mid <= self.len());
         unsafe {
