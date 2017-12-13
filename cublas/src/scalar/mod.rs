@@ -7,6 +7,7 @@ use self::alias::*;
 
 pub trait Scalar {
     const IAMAX: Iamax<Self>;
+    const ASUM: Asum<Self>;
     const AXPY: Axpy<Self>;
     const COPY: Copy<Self>;
 
@@ -15,6 +16,7 @@ pub trait Scalar {
 
 impl Scalar for c_float {
     const IAMAX: Iamax<Self> = cublas_sys::cublasIsamax_v2;
+    const ASUM: Asum<Self> = cublas_sys::cublasSasum_v2;
     const AXPY: Axpy<Self> = cublas_sys::cublasSaxpy_v2;
     const COPY: Copy<Self> = cublas_sys::cublasScopy_v2;
 

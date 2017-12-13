@@ -9,6 +9,7 @@ macro_rules! cublas_fn {
 }
 
 pub type Iamax<T> = cublas_fn!(c_int, *const T, c_int, *mut c_int);
+pub type Asum<T> = cublas_fn!(c_int, *const T, c_int, *mut T);
 pub type Axpy<T> = cublas_fn!(c_int, *const T, *const T, c_int, *mut T, c_int);
 pub type Copy<T> = cublas_fn!(c_int, *const T, c_int, *mut T, c_int);
 
