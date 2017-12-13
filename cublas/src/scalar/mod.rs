@@ -1,4 +1,3 @@
-use std::default;
 use std::os::raw::c_float;
 
 use cublas_sys;
@@ -6,7 +5,7 @@ use cublas_sys;
 mod alias;
 use self::alias::*;
 
-pub trait Scalar: default::Default {
+pub trait Scalar {
     const IAMAX: Iamax<Self>;
     const ASUM: Asum<Self>;
     const AXPY: Axpy<Self>;
