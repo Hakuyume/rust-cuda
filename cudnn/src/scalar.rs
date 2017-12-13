@@ -10,7 +10,7 @@ impl Scalar for c_float {
     const DATA_TYPE: cudnn_sys::cudnnDataType_t = cudnn_sys::CUDNN_DATA_FLOAT;
 }
 
-pub trait Scale {
+pub trait Scale: Scalar {
     type Scale;
 }
 

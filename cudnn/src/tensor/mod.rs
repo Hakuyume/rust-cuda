@@ -21,7 +21,7 @@ pub fn add<T, S, A, C>(context: &mut context::Context,
                        beta: &S,
                        c: (&Descriptor<T>, &mut C))
                        -> Result<()>
-    where T: scalar::Scalar + scalar::Scale<Scale = S>,
+    where T: scalar::Scale<Scale = S>,
           A: Repr<T>,
           C: ReprMut<T>
 {
@@ -60,7 +60,7 @@ pub fn scale<T, S, Y>(context: &mut context::Context,
                       y: (&Descriptor<T>, &mut Y),
                       alpha: &S)
                       -> Result<()>
-    where T: scalar::Scalar + scalar::Scale<Scale = S>,
+    where T: scalar::Scale<Scale = S>,
           Y: ReprMut<T>
 {
     y.0.check_memory(y.1)?;

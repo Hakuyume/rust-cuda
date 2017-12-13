@@ -24,7 +24,7 @@ pub fn forward<T, S, X, Y>(context: &mut context::Context,
                            beta: &S,
                            y: (&tensor::Descriptor<T>, &mut Y))
                            -> Result<()>
-    where T: scalar::Scalar + scalar::Scale<Scale = S>,
+    where T: scalar::Scale<Scale = S>,
           X: Repr<T>,
           Y: ReprMut<T>
 {
@@ -53,7 +53,7 @@ pub fn backward<T, S, Y, Dy, Dx>(context: &mut context::Context,
                                  beta: &S,
                                  dx: (&tensor::Descriptor<T>, &mut Dx))
                                  -> Result<()>
-    where T: scalar::Scalar + scalar::Scale<Scale = S>,
+    where T: scalar::Scale<Scale = S>,
           Y: Repr<T>,
           Dy: Repr<T>,
           Dx: ReprMut<T>

@@ -23,7 +23,7 @@ pub fn forward<T, S, Src, Dest>(context: &mut context::Context,
                                 beta: &S,
                                 dest: (&tensor::Descriptor<T>, &mut Dest))
                                 -> Result<()>
-    where T: scalar::Scalar + scalar::Scale<Scale = S>,
+    where T: scalar::Scale<Scale = S>,
           Src: Repr<T>,
           Dest: ReprMut<T>
 {

@@ -139,7 +139,7 @@ pub fn forward<T, S, X, W, R, Y>(context: &mut context::Context,
                                  beta: &S,
                                  y: (&tensor::Descriptor<T>, &mut Y))
                                  -> Result<()>
-    where T: scalar::Scalar + scalar::Scale<Scale = S>,
+    where T: scalar::Scale<Scale = S>,
           X: Repr<T>,
           W: Repr<T>,
           R: ReprMut<u8>,
@@ -223,7 +223,7 @@ pub fn backward_filter<T, S, X, Dy, R, Dw>(context: &mut context::Context,
                                            beta: &S,
                                            dw: (&filter::Descriptor<T>, &mut Dw))
                                            -> Result<()>
-    where T: scalar::Scalar + scalar::Scale<Scale = S>,
+    where T: scalar::Scale<Scale = S>,
           X: Repr<T>,
           Dy: Repr<T>,
           R: ReprMut<u8>,
