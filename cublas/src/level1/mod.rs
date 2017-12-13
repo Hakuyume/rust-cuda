@@ -1,4 +1,3 @@
-use std::default;
 use std::os::raw::c_int;
 
 use cuda::memory::{Repr, ReprMut};
@@ -28,7 +27,7 @@ pub fn iamax<T, X>(context: &mut context::Context, n: usize, x: &X, incx: usize)
 }
 
 pub fn asum<T, X>(context: &mut context::Context, n: usize, x: &X, incx: usize) -> Result<T>
-    where T: default::Default + scalar::Scalar,
+    where T: scalar::Scalar,
           X: Repr<T>
 {
     assert_eq!(context.get_pointer_mode()?, PointerMode::Host);
