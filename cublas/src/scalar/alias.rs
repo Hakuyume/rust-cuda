@@ -12,6 +12,7 @@ pub type Iamax<T> = cublas_fn!(c_int, *const T, c_int, *mut c_int);
 pub type Asum<T> = cublas_fn!(c_int, *const T, c_int, *mut T);
 pub type Axpy<T> = cublas_fn!(c_int, *const T, *const T, c_int, *mut T, c_int);
 pub type Copy<T> = cublas_fn!(c_int, *const T, c_int, *mut T, c_int);
+pub type Dot<T> = cublas_fn!(c_int, *const T, c_int, *const T, c_int, *mut T);
 
 pub type Gemv<T> = cublas_fn!(cublas_sys::cublasOperation_t, c_int, c_int,
                               *const T,

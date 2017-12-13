@@ -11,6 +11,7 @@ pub trait Scalar: default::Default {
     const ASUM: Asum<Self>;
     const AXPY: Axpy<Self>;
     const COPY: Copy<Self>;
+    const DOT: Dot<Self>;
 
     const GEMV: Gemv<Self>;
 }
@@ -20,6 +21,7 @@ impl Scalar for c_float {
     const ASUM: Asum<Self> = cublas_sys::cublasSasum_v2;
     const AXPY: Axpy<Self> = cublas_sys::cublasSaxpy_v2;
     const COPY: Copy<Self> = cublas_sys::cublasScopy_v2;
+    const DOT: Dot<Self> = cublas_sys::cublasSdot_v2;
 
     const GEMV: Gemv<Self> = cublas_sys::cublasSgemv_v2;
 }
