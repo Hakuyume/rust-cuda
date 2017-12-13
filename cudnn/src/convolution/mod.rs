@@ -130,13 +130,13 @@ pub fn get_forward_workspace_size<T>(context: &mut context::Context,
 }
 
 pub fn forward<T, S, X, W, R, Y>(context: &mut context::Context,
-                                 alpha: S,
+                                 alpha: &S,
                                  x: (&tensor::Descriptor<T>, &X),
                                  w: (&filter::Descriptor<T>, &W),
                                  conv_desc: &Descriptor<T>,
                                  algo: FwdAlgo,
                                  workspace: &mut R,
-                                 beta: S,
+                                 beta: &S,
                                  y: (&tensor::Descriptor<T>, &mut Y))
                                  -> Result<()>
     where T: scalar::Scalar + scalar::Scale<Scale = S>,
@@ -150,7 +150,7 @@ pub fn forward<T, S, X, W, R, Y>(context: &mut context::Context,
     y.0.check_memory(y.1)?;
     unsafe {
         try_call!(cudnn_sys::cudnnConvolutionForward(context.as_mut_ptr(),
-                                                     &alpha as *const S as *const c_void,
+                                                     alpha as *const S as *const c_void,
                                                      x.0.as_ptr(),
                                                      x.1.as_ptr() as *const c_void,
                                                      w.0.as_ptr(),
@@ -159,7 +159,7 @@ pub fn forward<T, S, X, W, R, Y>(context: &mut context::Context,
                                                      algo.into(),
                                                      workspace.as_mut_ptr() as *mut c_void,
                                                      workspace.len(),
-                                                     &beta as *const S as *const c_void,
+                                                     beta as *const S as *const c_void,
                                                      y.0.as_ptr(),
                                                      y.1.as_mut_ptr() as *mut c_void))
     }
@@ -214,13 +214,13 @@ pub fn get_backward_filter_workspace_size<T>(context: &mut context::Context,
 }
 
 pub fn backward_filter<T, S, X, Dy, R, Dw>(context: &mut context::Context,
-                                           alpha: S,
+                                           alpha: &S,
                                            x: (&tensor::Descriptor<T>, &X),
                                            dy: (&tensor::Descriptor<T>, &Dy),
                                            conv_desc: &Descriptor<T>,
                                            algo: BwdFilterAlgo,
                                            workspace: &mut R,
-                                           beta: S,
+                                           beta: &S,
                                            dw: (&filter::Descriptor<T>, &mut Dw))
                                            -> Result<()>
     where T: scalar::Scalar + scalar::Scale<Scale = S>,
@@ -234,7 +234,7 @@ pub fn backward_filter<T, S, X, Dy, R, Dw>(context: &mut context::Context,
     dw.0.check_memory(dw.1)?;
     unsafe {
         try_call!(cudnn_sys::cudnnConvolutionBackwardFilter(context.as_mut_ptr(),
-                                                            &alpha as *const S as *const c_void,
+                                                            alpha as *const S as *const c_void,
                                                             x.0.as_ptr(),
                                                             x.1.as_ptr() as *const c_void,
                                                             dy.0.as_ptr(),
@@ -243,7 +243,7 @@ pub fn backward_filter<T, S, X, Dy, R, Dw>(context: &mut context::Context,
                                                             algo.into(),
                                                             workspace.as_mut_ptr() as *mut c_void,
                                                             workspace.len(),
-                                                            &beta as *const S as *const c_void,
+                                                            beta as *const S as *const c_void,
                                                             dw.0.as_ptr(),
                                                             dw.1.as_mut_ptr() as *mut c_void))
     }

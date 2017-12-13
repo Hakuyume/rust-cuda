@@ -18,9 +18,9 @@ use misc::MemoryDescriptor;
 
 pub fn forward<T, S, Src, Dest>(context: &mut context::Context,
                                 activation_desc: &Descriptor,
-                                alpha: S,
+                                alpha: &S,
                                 src: Option<(&tensor::Descriptor<T>, &Src)>,
-                                beta: S,
+                                beta: &S,
                                 dest: (&tensor::Descriptor<T>, &mut Dest))
                                 -> Result<()>
     where T: scalar::Scalar + scalar::Scale<Scale = S>,
@@ -39,10 +39,10 @@ pub fn forward<T, S, Src, Dest>(context: &mut context::Context,
     unsafe {
         try_call!(cudnn_sys::cudnnActivationForward(context.as_mut_ptr(),
                                                     activation_desc.as_ptr(),
-                                                    &alpha as *const S as *const c_void,
+                                                    alpha as *const S as *const c_void,
                                                     src_ptr.0,
                                                     src_ptr.1 as *const c_void,
-                                                    &beta as *const S as *const c_void,
+                                                    beta as *const S as *const c_void,
                                                     dest.0.as_ptr(),
                                                     dest.1.as_mut_ptr() as *mut c_void))
     }
