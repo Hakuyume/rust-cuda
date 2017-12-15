@@ -1,6 +1,5 @@
 use std::any;
 use std::os::raw::c_void;
-use std::ptr;
 
 use cuda_sys;
 
@@ -15,7 +14,7 @@ pub unsafe fn launch_kernel(func: *const c_void,
                             block_dim: Dim3,
                             args: &mut [&mut any::Any],
                             shared_mem: usize,
-                            stream: Option<&mut stream::Stream>)
+                            stream: &stream::Handle)
                             -> Result<()> {
     let mut args: Vec<_> = args.iter_mut()
         .map(|arg| *arg as *mut any::Any as *mut c_void)
@@ -25,9 +24,6 @@ pub unsafe fn launch_kernel(func: *const c_void,
                                          block_dim.into(),
                                          args.as_mut_ptr(),
                                          shared_mem,
-                                         match stream {
-                                             Some(stream) => stream.as_mut_ptr(),
-                                             None => ptr::null_mut(),
-                                         }));
+                                         stream.as_ptr()));
     Ok(())
 }
