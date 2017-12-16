@@ -27,12 +27,6 @@ impl Stream {
     }
 }
 
-impl Default for Stream {
-    fn default() -> Stream {
-        Stream { stream: ptr::null_mut() }
-    }
-}
-
 impl Drop for Stream {
     fn drop(&mut self) {
         if !self.stream.is_null() {
