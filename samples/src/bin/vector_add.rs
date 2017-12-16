@@ -1,3 +1,5 @@
+// original: cuda/samples/0_Simple/vectorAdd
+
 extern crate rand;
 extern crate cuda;
 
