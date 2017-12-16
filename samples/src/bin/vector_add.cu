@@ -1,8 +1,12 @@
-// original: cuda/samples/0_Simple/vectorAdd
+// original: cuda/samples/0_Simple/vectorAdd/vectorAdd.cu
 
-extern "C" __global__ void vector_add(const float *a, const float *b, float *c, size_t num)
+extern "C" __global__ void
+vectorAdd(const float *A, const float *B, float *C, int numElements)
 {
-  const size_t i = blockDim.x * blockIdx.x + threadIdx.x;
-  if (i < num)
-    c[i] = a[i] + b[i];
+    int i = blockDim.x * blockIdx.x + threadIdx.x;
+
+    if (i < numElements)
+    {
+        C[i] = A[i] + B[i];
+    }
 }
