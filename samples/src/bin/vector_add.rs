@@ -53,9 +53,9 @@ fn main() {
         cuda::memory::memcpy(&mut h_c, &d_c).unwrap();
 
         for i in 0..NUM {
-            assert!((h_a[i] + h_b[i] - h_c[i]).abs() > 1e-5,
-                    "Result verification failed at element {}!",
-                    i);
+            if (h_a[i] + h_b[i] - h_c[i]).abs() > 1e-5 {
+                panic!("Result verification failed at element {}!", i);
+            }
         }
 
         println!("Test PASSED");
