@@ -60,3 +60,6 @@ impl<'a> Drop for SyncHandle<'a> {
         self.stream.synchronize().unwrap()
     }
 }
+
+#[cfg(test)]
+mod tests;
