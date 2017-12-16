@@ -11,7 +11,7 @@ fn split_at() {
 }
 
 #[test]
-#[should_panic(expected = "assersion failed")]
+#[should_panic(expected = "assertion failed")]
 fn split_at_invalid() {
     let m = Array::new(16).unwrap();
     m.split_at(24);
@@ -31,7 +31,7 @@ fn split_at_mut() {
 }
 
 #[test]
-#[should_panic(expected = "assersion failed")]
+#[should_panic(expected = "assertion failed")]
 fn split_at_mut_invalid() {
     let mut m = Array::new(16).unwrap();
     m.split_at_mut(24);

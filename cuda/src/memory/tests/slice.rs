@@ -33,28 +33,28 @@ fn slice_range_from() {
 }
 
 #[test]
-#[should_panic(expected = "assersion failed")]
+#[should_panic(expected = "assertion failed")]
 fn slice_range_invalid_interval() {
     let m = Array::new(16).unwrap();
     m.slice(8..8);
 }
 
 #[test]
-#[should_panic(expected = "assersion failed")]
+#[should_panic(expected = "assertion failed")]
 fn slice_range_invalid_end() {
     let m = Array::new(16).unwrap();
     m.slice(4..17);
 }
 
 #[test]
-#[should_panic(expected = "assersion failed")]
+#[should_panic(expected = "assertion failed")]
 fn slice_range_to_invalid() {
     let m = Array::new(16).unwrap();
     m.slice(..17);
 }
 
 #[test]
-#[should_panic(expected = "assersion failed")]
+#[should_panic(expected = "assertion failed")]
 fn slice_range_from_invalid() {
     let m = Array::new(16).unwrap();
     m.slice(17..);
@@ -101,28 +101,28 @@ fn slice_mut_range_from() {
 }
 
 #[test]
-#[should_panic(expected = "assersion failed")]
+#[should_panic(expected = "assertion failed")]
 fn slice_mut_range_invalid_interval() {
     let mut m = Array::new(16).unwrap();
     m.slice_mut(8..8);
 }
 
 #[test]
-#[should_panic(expected = "assersion failed")]
+#[should_panic(expected = "assertion failed")]
 fn slice_mut_range_invalid_end() {
     let mut m = Array::new(16).unwrap();
     m.slice_mut(4..17);
 }
 
 #[test]
-#[should_panic(expected = "assersion failed")]
+#[should_panic(expected = "assertion failed")]
 fn slice_mut_range_to_invalid() {
     let mut m = Array::new(16).unwrap();
     m.slice_mut(..17);
 }
 
 #[test]
-#[should_panic(expected = "assersion failed")]
+#[should_panic(expected = "assertion failed")]
 fn slice_mut_range_from_invalid() {
     let mut m = Array::new(16).unwrap();
     m.slice_mut(17..);
