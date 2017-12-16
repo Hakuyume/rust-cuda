@@ -2,9 +2,9 @@ type Array = super::Array<super::Owned<u8>>;
 
 #[test]
 fn malloc() {
-    let m = Array::new(16).unwrap();
-    assert!(!m.as_ptr().is_null());
-    assert_eq!(m.len(), 16);
+    let arr = Array::new(16).unwrap();
+    assert!(!arr.as_ptr().is_null());
+    assert_eq!(arr.len(), 16);
 }
 
 #[test]

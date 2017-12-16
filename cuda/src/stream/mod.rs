@@ -15,7 +15,7 @@ impl Stream {
         Ok(Stream { stream })
     }
 
-    pub fn synchronize(&self) -> Result<()> {
+    fn synchronize(&self) -> Result<()> {
         unsafe { try_call!(cuda_sys::cudaStreamSynchronize(self.stream)) }
         Ok(())
     }
@@ -23,7 +23,7 @@ impl Stream {
     pub fn with<'a, F, T>(&'a self, f: F) -> (T, SyncHandle<'a>)
         where F: 'a + FnOnce(&Handle) -> T
     {
-        (f(&Handle { stream: self.stream }), SyncHandle { stream: self })
+        (f(&Handle { stream: self.stream }), SyncHandle { stream: Some(self) })
     }
 }
 
@@ -46,12 +46,23 @@ impl Handle {
 }
 
 pub struct SyncHandle<'a> {
-    stream: &'a Stream,
+    stream: Option<&'a Stream>,
+}
+
+impl<'a> SyncHandle<'a> {
+    pub fn synchronize(mut self) -> Result<()> {
+        if let Some(stream) = self.stream.take() {
+            stream.synchronize()?;
+        }
+        Ok(())
+    }
 }
 
 impl<'a> Drop for SyncHandle<'a> {
     fn drop(&mut self) {
-        self.stream.synchronize().unwrap()
+        if let Some(stream) = self.stream.take() {
+            let _ = stream.synchronize();
+        }
     }
 }
 

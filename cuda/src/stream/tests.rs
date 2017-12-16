@@ -6,13 +6,14 @@ fn new() {
 }
 
 #[test]
-fn synchronize() {
-    let s = Stream::new().unwrap();
-    s.synchronize().unwrap();
+fn with() {
+    let stream = Stream::new().unwrap();
+    stream.with(|s| assert!(!s.as_ptr().is_null()));
 }
 
 #[test]
-fn with() {
-    let s = Stream::new().unwrap();
-    s.with(|s| assert!(!s.as_ptr().is_null()));
+fn synchronize() {
+    let stream = Stream::new().unwrap();
+    let (_, sync_handle) = stream.with(|s| assert!(!s.as_ptr().is_null()));
+    sync_handle.synchronize().unwrap();
 }
