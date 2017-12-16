@@ -60,12 +60,12 @@ fn main() {
 
         const THREADS_PER_BLOCK: usize = 256;
         const BLOCKS_PER_GRID: usize = (NUM + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK;
+        println!("CUDA kernel launch with {} blocks of {} threads",
+                 BLOCKS_PER_GRID,
+                 THREADS_PER_BLOCK);
 
         let stream = cuda::stream::Stream::default();
         stream.with(|stream| {
-            println!("CUDA kernel launch with {} blocks of {} threads",
-                     BLOCKS_PER_GRID,
-                     THREADS_PER_BLOCK);
             vector_add(BLOCKS_PER_GRID.into(),
                        THREADS_PER_BLOCK.into(),
                        &d_a,
@@ -84,7 +84,6 @@ fn main() {
                 panic!("Result verification failed at element {}!", i);
             }
         }
-
         println!("Test PASSED");
     }
 
