@@ -1,15 +1,17 @@
-mod repr;
-pub use self::repr::{Repr, ReprMut};
+mod ptr;
+pub use self::ptr::{Ptr, PtrMut};
 
-mod view;
-pub use self::view::{View, ViewMut};
-pub use self::view::{from_raw_parts, from_raw_parts_mut};
+mod owned;
+pub use self::owned::Owned;
 
-mod slice;
-pub use self::slice::{Slice, SliceMut};
+mod borrowed;
+pub use self::borrowed::{Borrowed, BorrowedMut};
 
-mod memory;
-pub use self::memory::Memory;
+mod array;
+pub use self::array::Array;
 
 mod memcpy;
 pub use self::memcpy::memcpy;
+
+#[cfg(test)]
+mod tests;

@@ -5,7 +5,9 @@ use std::os::raw::c_void;
 use cuda_sys;
 
 use Result;
-use super::{Repr, ReprMut};
+
+use super::{Ptr, PtrMut};
+use super::Array;
 
 pub trait MemcpyFrom<S>
     where S: ?Sized
@@ -20,8 +22,8 @@ pub fn memcpy<D, S>(dst: &mut D, src: &S) -> Result<()>
     dst.memcpy_from(src)
 }
 
-impl<T, D> MemcpyFrom<[T]> for D
-    where D: ReprMut<T>
+impl<T, P> MemcpyFrom<[T]> for Array<P>
+    where P: PtrMut<Type = T>
 {
     fn memcpy_from(&mut self, src: &[T]) -> Result<()> {
         assert_eq!(src.len(), self.len());
@@ -35,11 +37,11 @@ impl<T, D> MemcpyFrom<[T]> for D
     }
 }
 
-impl<T, D, S> MemcpyFrom<S> for D
-    where D: ?Sized + ops::DerefMut<Target = [T]>,
-          S: Repr<T>
+impl<T, P, D> MemcpyFrom<Array<P>> for D
+    where P: Ptr<Type = T>,
+          D: ?Sized + ops::DerefMut<Target = [T]>
 {
-    fn memcpy_from(&mut self, src: &S) -> Result<()> {
+    fn memcpy_from(&mut self, src: &Array<P>) -> Result<()> {
         let dst = self.deref_mut();
         assert_eq!(src.len(), dst.len());
         unsafe {
@@ -51,6 +53,3 @@ impl<T, D, S> MemcpyFrom<S> for D
         Ok(())
     }
 }
-
-#[cfg(test)]
-mod tests;

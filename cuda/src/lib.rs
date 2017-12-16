@@ -8,3 +8,5 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub mod memory;
 pub mod stream;
 pub mod misc;
+
+pub mod nightly;

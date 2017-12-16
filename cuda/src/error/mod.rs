@@ -8,7 +8,6 @@ mod error;
 pub use self::error::Error;
 
 mod try_from;
-pub use self::try_from::TryFrom;
 
 impl std::error::Error for Error {
     fn description(&self) -> &str {
@@ -28,7 +27,7 @@ impl fmt::Display for Error {
 
 macro_rules! try_call {
     ($call:expr) => {{
-        use $crate::error::TryFrom;
+        use $crate::nightly::convert::TryFrom;
         try!(match $crate::Error::try_from($call) {
             Ok(err) => Err(err),
             Err(_) => Ok(()),

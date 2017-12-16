@@ -2,14 +2,11 @@ use std::result;
 
 use cuda_sys;
 
+use nightly::convert;
+
 use super::Error;
 
-pub trait TryFrom<T>: Sized {
-    type Error;
-    fn try_from(T) -> result::Result<Self, Self::Error>;
-}
-
-impl TryFrom<cuda_sys::cudaError> for Error {
+impl convert::TryFrom<cuda_sys::cudaError> for Error {
     type Error = ();
     fn try_from(value: cuda_sys::cudaError) -> result::Result<Error, ()> {
         match value {
