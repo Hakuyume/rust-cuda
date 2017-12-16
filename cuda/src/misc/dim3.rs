@@ -17,3 +17,13 @@ impl Into<cuda_sys::dim3> for Dim3 {
         }
     }
 }
+
+impl From<usize> for Dim3 {
+    fn from(value: usize) -> Dim3 {
+        Dim3 {
+            x: value,
+            y: 1,
+            z: 1,
+        }
+    }
+}

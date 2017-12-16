@@ -1,0 +1,12 @@
+[package]
+name = "samples"
+version = "0.1.0"
+authors = ["Toru Ogawa <Hakuyume@users.noreply.github.com>"]
+build = "build.rs"
+
+[dependencies]
+rand = "0.3"
+cuda = { path = "../cuda" }
+
+[build-dependencies]
+nvcc = { path = "../nvcc" }
