@@ -14,6 +14,6 @@ fn with() {
 #[test]
 fn synchronize() {
     let stream = Stream::new().unwrap();
-    let (_, sync_handle) = stream.with(|s| assert!(!s.as_ptr().is_null()));
+    let sync_handle = stream.with(|s| assert!(!s.as_ptr().is_null()));
     sync_handle.synchronize().unwrap();
 }

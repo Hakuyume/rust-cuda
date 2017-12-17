@@ -20,10 +20,11 @@ impl Stream {
         Ok(())
     }
 
-    pub fn with<'a, F, T>(&'a self, f: F) -> (T, SyncHandle<'a>)
-        where F: 'a + FnOnce(&Handle) -> T
+    pub fn with<'a, F>(&'a self, f: F) -> SyncHandle<'a>
+        where F: 'a + FnOnce(&Handle)
     {
-        (f(&Handle { stream: self.stream }), SyncHandle { stream: Some(self) })
+        f(&Handle { stream: self.stream });
+        SyncHandle { stream: Some(self) }
     }
 }
 

@@ -73,7 +73,7 @@ fn main() {
                        &mut d_c,
                        NUM,
                        stream)
-                    .unwrap()
+                    .unwrap();
         });
 
         println!("Copy output data from the CUDA device to the host memory");
