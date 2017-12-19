@@ -17,7 +17,7 @@ fn vector_add<A, B, C>(grid_dim: cuda::misc::Dim3,
                        b: &cuda::memory::Array<B>,
                        c: &mut cuda::memory::Array<C>,
                        num: usize,
-                       stream: &cuda::stream::Handle)
+                       stream: &cuda::stream::Stream)
                        -> cuda::Result<()>
     where A: cuda::memory::Ptr<Type = c_float>,
           B: cuda::memory::Ptr<Type = c_float>,
@@ -65,16 +65,14 @@ fn main() {
                  THREADS_PER_BLOCK);
 
         let stream = cuda::stream::Stream::default();
-        stream.with(|stream| {
-            vector_add(BLOCKS_PER_GRID.into(),
-                       THREADS_PER_BLOCK.into(),
-                       &d_a,
-                       &d_b,
-                       &mut d_c,
-                       NUM,
-                       stream)
-                    .unwrap();
-        });
+        vector_add(BLOCKS_PER_GRID.into(),
+                   THREADS_PER_BLOCK.into(),
+                   &d_a,
+                   &d_b,
+                   &mut d_c,
+                   NUM,
+                   &stream)
+                .unwrap();
 
         println!("Copy output data from the CUDA device to the host memory");
         cuda::memory::memcpy(&mut h_c, &d_c).unwrap();

@@ -14,7 +14,7 @@ pub unsafe fn launch_kernel(func: *const c_void,
                             block_dim: Dim3,
                             args: &mut [&mut any::Any],
                             shared_mem: usize,
-                            stream: &stream::Handle)
+                            stream: &stream::Stream)
                             -> Result<()> {
     let mut args: Vec<_> = args.iter_mut()
         .map(|arg| *arg as *mut any::Any as *mut c_void)
