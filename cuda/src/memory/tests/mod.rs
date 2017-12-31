@@ -1,16 +1,16 @@
-type Array = super::Array<super::Owned<u8>>;
+use super::Array;
 
 #[test]
 fn malloc() {
-    let arr = Array::new(16).unwrap();
-    assert!(!arr.as_ptr().is_null());
-    assert_eq!(arr.len(), 16);
+    let m = Array::<u8>::new(16).unwrap();
+    assert!(!m.as_ptr().is_null());
+    assert_eq!(m.len(), 16);
 }
 
 #[test]
 #[should_panic(expected = "MemoryAllocation")]
 fn malloc_huge() {
-    Array::new(1 << 48).unwrap();
+    Array::<u8>::new(1 << 48).unwrap();
 }
 
 mod slice;

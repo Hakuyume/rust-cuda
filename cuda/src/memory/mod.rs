@@ -1,14 +1,13 @@
-mod ptr;
-pub use self::ptr::{Ptr, PtrMut};
+mod repr;
+pub use self::repr::{Repr, ReprMut};
 
-mod owned;
-pub use self::owned::Owned;
-
-mod borrowed;
-pub use self::borrowed::{Borrowed, BorrowedMut};
+mod owned_repr;
+mod borrowed_repr;
 
 mod array;
+pub use self::array::ArrayBase;
 pub use self::array::Array;
+pub use self::array::{Slice, SliceMut};
 
 mod memcpy;
 pub use self::memcpy::memcpy;

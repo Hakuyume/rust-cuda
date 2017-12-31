@@ -6,34 +6,34 @@ use cuda_sys;
 
 use Result;
 
-use super::{Ptr, PtrMut};
+use super::{Repr, ReprMut};
 
-pub struct Owned<T> {
+pub struct OwnedRepr<T> {
     ptr: *mut T,
 }
 
-impl<T> Owned<T> {
-    pub fn new(len: usize) -> Result<Owned<T>> {
+impl<T> OwnedRepr<T> {
+    pub fn new(len: usize) -> Result<OwnedRepr<T>> {
         let mut ptr = ptr::null_mut();
         unsafe { try_call!(cuda_sys::cudaMalloc(&mut ptr, mem::size_of::<T>() * len)) }
-        Ok(Owned { ptr: ptr as *mut T })
+        Ok(OwnedRepr { ptr: ptr as *mut T })
     }
 }
 
-impl<T> Drop for Owned<T> {
+impl<T> Drop for OwnedRepr<T> {
     fn drop(&mut self) {
         unsafe { cuda_sys::cudaFree(self.ptr as *mut c_void) };
     }
 }
 
-impl<T> Ptr for Owned<T> {
+impl<T> Repr for OwnedRepr<T> {
     type Type = T;
     fn as_ptr(&self) -> *const T {
         self.ptr
     }
 }
 
-impl<T> PtrMut for Owned<T> {
+impl<T> ReprMut for OwnedRepr<T> {
     fn as_mut_ptr(&mut self) -> *mut T {
         self.ptr
     }

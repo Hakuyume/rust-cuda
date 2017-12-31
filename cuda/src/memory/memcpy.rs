@@ -6,8 +6,8 @@ use cuda_sys;
 
 use Result;
 
-use super::{Ptr, PtrMut};
-use super::Array;
+use super::{Repr, ReprMut};
+use super::ArrayBase;
 
 pub trait MemcpyFrom<S>
     where S: ?Sized
@@ -22,8 +22,8 @@ pub fn memcpy<D, S>(dst: &mut D, src: &S) -> Result<()>
     dst.memcpy_from(src)
 }
 
-impl<T, P> MemcpyFrom<[T]> for Array<P>
-    where P: PtrMut<Type = T>
+impl<T, R> MemcpyFrom<[T]> for ArrayBase<R>
+    where R: ReprMut<Type = T>
 {
     fn memcpy_from(&mut self, src: &[T]) -> Result<()> {
         assert_eq!(src.len(), self.len());
@@ -37,11 +37,11 @@ impl<T, P> MemcpyFrom<[T]> for Array<P>
     }
 }
 
-impl<T, P, D> MemcpyFrom<Array<P>> for D
-    where P: Ptr<Type = T>,
+impl<T, R, D> MemcpyFrom<ArrayBase<R>> for D
+    where R: Repr<Type = T>,
           D: ?Sized + ops::DerefMut<Target = [T]>
 {
-    fn memcpy_from(&mut self, src: &Array<P>) -> Result<()> {
+    fn memcpy_from(&mut self, src: &ArrayBase<R>) -> Result<()> {
         let dst = self.deref_mut();
         assert_eq!(src.len(), dst.len());
         unsafe {
