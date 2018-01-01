@@ -6,7 +6,12 @@ pub use error::Error;
 pub type Result<T> = std::result::Result<T, Error>;
 
 pub mod memory;
-pub mod stream;
-pub mod misc;
+pub use memory::memcpy;
+
+mod stream;
+pub use stream::Stream;
+
+mod misc;
+pub use misc::*;
 
 pub mod nightly;
